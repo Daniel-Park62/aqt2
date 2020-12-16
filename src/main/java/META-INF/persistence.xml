@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="aqtclient" transaction-type="RESOURCE_LOCAL">
+		<description>aqt db2</description>
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>aqtclient.model.Tconfig</class>
+		<class>aqtclient.model.Texecjob</class>
+		<class>aqtclient.model.Tmaster</class>
+		<class>aqtclient.model.Trequest</class>
+		<class>aqtclient.model.Tservice</class>
+		<class>aqtclient.model.Ttransaction</class>
+		<class>aqtclient.model.Vtrxdetail</class>
+		<class>aqtclient.model.Vtrxlist</class>
+		<properties>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/aqtdb2"/>
+			<property name="javax.persistence.jdbc.user" value="aqtdb"/>
+			<property name="javax.persistence.jdbc.password" value="Dawinit1!"/>
+			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
+			<property name="eclipselink.target-database" value="MySQL"/>
+			<property name="eclipselink.jdbc.read-connections.max" value="5"/>
+		</properties>
+	</persistence-unit>
+</persistence>
