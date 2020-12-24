@@ -121,7 +121,8 @@ public class AqtStatus {
 
 		Label lbl = new Label(compS, SWT.NONE);
 //     	lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-     	lbl.setFont(IAqtVar.font1);
+//     	lbl.setFont(IAqtVar.font1);
+     	lbl.setFont(SWTResourceManager.getFont("맑은 고딕", 10, SWT.NORMAL));
      	lbl.setText(nm);
      	lbl.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, true ));
      	

@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
  * The persistent class for the ttransaction database table.
  * 
  */
-@Entity
+//@Entity
 public class Ttranabbr  {
 	
 	public Ttranabbr(int pkey, String uuid, String msgcd, String rcvmsg, String errinfo, String rdata, int rlen,
@@ -60,7 +60,7 @@ public class Ttranabbr  {
 		this.sdata = sdata;
 	}
 
-	@Id
+//	@Id
 	private int pkey ;
 	
 	public int getPkey() {

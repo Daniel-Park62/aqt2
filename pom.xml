@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.dawin</groupId>
-  <artifactId>aqt2</artifactId>
+  <artifactId>aqt2</artifactId> 
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>aqttool</name>
+  <name>aqtV2</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -18,7 +18,7 @@
 <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.10</version>
+      <version>4.13</version>
       <scope>test</scope>
     </dependency>
       
@@ -74,17 +74,16 @@
 	</dependency>
    
   </dependencies>
+
   <build>
-    <sourceDirectory>src</sourceDirectory>
+  <!--   
+  
+    <sourceDirectory>src/main/java</sourceDirectory>
     <resources>
       <resource>
-        <directory>src</directory>
-        <excludes>
-          <exclude>**/*.java</exclude>
-        </excludes>
       </resource>
     </resources>
-    
+ -->   
     
     <plugins>
       <plugin>
@@ -97,5 +96,5 @@
       </plugin>
     </plugins>
   </build>
-  
+   
 </project>

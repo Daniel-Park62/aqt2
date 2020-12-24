@@ -1,7 +1,16 @@
 package aqtclient.part;
 
+import java.awt.Toolkit;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
@@ -62,8 +71,13 @@ public class AqtLogin extends Dialog {
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-
-		Image img_login = SWTResourceManager.getImage( "images/login.png");
+		URL url = getClass().getClassLoader().getResource("login.png");
+		ImageDescriptor imgDesc = ImageDescriptor.createFromURL(url);
+		
+		Image img_login = imgDesc.createImage() ;
+		
+//		System.out.println(url.toString());
+//		Image img_login = SWTResourceManager.getImage( "images/login.png");
 
 		Composite parent2 = (Composite)super.createDialogArea(parent);
 //		parent2.setSize(img_login.getImageData().width, img_login.getImageData().height);

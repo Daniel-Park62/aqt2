@@ -372,7 +372,7 @@ public class AqtRegTcode {
 	    Menu popupMenu = new Menu(tblList);
 
 	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
-	    addsvc.setText("서비스등록");
+	    addsvc.setText("테스트코드등록");
 	    addsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
