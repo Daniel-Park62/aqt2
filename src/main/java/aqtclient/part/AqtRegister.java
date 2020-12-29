@@ -44,7 +44,7 @@ public class AqtRegister extends Dialog {
 	private Button[] btnLevel = new Button[4];
 	
 	private static Tmaster tmaster;
-	private Text txtSdate, txtEdate;
+	private DateText txtSdate, txtEdate;
 
 	/**
 	 * Create the composite.
@@ -135,7 +135,7 @@ public class AqtRegister extends Dialog {
 		
 		Label ltitle = new Label(compTitle, SWT.NONE);
 		
-    	ltitle.setImage(SWTResourceManager.getImage("images/tit_register.png"));
+    	ltitle.setImage(AqtMain.getMyimage("tit_register.png"));
 
 		Label lblCode = new Label(compHeader, SWT.NONE);
 		lblCode.setFont(IAqtVar.font1);
@@ -214,7 +214,8 @@ public class AqtRegister extends Dialog {
 		lblCode.setFont(IAqtVar.font1);
 		lblCode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		
-		txtSdate = new Text(compHeader, SWT.BORDER);
+//		txtSdate = new Text(compHeader, SWT.BORDER);
+		DateText txtSdate = new DateText(compHeader, SWT.SINGLE | SWT.BORDER | SWT.CENTER  );
 		txtSdate.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtSdate.setFont(IAqtVar.font1);
 		txtSdate.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -224,7 +225,7 @@ public class AqtRegister extends Dialog {
 		lblCode.setFont(IAqtVar.font1);
 		lblCode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		
-		txtEdate = new Text(compHeader, SWT.BORDER);
+		txtEdate = new DateText(compHeader, SWT.SINGLE | SWT.BORDER | SWT.CENTER  );
 		txtEdate.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtEdate.setFont(IAqtVar.font1);
 	    txtEdate.setEditable(false);
@@ -267,19 +268,6 @@ public class AqtRegister extends Dialog {
 		
 	    txtSdate.setText(strToday);
 	    txtSdate.setEditable(false);
-	    txtSdate.addMouseListener(new MouseAdapter() {
-	    	@Override
-	    	public void mouseDoubleClick(MouseEvent e) {
-	    		Point pt = AqtMain.aqtmain.getShell().getDisplay().getCursorLocation() ; 
-	        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 20 );
-	    		
-                String s = (String)cd.open();
-                if (s != null) {
-                	txtSdate.setText(s.replace('-', '/') ) ;
-                }
-	    		super.mouseDoubleClick(e);
-	    	}
-		});
 
 		lblCode = new Label(compHeader, SWT.NONE);
 		lblCode.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));

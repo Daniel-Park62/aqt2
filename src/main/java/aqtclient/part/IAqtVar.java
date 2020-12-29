@@ -9,8 +9,8 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 public interface IAqtVar {
 	final public static Font title_font = SWTResourceManager.getFont("맑은 고딕", 20, SWT.NORMAL ) ;
-	final public static Font font1 = SWTResourceManager.getFont("맑은 고딕", 12, SWT.NORMAL); // 텍스트 기본
-	final public static Font font1b = SWTResourceManager.getFont("맑은 고딕", 12, SWT.BOLD);
+	final public static Font font1 = SWTResourceManager.getFont("맑은 고딕", 11, SWT.NORMAL); // 텍스트 기본
+	final public static Font font1b = SWTResourceManager.getFont("맑은 고딕", 11, SWT.BOLD);
 	final public static Font font13 = SWTResourceManager.getFont("맑은 고딕", 13, SWT.NORMAL); 
 	final public static Font font13b = SWTResourceManager.getFont("맑은 고딕", 13, SWT.BOLD);
 	final public static Font font15b = SWTResourceManager.getFont("맑은 고딕", 15, SWT.BOLD); // 소제목

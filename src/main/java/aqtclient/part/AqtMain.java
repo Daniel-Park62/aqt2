@@ -1,9 +1,11 @@
 package aqtclient.part;
 
 import java.io.BufferedWriter;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -214,7 +217,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test");
+		newShell.setText("Application Quarity Test 2");
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
 		        event.doit = true;
@@ -270,9 +273,9 @@ public class AqtMain extends ApplicationWindow {
 	}
 
 	private void menuCreate(Composite parent ) {
-		Image img_logo = SWTResourceManager.getImage( "images/logo.png");
-		Image img_result = SWTResourceManager.getImage( "images/result.png");
-		Image img_oper = SWTResourceManager.getImage( "images/operating.png");
+		Image img_logo = AqtMain.getMyimage("Logo.png");
+		Image img_result = AqtMain.getMyimage("result.png");
+		Image img_oper = AqtMain.getMyimage("operating.png");
 
 		Composite comp_menu = new Composite(parent, SWT.NONE);
 		
@@ -630,7 +633,24 @@ public class AqtMain extends ApplicationWindow {
 		label.setForeground(SWTResourceManager.getColor(240,250,240));
 		
 	}
-	
+
+	private static Map<String, Image> m_imageMap = new HashMap<String, Image>();
+	public static Image getMyimage(String nm) {
+		Image image = m_imageMap.get(nm);
+		if (image == null) {
+			try {
+				URL url = aqtmain.getClass().getClassLoader().getResource(nm);
+				ImageDescriptor imgDesc = ImageDescriptor.createFromURL(url);
+				
+				image = imgDesc.createImage() ;
+				m_imageMap.put(nm, image);
+			} catch (Exception e) {
+				m_imageMap.put(nm, image);
+			}
+		}
+		return image;
+		
+	}
     public static Image resize(Image image, int width, int height) {
 		  Image scaled = new Image(Display.getCurrent(), width, height);
 		  GC gc = new GC(scaled);

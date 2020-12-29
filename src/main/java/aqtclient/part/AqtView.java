@@ -83,7 +83,7 @@ public class AqtView {
 
 		Label ltitle = new Label(compHeader, SWT.NONE);
 //		ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-		ltitle.setImage(SWTResourceManager.getImage("images/tit_view.png"));
+		ltitle.setImage(AqtMain.getMyimage("tit_view.png"));
 		ltitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 		Composite compIn = new Composite(compHeader, SWT.BORDER);
@@ -133,7 +133,7 @@ public class AqtView {
 		textHost.setFont(IAqtVar.font1b);
 
 		lbl = new Label(compIn, SWT.NONE);
-		lbl.setImage(SWTResourceManager.getImage("images/refresh.png"));
+		lbl.setImage(AqtMain.getMyimage("refresh.png"));
 		lbl.setCursor(IAqtVar.handc);
 		lbl.setLayoutData(new GridData(SWT.END,SWT.CENTER,true, false));
 		lbl.addMouseListener(new MouseAdapter() {

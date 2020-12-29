@@ -111,7 +111,7 @@ public class AqtResult {
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		Label ltitle = new Label(compHeader, SWT.NONE);
 //		ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-		ltitle.setImage(SWTResourceManager.getImage("images/tit_result.png"));
+		ltitle.setImage(AqtMain.getMyimage("tit_result.png"));
 
 		Composite compTitle = new Composite(compHeader, SWT.NONE);
 
@@ -191,7 +191,7 @@ public class AqtResult {
 			}
 		});
 		btnSearch.setCursor(IAqtVar.handc);
-		btnSearch.setImage(SWTResourceManager.getImage("images/search.png"));
+		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 //		btnSearch.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		new Label(compTitle, SWT.NONE);
 
@@ -350,7 +350,7 @@ public class AqtResult {
 		 * SWT.DIALOG_TRIM); if (!tempTrxList1.isEmpty()) {
 		 * aqtDetail.setTrxList(tempTrxList1.get(tblDetailResult1.getSelectionIndex()));
 		 * aqtDetail.open(); } } } });
-		 * lblView1.setImage(SWTResourceManager.getImage("images/detailview.png"));
+		 * lblView1.setImage(AqtMain.getMyimage("detailview.png"));
 		 */
 		Label lblSend1 = new Label(compCode1, SWT.NONE);
 		lblSend1.setText("SEND");

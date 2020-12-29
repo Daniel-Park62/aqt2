@@ -102,7 +102,7 @@ public class AqtStatus {
 
 
 	private Composite create_pan(Composite parent) {
-     	final Image img_pan = SWTResourceManager.getImage("images/status_panel.png");
+     	final Image img_pan = AqtMain.getMyimage("status_panel.png");
 		// 전체 누적진척률
      	compS = new Composite(parent, SWT.NONE);
 //     	compS.setBackground(parent.getBackground());
@@ -156,7 +156,7 @@ public class AqtStatus {
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
 //    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-    	ltitle.setImage(SWTResourceManager.getImage("images/tit_status.png"));
+    	ltitle.setImage(AqtMain.getMyimage("tit_status.png"));
 
     	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		lbl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

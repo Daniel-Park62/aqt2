@@ -168,7 +168,7 @@ public class AqtExec  {
 //		compHeader.setBackground(parent.getBackground());
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
-    	ltitle.setImage(SWTResourceManager.getImage("images/tit_exec.png"));
+    	ltitle.setImage(AqtMain.getMyimage("tit_exec.png"));
 		
 		Composite compTitle = new Composite(compHeader, SWT.LINE_DASH);
 		
@@ -466,7 +466,7 @@ public class AqtExec  {
 /*		
 		lblTrans = new Label(composite, SWT.NONE);
 		lblTrans.setLayoutData(new GridData(SWT.END, SWT.CENTER, true, false));
-		lblTrans.setImage(SWTResourceManager.getImage("images/execbtn.png"));
+		lblTrans.setImage(AqtMain.getMyimage("execbtn.png"));
 		lblTrans.setCursor(IAqtVar.handc);
 		lblTrans.addMouseListener(new MouseAdapter() {
 			@Override

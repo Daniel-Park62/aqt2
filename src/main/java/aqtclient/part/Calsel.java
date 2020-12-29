@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class Calsel extends CLabel {
-    final Image calsel_img = SWTResourceManager.getImage("images/calsel.png");
+    final Image calsel_img = AqtMain.getMyimage("calsel.png");
 //    Text t;
 //    public void setTarget(Text t) {
 //    	this.t = t ;

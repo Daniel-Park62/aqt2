@@ -93,7 +93,7 @@ public class AqtRegSvc {
 		
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
-    	ltitle.setImage(SWTResourceManager.getImage("images/tit_regsvc.png"));
+    	ltitle.setImage(AqtMain.getMyimage("tit_regsvc.png"));
 
 		Composite compTit = new Composite(container, SWT.NONE);
 		GridLayoutFactory.fillDefaults().numColumns(5).equalWidth(false).applyTo(compTit);
@@ -138,7 +138,7 @@ public class AqtRegSvc {
 			}
 		});
 		btnSearch.setCursor(IAqtVar.handc);
-		btnSearch.setImage(SWTResourceManager.getImage("images/search.png"));
+		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 
 		
     	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);

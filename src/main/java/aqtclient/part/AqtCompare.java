@@ -120,7 +120,7 @@ public class AqtCompare {
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		Label ltitle = new Label(compHeader, SWT.NONE);
 //		ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-		ltitle.setImage(SWTResourceManager.getImage("images/tit_compare.png"));
+		ltitle.setImage(AqtMain.getMyimage("tit_compare.png"));
 
 		Composite compTitle = new Composite(compHeader, SWT.NONE);
 
@@ -172,7 +172,7 @@ public class AqtCompare {
 			}
 		});
 		btnSearch.setCursor(IAqtVar.handc);
-		btnSearch.setImage(SWTResourceManager.getImage("images/search.png"));
+		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 		
 
 		Composite compScArea = new Composite(compHeader, SWT.NONE);

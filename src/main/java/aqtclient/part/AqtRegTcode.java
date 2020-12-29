@@ -19,6 +19,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -50,7 +51,9 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tmaster;
@@ -94,7 +97,7 @@ public class AqtRegTcode {
 		
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
-    	ltitle.setImage(SWTResourceManager.getImage("images/tit_register.png"));
+    	ltitle.setImage(AqtMain.getMyimage("tit_register.png"));
 
 		Composite compTit = new Composite(container, SWT.NONE);
 		GridLayoutFactory.fillDefaults().numColumns(5).equalWidth(false).applyTo(compTit);
@@ -139,7 +142,7 @@ public class AqtRegTcode {
 			}
 		});
 		btnSearch.setCursor(IAqtVar.handc);
-		btnSearch.setImage(SWTResourceManager.getImage("images/search.png"));
+		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 
 		
     	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -183,9 +186,9 @@ public class AqtRegTcode {
 		});
 	    
         String[] cols1 = new String[] 
-        		{  " 테스트코드", "  테스트명", "타입", "단계", "비교대상코드", "테스트시작일","테스트종료일","대상서버정보"};
+        		{  " 테스트코드", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","대상서버정보"};
 
-        int[] columnWidths1 = new int[] {  150, 300, 80, 80, 150,150,150, 150};
+        int[] columnWidths1 = new int[] {  150, 300, 80, 80, 150,200,200, 200};
 
 	    int[] colas1 = new int[] 
 	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER };
@@ -206,12 +209,31 @@ public class AqtRegTcode {
 
 	    	}
 	    });
+	    tblList.addMouseListener(new MouseAdapter() {
+			
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				TableItem item = (TableItem) ((Table) e.getSource()).getSelection() [0];
+				Tmaster tmaster = (Tmaster) item.getData() ;
+				AqtRegister aqtregister = new AqtRegister(container.getShell(), SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM) ;
+				aqtregister.setTmaster(tmaster);
+				aqtregister.open();
+				
+			}
+		});
 	    tblList.setHeaderVisible(true);
 	    
 	    tvList.setColumnProperties(cols1);
 		CellEditor[] CELL_EDITORS = new CellEditor[cols1.length];
+		
 		for (int i = 0; i < CELL_EDITORS.length; i++) {
-			CELL_EDITORS[i] = new TextCellEditor(tblList);
+			if ( i == -2 ) {
+				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, new String[] {"1","2","3"} ) ;
+//				CELL_EDITORS[i].setActivationStyle(
+//					    ComboBoxCellEditor.DROP_DOWN_ON_KEY_ACTIVATION | ComboBoxCellEditor.DROP_DOWN_ON_MOUSE_ACTIVATION);
+			} else {
+				CELL_EDITORS[i] = new TextCellEditor(tblList);
+			}
 		}
 //		CELL_EDITORS[0] = new CheckboxCellEditor(tblList) ;
 		tvList.setCellEditors(CELL_EDITORS);

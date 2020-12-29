@@ -71,21 +71,20 @@ public class AqtLogin extends Dialog {
 	
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		URL url = getClass().getClassLoader().getResource("login.png");
-		ImageDescriptor imgDesc = ImageDescriptor.createFromURL(url);
 		
-		Image img_login = imgDesc.createImage() ;
+		Image img_login = AqtMain.getMyimage("login.png") ;
 		
 //		System.out.println(url.toString());
 //		Image img_login = SWTResourceManager.getImage( "images/login.png");
 
 		Composite parent2 = (Composite)super.createDialogArea(parent);
 //		parent2.setSize(img_login.getImageData().width, img_login.getImageData().height);
-
-		parent2.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+		parent.setBackgroundMode(SWT.INHERIT_FORCE);
+		
+//		parent2.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
 		Composite container  = new Composite(parent2, SWT.NONE) ;
-		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//		container.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		container.setBackgroundImage(img_login);
 		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 		container.addKeyListener(new KeyAdapter() {
@@ -99,31 +98,31 @@ public class AqtLogin extends Dialog {
 		});
 		
 		lbluser = new Label(container,SWT.NONE); 
-		lbluser.setImage(SWTResourceManager.getImage("images/user2.png"));
-		lbluser.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+		lbluser.setImage(AqtMain.getMyimage("user2.png"));
+//		lbluser.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lbluser.setBounds(720, 383,64,36);
 
 		lbluser.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				AqtMain.authtype = AuthType.USER ;
-				lbltester.setImage(SWTResourceManager.getImage("images/tester1.png"));
-				lbluser.setImage(SWTResourceManager.getImage("images/user2.png"));
+				lbltester.setImage(AqtMain.getMyimage("tester1.png"));
+				lbluser.setImage(AqtMain.getMyimage("user2.png"));
 			}
 			
 		});
 
 		
 		lbltester = new Label(container,SWT.NONE); 
-		lbltester.setImage(SWTResourceManager.getImage("images/tester1.png"));
-		lbltester.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+		lbltester.setImage(AqtMain.getMyimage("tester1.png"));
+//		lbltester.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lbltester.setBounds(795, 383,64,36);
 		lbltester.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				AqtMain.authtype = AuthType.TESTADM ;
-				lbltester.setImage(SWTResourceManager.getImage("images/tester2.png"));
-				lbluser.setImage(SWTResourceManager.getImage("images/user1.png"));
+				lbltester.setImage(AqtMain.getMyimage("tester2.png"));
+				lbluser.setImage(AqtMain.getMyimage("user1.png"));
 			}
 		});
 
@@ -131,7 +130,7 @@ public class AqtLogin extends Dialog {
 		txtPwd = new Text(container, SWT.NONE | SWT.PASSWORD);
 		txtPwd.setBounds(724, 450, 200, 30);
 		txtPwd.setFont(font);
-		txtPwd.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//		txtPwd.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		txtPwd.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -147,12 +146,12 @@ public class AqtLogin extends Dialog {
 		lblmsg.setBounds(631, 742, 400, 60);
 		lblmsg.setText(" ");
 		lblmsg.setFont(font);
-		lblmsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//		lblmsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
 		Label lbl = new Label(container , SWT.NONE) ;
-		lbl.setImage(SWTResourceManager.getImage("images/loginbtn.png"));
+		lbl.setImage(AqtMain.getMyimage("loginbtn.png"));
 		lbl.setBounds(721, 503, 200,64);
-		lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//		lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lbl.setCursor(IAqtVar.handc);
 		lbl.addMouseListener(new MouseAdapter() {
 			@Override
@@ -163,9 +162,10 @@ public class AqtLogin extends Dialog {
 		});
 
 		lbl = new Label(container , SWT.NONE) ;
-		lbl.setImage(SWTResourceManager.getImage("images/cancelbtn.png"));
+		lbl.setImage(AqtMain.getMyimage("cancelbtn.png"));
 		lbl.setBounds(936, 503, 200,64) ;
-		lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+		lbl.setCursor(IAqtVar.handc);
+//		lbl.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lbl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {

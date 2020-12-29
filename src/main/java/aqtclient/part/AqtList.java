@@ -81,7 +81,7 @@ public class AqtList  {
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
 //    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-    	ltitle.setImage(SWTResourceManager.getImage("images/tit_list.png"));
+    	ltitle.setImage(AqtMain.getMyimage("tit_list.png"));
     	ltitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
 
 		Composite compTitle = new Composite(compHeader, SWT.LINE_DASH);
