@@ -25,7 +25,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -92,7 +91,7 @@ public class AqtList  {
 		
     	Label lblServiceCnt = new Label(compTitle, SWT.NONE );
 //    	lblServiceCnt.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-    	lblServiceCnt.setText("대상서비스수 :");
+    	lblServiceCnt.setText("대상URI수 :");
     	lblServiceCnt.setFont(IAqtVar.font15b);
     	lblServiceCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	lblServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, true, true));
@@ -133,7 +132,7 @@ public class AqtList  {
         int width = 1500 / 10;
 
         String[] columnNames1 = new String[] {
-   	         "","테스트ID", "테스트명", "테스트일자", "단계", "대상호스트", "서비스수", "전문건수", "성공건수", "실패건수","실패서비스", "성공율(%)"};
+   	         "","테스트ID", "테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수","실패URI", "성공율(%)"};
         
         int[] columnWidths1 = new int[] {
 //        		115, 350, 130, 130, 115, 115, 115, 110, 110};
@@ -173,8 +172,8 @@ public class AqtList  {
 				int i = tblTestList.getSelectionIndex() ;
 				if (  i >= 0 ) {
 					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '" 
-					 + ( vlist.getFcnt() > 0  ?  "2'" : "1") ) ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = " 
+					 + ( vlist.getFcnt() > 0  ?  "'2'" : "'1'") ) ;
 				}
 			}
 
@@ -235,14 +234,14 @@ public class AqtList  {
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {
-        		"","서비스", "서비스명", "화면번호", "누적건수", "처리건수", "평균시간", "정상건수", "실패건수"};
+        		"","URI", "URI명",  "누적건수", "처리건수", "평균시간", "정상건수", "실패건수"};
         
         int[] columnWidths2 = new int[] {
 //        		150, 480, 150, 130, 130, 130, 130};
-        		0, 220, width + 200, width-40, width-40, width-40, width-40, width-40, width-40};
+        		0, 220, width + 200,  width-40, width-40, width-40, width-40, width-40};
         		
 	    int[] columnAlignments2 = new int[] {
-	    		SWT.CENTER, SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
+	    		SWT.CENTER,  SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
 	      
 	     for (int i = 0; i < columnNames2.length; i++) {
 	         TableViewerColumn tableViewerColumn =
@@ -270,7 +269,7 @@ public class AqtList  {
 				int i = tblDetailList.getSelectionIndex() ;
 				if (  i >= 0 ) {
 					Vtrxdetail vlist = (Vtrxdetail) tblDetailList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getTcode() + "' and t.svcid = '" + vlist.getSvcid() + "'") ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getTcode() + "' and t.uri = '" + vlist.getSvcid() + "'") ;
 				}
 			}
 
@@ -323,14 +322,16 @@ public class AqtList  {
 //		qTrxList.setParameter("tcode", tempVtrxList.get(tblTestList.getSelectionIndex()).getCode());
 //		List<Vtrxdetail> listtrx = qTrxList.getResultList() ;
 
-		List<Vtrxdetail> listtrx = em.createNativeQuery("select uuid_short()  pkey, a.tcode, a.svcid, a.scrno, s.svckor svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, ifnull(s.cumcnt,0) cumcnt " + 
+		List<Vtrxdetail> listtrx = em.createNativeQuery(
+				"select uuid_short()  pkey, a.tcode, a.svcid, s.svckor svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " +
+				" sum(tcnt) OVER (PARTITION BY a.svcid) cumcnt\r\n" + 
 				"FROM   ((" + 
-				"select t.tcode, t.svcid, t.scrno, count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
+				"select t.tcode, t.uri svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
-				"from   Ttransaction t, tmaster m \r\n" + 
+				"from   Ttcppacket t, tmaster m \r\n" + 
 				"WHERE m.code = '" + tempVtrxList.get(tblTestList.getSelectionIndex()).getCode() + 
 				"' and m.code = t.tcode and m.lvl > '0' " + 
-				"group by t.tcode, t.svcid, t.scrno) a " + 
+				"group by t.tcode, t.uri) a " + 
 				"left outer join tservice s on a.svcid = s.svcid )" , Vtrxdetail.class)
 			.getResultList() ;
 
@@ -480,16 +481,14 @@ public class AqtList  {
 				  case 2:
 					  return trx.getSvckor();
 				  case 3:
-					  return trx.getScrno();
-				  case 4:
 					  return String.format("%,d", trx.getCumcnt() ) ;
-				  case 5:
+				  case 4:
 					  return String.format("%,d", trx.getTcnt() ) ;
-				  case 6:
+				  case 5:
 					  return String.format("%.3f", trx.getAvgt());
-				  case 7:
+				  case 6:
 					  return String.format("%,d", trx.getScnt() );
-				  case 8:
+				  case 7:
 					  return String.format("%,d", trx.getFcnt() );
 				  }
 			  return null;

@@ -51,7 +51,7 @@ import org.eclipse.swtchart.LineStyle;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tservice;
-import aqtclient.model.Ttranabbr;
+import aqtclient.model.Ttcppacket;
 import aqtclient.model.Vtrxdetail;
 
 public class AqtResult {
@@ -67,7 +67,7 @@ public class AqtResult {
 
 	private AqtTcodeCombo cmbCode;
 
-	private List<Ttranabbr> tempTrxList1 = new ArrayList<Ttranabbr>(); // testcode1 의 ttransaction
+	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
 	private List<Vtrxdetail> tempTrxCompList; // 서비스별 트랜잭션 건수
 
 	private TableViewer tableViewer;
@@ -98,7 +98,6 @@ public class AqtResult {
 		parent.setLayout(new FillLayout());
 
 		sashForm = new SashForm(parent, SWT.VERTICAL);
-//		sashForm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 
 		Composite compHeader = new Composite(sashForm, SWT.NONE);
 		GridLayout headerLayout = new GridLayout(1, false);
@@ -243,13 +242,13 @@ public class AqtResult {
 		Point point = parent.getSize();
 		int width = (point.x - 70) / 8;
 
-		String[] columnNames1 = new String[] { "", "서비스", "서비스명", "화면번호", "누적건수", "처리건수", "평균시간", "정상건수", "실패건수" };
+		String[] columnNames1 = new String[] { "", "URI", "URI명", "누적건수", "처리건수", "평균시간", "정상건수", "실패건수" };
 
 		int[] columnWidths1 = new int[] {
 //   	         90, 310, 120/*, 110*/, 95, 95, 95, 95, 95, 95, 95, 95 };
-				0, 180, 250, 120, 120 , 120, 120, 120, 120, 120,	120, 120, 120};
+				0, 250, 250, 120 , 120, 120, 120, 120, 120,	120, 120, 120};
 
-		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER,
+		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.CENTER,  SWT.CENTER, SWT.CENTER, SWT.CENTER,
 				SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER };
 
 		TableColumn tc;
@@ -391,18 +390,18 @@ public class AqtResult {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		em.clear();
 		String tcode = cmbCode.getTcode(); 
-		String sfail = btnfail.getSelection() ? "and sflag='2' " : "";
-		String ssvc  = textService.getText().trim().isEmpty() ? "": "and svcid like '" + textService.getText().trim() + "' ";
-		String smsg  = txtMsgcd.getText().trim().isEmpty() ? "": "and msgcd like '" + txtMsgcd.getText().trim() + "' ";
+		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
+		String ssvc  = textService.getText().trim().isEmpty() ? "": "and uri like '" + textService.getText().trim() + "' ";
+		String smsg  = txtMsgcd.getText().trim().isEmpty() ? "": "and rcode = " + txtMsgcd.getText().trim() ;
 //		String qstr = "SELECT v FROM Vtrxdetail v WHERE v.tcode = :tcode and v.svcid like :svcid and v.scrno like :scrno" ;
 		String qstr = 
-				"select uuid_short() pkey, a.tcode, a.svcid, a.scrno, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
+				"select uuid_short() pkey, a.tcode, a.svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
 				" sum(tcnt) OVER (PARTITION BY a.svcid) cumcnt\r\n" + 
 				"from   (\r\n" + 
-				"select t.tcode, t.svcid, t.scrno, count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
-				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
- 				"from   Ttransaction t, tmaster m where m.code = t.tcode and m.lvl > '0' and t.tcode = '" + tcode +"' " + sfail + ssvc + smsg +
-				"group by t.tcode, t.svcid, t.scrno\r\n" + 
+				"select t.tcode, t.uri as svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when rcode between 200 and 399 then 1 else 0 end) scnt\r\n" + 
+				", sum(case when rcode > 399 then 1 else 0 end) fcnt\r\n" + 
+ 				"from   Ttcppacket t where t.tcode = '" + tcode +"' " + sfail + ssvc + smsg +
+				" group by t.tcode, t.uri\r\n" + 
 				") as a\r\n" + 
 				"left outer join Tservice s on a.svcid = s.svcid " ;
 				
@@ -432,38 +431,37 @@ public class AqtResult {
 		
 		if (tempTrxCompList.size() > 0)
 			tbl2data(tcode ,tempTrxCompList.get(0).getSvcid());
-		
 	}
 
 	private void tbl2data(String tcode, String svcid) {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		em.clear();
-		tempTrxList1 = new ArrayList<Ttranabbr>();
+		tempTrxList1 = new ArrayList<Ttcppacket>();
 
-		String sfail = btnfail.getSelection() ? "and sflag='2' " : "";
-//		TypedQuery<Ttranabbr> qTrx = em
-//				.createQuery("select t from Ttranabbr t where t.tcode = :tcode and t.svcid = :svcid",
-//						Ttranabbr.class)
-//				.setParameter("tcode", tcode).setParameter("svcid", svcid);
+		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
+		TypedQuery<Ttcppacket> qTrx = em
+				.createQuery("select t from Ttcppacket t where t.tcode = :tcode and t.uri = :svcid " + sfail ,
+						Ttcppacket.class)
+				.setParameter("tcode", tcode).setParameter("svcid", svcid);
+
+		tempTrxList1 = qTrx.getResultList();
+//		Query query  = em.createNativeQuery(
+//				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
+//					" ifnull(convert(rdata using euckr),'') rdata,  t.rlen , t.rtime,  t.scrno, " +
+//					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
+//					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
+//				 "FROM 	ttransaction t where t.tcode = '" + tcode + "' and svcid = '" + svcid + "' " +
+//					sfail) ;
 //
-//		tempTrxList1 = qTrx.getResultList();
-		Query query  = em.createNativeQuery(
-				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
-					" ifnull(convert(rdata using euckr),'') rdata,  t.rlen , t.rtime,  t.scrno, " +
-					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
-					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
-				 "FROM 	ttransaction t where t.tcode = '" + tcode + "' and svcid = '" + svcid + "' " +
-					sfail) ;
-
-		List<Object[]> resultList = query.getResultList();
-		tempTrxList1 = resultList.stream().map( (r) -> 
-		    new Ttranabbr((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
-		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
-		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
-		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
-		    		r[15].toString(), (double)r[16], r[17].toString()) 
-				)
-				.collect(Collectors.toCollection(ArrayList::new));
+//		List<Object[]> resultList = query.getResultList();
+//		tempTrxList1 = resultList.stream().map( (r) -> 
+//		    new Ttcppacket((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
+//		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
+//		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
+//		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
+//		    		r[15].toString(), (double)r[16], r[17].toString()) 
+//				)
+//				.collect(Collectors.toCollection(ArrayList::new));
 		
 		txtSend1.setText("");
 		txtReceive1.setText("");
@@ -472,7 +470,7 @@ public class AqtResult {
 		if (!tempTrxList1.isEmpty()) {
 
 			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
-			qSvc.setParameter("svcid", tempTrxList1.get(0).getSvcid());
+			qSvc.setParameter("svcid", tempTrxList1.get(0).getUri());
 
 			qSvc.getResultList();
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
@@ -538,7 +536,7 @@ public class AqtResult {
 		return chart;
 	}
 
-	public void redrawChart(List<Ttranabbr> tempTrxList, Chart chart) {
+	public void redrawChart(List<Ttcppacket> tempTrxList, Chart chart) {
 
 		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
 		double[] ySeries = {1.0, 2.0} ;
@@ -546,7 +544,7 @@ public class AqtResult {
 		if ( tempTrxList.size() > 0 ) {
 			xSeries = tempTrxList.stream().map(a -> a.getStime()).toArray(Date[]::new);
 			ySeries = tempTrxList.stream().mapToDouble(a -> a.getSvctime()).toArray();
-			chart.getTitle().setText("시간대별 TR 현황 (" + tempTrxList.get(0).getSvcid() + ")" );
+			chart.getTitle().setText("시간대별 TR 현황 (" + tempTrxList.get(0).getUri() + ")" );
 		} 
 
 		chart.setRedraw(false);
@@ -566,7 +564,7 @@ public class AqtResult {
 		@Override
 		public Object[] getElements(Object input) {
 			// return new Object[0];
-			List<Ttranabbr> arrayList = (List<Ttranabbr>) input;
+			List<Ttcppacket> arrayList = (List<Ttcppacket>) input;
 			return arrayList.toArray();
 		}
 
@@ -602,11 +600,11 @@ public class AqtResult {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
 		public String getColumnText(Object element, int columnIndex) {
-			Ttranabbr trx = (Ttranabbr) element;
+			Ttcppacket trx = (Ttcppacket) element;
 			if (trx != null)
 				switch (columnIndex) {
 				case 0:
-					return trx.getUuid();
+					return trx.getUri();
 				case 1:
 					return fmt.format(trx.getStime());
 				case 2:
@@ -616,9 +614,9 @@ public class AqtResult {
 				case 4:
 					return String.format("%.3f",trx.getSvctime());
 				case 5:
-					return (trx.getMsgcd() == null) ? "": trx.getMsgcd() ;
+					return trx.getRcode()+"";
 				case 6:
-					return (trx.getRcvmsg() == null) ? "": trx.getRcvmsg() ;
+					return trx.getRhead() ;
 				}
 			
 			return null;
@@ -691,16 +689,14 @@ public class AqtResult {
 				case 2:
 					return trx.getSvckor();
 				case 3:
-					return trx.getScrno();
-				case 4:
 					return String.format("%,d", trx.getCumcnt());
-				case 5:
+				case 4:
 					return String.format("%,d", trx.getTcnt());
-				case 6:
+				case 5:
 					return String.format("%.3f", trx.getAvgt());
-				case 7:
+				case 6:
 					return String.format("%,d", trx.getScnt());
-				case 8:
+				case 7:
 					return String.format("%,d", trx.getFcnt());
 				}
 			return "";

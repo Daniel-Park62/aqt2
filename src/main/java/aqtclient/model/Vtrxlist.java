@@ -18,19 +18,6 @@ import org.eclipse.persistence.annotations.ReadOnly;
 @Entity
 @ReadOnly
 @NamedQuery(name="Vtrxlist.findAll", query="SELECT v FROM Vtrxlist v  order by v.tdate desc")
-@NamedNativeQuery(name="Vtrxlist.findByCode", query="SELECT a.svcid,  MAX(a.svckor) svckor, a.scrno, SUM(a.tcnt1) tcnt1, SUM(a.avgt1) avgt1, SUM(a.scnt1) scnt1, SUM(a.fcnt1) fcnt1, SUM(a.tcnt2) tcnt2, SUM(a.avgt2) avgt2, SUM(a.scnt2) scnt2, SUM(a.fcnt2) fcnt2 " + 
-												 " FROM ( " + 
-												 " SELECT v.svcid, v.scrno, v.svckor, v.tcnt tcnt1, v.avgt avgt1, v.scnt scnt1 " + 
-												 " , fcnt fcnt1, 0 tcnt2, 0 avgt2, 0 scnt2, 0 fcnt2 " + 
-												 " FROM vtrxdetail v " + 
-												 " WHERE v.tcode = ?" + 
-												 " UNION ALL " + 
-												 " SELECT v.svcid, v.scrno, v.svckor, 0, 0, 0, 0, v.tcnt tcnt1, v.avgt avgt1, v.scnt scnt1 " + 
-												 " , v.fcnt fcnt1 " + 
-												 " FROM vtrxdetail v " + 
-												 " WHERE v.tcode = ? " + 
-												 " ) AS a " + 
-												 " GROUP BY a.svcid, a.scrno")
 public class Vtrxlist  {
 	
 	@Id
@@ -58,7 +45,9 @@ public class Vtrxlist  {
 	private String tdate;
 
 	private String thost;
-
+	
+	private double spct ;
+	
 	public Vtrxlist() {
 	}
 
@@ -83,7 +72,7 @@ public class Vtrxlist  {
 	}
 
 	public double getSpct() {
-		return (double)this.scnt * 100 / (this.scnt+this.fcnt);
+		return this.spct;
 	}
 
 	public Long getSvcCnt() {

@@ -313,7 +313,7 @@ public class AqtExec2  {
 		
 		if (tempMstList != null) {
 			textDesc.setText(tempMstList.get(cmbHost.getSelectionIndex()).getDesc1());
-			textSdate.setText(tempMstList.get(cmbHost.getSelectionIndex()).getTdate());
+			textSdate.setText(tempMstList.get(cmbHost.getSelectionIndex()).getTdate().toString());
 			String sType = tempMstList.get(cmbHost.getSelectionIndex()).getTypeNm();
 			
 			textType.setText(sType);

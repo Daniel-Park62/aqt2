@@ -96,7 +96,7 @@ public class AqtMain extends ApplicationWindow {
         em = AqtMain.emf.createEntityManager() ;
 		System.out.println("AQT Started !!");
 		aqtmain = this ;
-//		addStatusLine();
+		addStatusLine();
 		
 	}
 
@@ -134,9 +134,10 @@ public class AqtMain extends ApplicationWindow {
 			
 			@Override
 			public void handleEvent(Event arg0) {
-				int w = 32000 / parent.getSize().x ; 
+				int w = 35000 / parent.getSize().x ; 
 
 				sashForm.setWeights(new int[] {w ,100 - w});
+				aqtmain.setStatus(parent.getClientArea().toString());
 				
 			}
 		});
@@ -189,6 +190,7 @@ public class AqtMain extends ApplicationWindow {
 		return statusLineManager;
 	}
 
+	
 	/**
 	 * Launch the application.
 	 * @param args
@@ -217,7 +219,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test 2");
+		newShell.setText("Application Quarity Test v2");
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
 		        event.doit = true;
@@ -245,8 +247,8 @@ public class AqtMain extends ApplicationWindow {
 	 * 
 	 * return desc; }
 	 */
-	public static void delWidget(Composite parent) {
-		
+	public void delWidget(Composite parent) {
+		this.setStatus("");
 		cback = null ;
 		if (jobScheduler != null) jobScheduler.cancel();
 	    for (Control kid : parent.getChildren()) {

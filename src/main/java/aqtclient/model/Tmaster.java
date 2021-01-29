@@ -1,6 +1,8 @@
 package aqtclient.model;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import javax.persistence.*;
 
 
@@ -10,24 +12,24 @@ import javax.persistence.*;
  */
 @Entity
 @NamedQuery(name="Tmaster.findAll", query="SELECT t FROM Tmaster t ORDER BY t.tdate desc,t.lvl desc, t.code")
-@NamedQuery(name="Tmaster.TotalCnt", query="SELECT COUNT(t.tcode) cnt FROM Tmaster t")
+@NamedQuery(name="Tmaster.TotalCnt", query="SELECT COUNT(t.code) cnt FROM Tmaster t")
 public class Tmaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int tcode ;
-	
 	private String code = "";
 
 	private String desc1 = "";
 
 	private String lvl  = "1";   //  1.단위테스트 2.통합테스트 3.실시간
 
-	private String tdate = "";
+	@Temporal(TemporalType.DATE)
+	private Date tdate  ;
 
 	private String cmpCode = "";
 
-	private String endDate = "";
+	@Temporal(TemporalType.DATE)
+	private Date endDate ;
 
 	private String tdir = "";
 
@@ -35,20 +37,27 @@ public class Tmaster implements Serializable {
 
 	private String thost = "";
 
-	private String tport = "";
+	private int tport = 0;
 
 	private String tuser = "";
 
 	private String type = "1";    // 1.배치테스트 2.실시간
+	
+	@Transient
+	private boolean newFlag = false ;
+
 
 	public Tmaster() {
 
 	}
-
-	public int getTcode() {
-		return this.tcode;
+	public boolean isNew() {
+		return newFlag;
 	}
-	
+
+	public void setNew(boolean isNew) {
+		this.newFlag = isNew;
+	}
+
 	public String getCode() {
 		return this.code;
 	}
@@ -74,22 +83,25 @@ public class Tmaster implements Serializable {
 	}
 
 	public String getLvlNm() {
-		return "1".equals(this.lvl) ? "단위테스트" : "통합테스트" ;
+		return "1".equals(this.lvl) ? "단위테스트" : 
+			   "2".equals(this.lvl) ? "통합테스트" : 
+			   "3".equals(this.lvl) ? "실시간" : 
+			   "0".equals(this.lvl) ? "Origin" : "" ;
 	}
 
-	public String getTdate() {
+	public Date getTdate() {
 		return this.tdate;
 	}
 
-	public void setTdate(String tdate) {
+	public void setTdate(Date tdate) {
 		this.tdate = tdate;
 	}
 
-	public String getEndDate() {
-		return endDate == null ? "" : endDate;
+	public Date getEndDate() {
+		return endDate ;
 	}
 
-	public void setEndDate(String endDate) {
+	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
 
@@ -125,11 +137,11 @@ public class Tmaster implements Serializable {
 		this.thost = thost;
 	}
 
-	public String getTport() {
+	public int getTport() {
 		return this.tport;
 	}
 
-	public void setTport(String tport) {
+	public void setTport(int tport) {
 		this.tport = tport;
 	}
 

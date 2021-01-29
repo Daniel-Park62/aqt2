@@ -38,7 +38,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tmaster;
 import aqtclient.model.Trequest;
-import aqtclient.model.Ttranabbr;
+import aqtclient.model.Ttcppacket;
 
 public class AqtTranTable extends AqtTableView {
 
@@ -59,7 +59,7 @@ public class AqtTranTable extends AqtTableView {
 				
 				if ( tbl.getSelectionIndex() >= 0) {
 					AqtDetail aqtDetail = new AqtDetail(parent.getShell() , SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE );
-					aqtDetail.setTrx( ((Ttranabbr) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() ); 
+					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() ); 
 					aqtDetail.open();
 				}
 				
@@ -67,7 +67,7 @@ public class AqtTranTable extends AqtTableView {
 		});
 	    
 	    reSendItem = new MenuItem(popupMenu, SWT.NONE);
-	    reSendItem.setText("TR재전송");
+	    reSendItem.setText("재전송");
 	    reSendItem.setEnabled(false);
 
 	    reSendItem.addSelectionListener(new SelectionAdapter() {
@@ -78,15 +78,15 @@ public class AqtTranTable extends AqtTableView {
 					em.clear();
 					em.getEntityManagerFactory().getCache().evictAll();
 					
-					Ttranabbr tr =  (Ttranabbr) tbl.getItem(tbl.getSelectionIndex() ).getData()  ;
+					Ttcppacket tr =  (Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()  ;
 					
-					Tmaster tmst = tr.getTmaster() ;
+					Tmaster tmst = tr.tmaster ;
 					
-					if (tmst != null && "3".equals(tmst.getLvl() ) ) {
-						MessageDialog.openInformation(parent.getShell(), "Info", "실시간은 재전송 불가합니다.");
-						em.close();
-						return ;
-					}
+//					if (tmst != null && "3".equals(tmst.getLvl() ) ) {
+//						MessageDialog.openInformation(parent.getShell(), "Info", "실시간은 재전송 불가합니다.");
+//						em.close();
+//						return ;
+//					}
 					Trequest treq = em.find(Trequest.class, tr.getPkey()) ;
 					if (treq != null) {
 						MessageDialog.openInformation(parent.getShell(), "Info", "이미 재전송 요청되었습니다.");
@@ -103,11 +103,11 @@ public class AqtTranTable extends AqtTableView {
 						e.printStackTrace();
 					}
 
-					boolean result = MessageDialog.openConfirm(parent.getShell(), "TR 재전송",
-							tr.getUuid() + " 재전송 등록하시겠습니까?" ) ;
+					boolean result = MessageDialog.openConfirm(parent.getShell(), "재전송",
+							tr.getCmpid() + " 재전송 요청등록하시겠습니까?" ) ;
 					if (  result ) {
 						em.getTransaction().begin();
-						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getUuid(), ip ) );
+						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getCmpid(), ip ) );
 						em.getTransaction().commit();
 					}
 					em.close();
@@ -124,8 +124,8 @@ public class AqtTranTable extends AqtTableView {
 			public void mouseDoubleClick(MouseEvent arg0) {
 				if ( tbl.getSelectionIndex() >= 0) {
 					AqtDetail aqtDetail = new AqtDetail(parent.getShell() , SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE );
-//					aqtDetail.setTrxList( (Ttranabbr) tbl.getItem(tbl.getSelectionIndex() ).getData() ); 
-					aqtDetail.setTrx( ((Ttranabbr) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() );
+//					aqtDetail.setTrxList( (Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData() ); 
+					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() );
 					aqtDetail.open();
 				}
 
@@ -172,30 +172,30 @@ public class AqtTranTable extends AqtTableView {
 
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
 
-		tvc = createTableViewerColumn("UUID", 300, 0);
+		tvc = createTableViewerColumn("comp id", 150, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
-				return tr.getUuid();
+				Ttcppacket tr = (Ttcppacket) element;
+				return "" + tr.getCmpid();
 			}
 		});
-		tvc = createTableViewerColumn("송신시간", 130, 1);
+		tvc = createTableViewerColumn("송신시간", 150, 1);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
+				Ttcppacket tr = (Ttcppacket) element;
 				return smdfmt.format(tr.getStime());
 			}
 		});
-		tvc = createTableViewerColumn("수신시간", 130, 2);
+		tvc = createTableViewerColumn("수신시간", 150, 2);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
+				Ttcppacket tr = (Ttcppacket) element;
 				return smdfmt.format(tr.getRtime());
 			}
 		});
@@ -204,17 +204,17 @@ public class AqtTranTable extends AqtTableView {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
+				Ttcppacket tr = (Ttcppacket) element;
 				return String.format("%.3f", tr.getSvctime());
 			}
 		});
-		tvc = createTableViewerColumn("서비스ID", 120, 4);
+		tvc = createTableViewerColumn("URI", 200, 4);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
-				return tr.getSvcid();
+				Ttcppacket tr = (Ttcppacket) element;
+				return tr.getUri();
 			}
 		});
 		tvc = createTableViewerColumn("응답코드", 80, 5);
@@ -222,28 +222,18 @@ public class AqtTranTable extends AqtTableView {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
-				return tr.getMsgcd() == null ? "" : tr.getMsgcd()  ;
+				Ttcppacket tr = (Ttcppacket) element;
+				return tr.getRcode() + ""  ;
 			}
 		});
-		tvc = createTableViewerColumn("응답메세지", 300, 6);
+		tvc = createTableViewerColumn("응답Header", 500, 6);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
-				return tr.getRcvmsg() ;
-			}
-		});
-		tvc = createTableViewerColumn("에러유형", 300, 7);
-		tvc.getColumn().setAlignment(SWT.LEFT);
-		tvc.setLabelProvider(new myColumnProvider() {
-			public String getText(Object element) {
-				if (element == null)
-					return super.getText(element);
-				Ttranabbr tr = (Ttranabbr) element;
-				return tr.getErrinfo() ;
+				Ttcppacket tr = (Ttcppacket) element;
+				return tr.getRhead() ;
 			}
 		});
 
@@ -271,7 +261,7 @@ public class AqtTranTable extends AqtTableView {
 		public Color getForeground(Object element) {
 			if (element == null)
 				return super.getForeground(element);
-			return "2".equals(((Ttranabbr) element).getSflag()) ? SWTResourceManager.getColor(SWT.COLOR_RED)
+			return (((Ttcppacket) element).getSflag()) == '2' ? SWTResourceManager.getColor(SWT.COLOR_RED)
 					: SWTResourceManager.getColor(SWT.COLOR_BLACK);
 		}
 	}
@@ -283,7 +273,7 @@ public class AqtTranTable extends AqtTableView {
 		@Override
 		public Object[] getElements(Object input) {
 			// return new Object[0];
-			List<Ttranabbr> arrayList = (List<Ttranabbr>) input;
+			List<Ttcppacket> arrayList = (List<Ttcppacket>) input;
 			return arrayList.toArray();
 		}
 
@@ -319,11 +309,11 @@ public class AqtTranTable extends AqtTableView {
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
 
 		public String getColumnText(Object element, int columnIndex) {
-			Ttranabbr trx = (Ttranabbr) element;
+			Ttcppacket trx = (Ttcppacket) element;
 			if (trx != null)
 				switch (columnIndex) {
 				case 0:
-					return trx.getUuid();
+					return trx.getCmpid() + "";
 				case 1:
 					return smdfmt.format(trx.getStime());
 				case 2:
@@ -331,9 +321,9 @@ public class AqtTranTable extends AqtTableView {
 				case 3:
 					return String.format("%.3f", trx.getSvctime());
 				case 4:
-					return (trx.getMsgcd() == null ? "" : trx.getMsgcd());
+					return trx.getRcode() + "";
 				case 5:
-					return trx.getRcvmsg();
+					return trx.getRhead();
 				}
 			return null;
 		}

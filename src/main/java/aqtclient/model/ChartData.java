@@ -1,22 +1,30 @@
 package aqtclient.model;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.eclipse.persistence.annotations.ReadOnly;
+
+@Entity
+@ReadOnly
 public class ChartData {
-	private Timestamp dtime;
-	private double trxCnt;
 	
-	public ChartData(Timestamp dtime, double trxCnt) {
-		super();
-		this.dtime = dtime;
-
-		this.trxCnt = trxCnt;
+	@Id
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date dtime;
+	private long trxCnt;
+	
+	public ChartData() {
+		
 	}
-	
-	public Timestamp getDtime() {
+	public Date getDtime() {
 		return dtime;
 	}
-	public void setDtime(Timestamp dtime) {
+	public void setDtime(Date dtime) {
 		this.dtime = dtime;
 	}
 
@@ -24,7 +32,7 @@ public class ChartData {
 	public double getTrxCnt() {
 		return trxCnt;
 	}
-	public void setTrxCnt(double trxCnt) {
+	public void setTrxCnt(long trxCnt) {
 		this.trxCnt = trxCnt;
 	}   
 

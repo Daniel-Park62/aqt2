@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tservice;
-import aqtclient.model.Ttranabbr;
+import aqtclient.model.Ttcppacket;
 
 public class AqtTRList extends Dialog {
 
@@ -40,7 +40,7 @@ public class AqtTRList extends Dialog {
 	private Text txtReceive1;
 	private Text txtSend1;
 	
-	private List<Ttranabbr> tempTrxList1 = new ArrayList<Ttranabbr>(); // testcode1 의 ttransaction
+	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
 	private AqtTranTable tableViewerDR1;
 	private String cond_str ;
 	public AqtTRList(Shell parent, String cond_string) {
@@ -53,7 +53,7 @@ public class AqtTRList extends Dialog {
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         
-        newShell.setText("전문상세목록");
+        newShell.setText("Packet상세목록");
     }
 
     @Override
@@ -92,7 +92,7 @@ public class AqtTRList extends Dialog {
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
-    	ltitle.setText("전문상세목록" ) ;
+    	ltitle.setText("Packet 상세목록" ) ;
     	ltitle.setFont( IAqtVar.title_font );
 
 		Composite compCode1 = new Composite(compHeader, SWT.NONE);
@@ -186,29 +186,30 @@ public class AqtTRList extends Dialog {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		
-		tempTrxList1 = new ArrayList<Ttranabbr>();
+		tempTrxList1 = new ArrayList<Ttcppacket>();
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		
-//		TypedQuery<Ttransaction> qTrx = em
-//				.createQuery("select t from Ttransaction t where " + cond_str,
-//						Ttransaction.class) ;
-		Query query  = em.createNativeQuery(
-				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
-					" cast(ifnull(rdata,'') as char(150)) rdata,  t.rlen , t.rtime,  t.scrno, " +
-					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
-					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
-				 "FROM 	ttransaction t where " + cond_str 
-										) ;
-		List<Object[]> resultList = query.getResultList();
-		tempTrxList1 = resultList.stream().map( (r) -> 
-		    new Ttranabbr((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
-		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
-		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
-		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
-		    		r[15].toString(), (double)r[16], r[17].toString()) 
-				)
-				.collect(Collectors.toCollection(ArrayList::new));
-//		tempTrxList1 = qTrx.getResultList();
+		TypedQuery<Ttcppacket> qTrx = em
+				.createQuery("select t from Ttcppacket t where " + cond_str,
+						Ttcppacket.class) ;
+		
+//		Query query  = em.createNativeQuery(
+//				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
+//					" cast(ifnull(rdata,'') as char(150)) rdata,  t.rlen , t.rtime,  t.scrno, " +
+//					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
+//					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
+//				 "FROM 	ttransaction t where " + cond_str 
+//										) ;
+//		List<Object[]> resultList = query.getResultList();
+//		tempTrxList1 = resultList.stream().map( (r) -> 
+//		    new Ttcppacket((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
+//		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
+//		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
+//		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
+//		    		r[15].toString(), (double)r[16], r[17].toString()) 
+//				)
+//				.collect(Collectors.toCollection(ArrayList::new));
+		tempTrxList1 = qTrx.getResultList();
 
 		txtSend1.setText("");
 		txtReceive1.setText("");
@@ -216,10 +217,10 @@ public class AqtTRList extends Dialog {
 		/* 상단 서비스정보 및 화면 정보의 정확한 정의가 필요함 -> 추후 수정 */
 		if (!tempTrxList1.isEmpty()) {
 
-			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
-			qSvc.setParameter("svcid", tempTrxList1.get(0).getSvcid());
-
-			qSvc.getResultList();
+//			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
+//			qSvc.setParameter("svcid", tempTrxList1.get(0).getSvcid());
+//
+//			qSvc.getResultList();
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
 			txtReceive1.setText(tempTrxList1.get(0).getRdata());
 			tblDetailResult1.setSelection(0);

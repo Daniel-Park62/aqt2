@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -52,7 +53,7 @@ import org.eclipse.swtchart.LineStyle;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.TrxCompList;
-import aqtclient.model.Ttranabbr;
+import aqtclient.model.Ttcppacket;
 
 public class AqtCompare {
 
@@ -71,8 +72,8 @@ public class AqtCompare {
 	private AqtTcodeCombo cmbCode2;
 	private Button btndiff ;
 
-	private static List<Ttranabbr> tempTrxList1; // testcode1 의 ttransaction
-	private static List<Ttranabbr> tempTrxList2; // testcode2 의 ttransaction
+	private static List<Ttcppacket> tempTrxList1; // testcode1 의 ttransaction
+	private static List<Ttcppacket> tempTrxList2; // testcode2 의 ttransaction
 //	private static ArrayList<TrxResultList> tempTrxRsltList;  // 서비스별 트랜잭션 건수
 	private static List<TrxCompList> tempTrxCompList; // 서비스별 트랜잭션 건수
 
@@ -83,6 +84,7 @@ public class AqtCompare {
 	private Chart chart1;
 	private Chart chart2;
 	
+	private EntityManager em = AqtMain.emf.createEntityManager();
 //	int gcol1 = 0 , gcol2 = 0 ;
 
 	public AqtCompare(Composite parent, int style) {
@@ -143,7 +145,7 @@ public class AqtCompare {
 		cmbCode1.getControl().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				topTable.getColumn(3).setText(cmbCode1.getText() );
+				topTable.getColumn(2).setText(cmbCode1.getText() );
 				cmbCode2.findSelect(cmbCode1.getCmpCode() + " :") ;
 			}
 		});
@@ -156,7 +158,7 @@ public class AqtCompare {
 		cmbCode2.getControl().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				topTable.getColumn(4).setText(cmbCode2.getText() );
+				topTable.getColumn(3).setText(cmbCode2.getText() );
 			}
 		});
 		
@@ -164,7 +166,7 @@ public class AqtCompare {
 		btndiff.setText("값이다른전문만 보기");
 
 		Label btnSearch = new Label(compTitle, SWT.NONE);
-		btnSearch.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+		btnSearch.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -242,7 +244,7 @@ public class AqtCompare {
 
 //	    topTable.setHeaderBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 
-		String[] colTopNames1 = new String[] { "", "", ""/* , "" */, "Test Code 1", "Test Code 2" };
+		String[] colTopNames1 = new String[] { "", "",  "Test Code 1", "Test Code 2" };
 
 		for (int i = 0; i < colTopNames1.length; i++) {
 			TableColumn tableColumn = new TableColumn(topTable, SWT.CENTER);
@@ -270,15 +272,15 @@ public class AqtCompare {
 		tableViewer.setUseHashlookup(true);
 
 		Point point = parent.getSize();
-		int width = (point.x - 70) / 11;
+		int width = (point.x - 70) / 10;
 
-		String[] columnNames1 = new String[] { "서비스", "서비스명", "화면번호", "전문건수", "평균시간", "정상건수", "실패건수", "전문건수", "평균시간",
+		String[] columnNames1 = new String[] { "URI", "URI명",  "전문건수", "평균시간", "정상건수", "실패건수", "전문건수", "평균시간",
 				"정상건수", "실패건수" };
 
-		int[] columnWidths1 = new int[] { 160, width + 100, width - 20, width - 20, width - 20, width - 20, width - 20,
-				width - 20, width - 20, width - 20, width - 20 };
+		int[] columnWidths1 = new int[] { 300, width + 100, width - 20, width - 20, width - 20, width - 20, width - 20,
+				width - 20, width - 20, width - 20 };
 
-		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER,
+		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.LEFT,  SWT.CENTER, SWT.CENTER, SWT.CENTER,
 				SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER };
 
 		GridDataFactory.fillDefaults().grab(true, true).span(columnNames1.length, 1).applyTo(tblResult);
@@ -404,8 +406,8 @@ public class AqtCompare {
 			public void widgetSelected(SelectionEvent arg0) {
 				
 				if (tblDetailResult1.getSelectionIndex() >= 0) {
-					Ttranabbr tr1 = (Ttranabbr) tblDetailResult1.getItem(tblDetailResult1.getSelectionIndex()).getData() ;
-					Ttranabbr tr2 = (Ttranabbr) tblDetailResult2.getItem(tblDetailResult2.getSelectionIndex()).getData() ;
+					Ttcppacket tr1 = (Ttcppacket) tblDetailResult1.getItem(tblDetailResult1.getSelectionIndex()).getData() ;
+					Ttcppacket tr2 = (Ttcppacket) tblDetailResult2.getItem(tblDetailResult2.getSelectionIndex()).getData() ;
 					AqtDetailComp aqtDetail = new AqtDetailComp(parent.getShell(),
 							SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
 							tr1.getPkey() , tr2.getPkey()
@@ -521,36 +523,35 @@ public class AqtCompare {
 	}
 
 	public void refreshScreen() {
-		EntityManager em = AqtMain.emf.createEntityManager();
 
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 
-		topTable.getColumn(3).setText(cmbCode1.getText());
-		topTable.getColumn(4).setText(cmbCode2.getText());
+		topTable.getColumn(2).setText(cmbCode1.getText());
+		topTable.getColumn(3).setText(cmbCode2.getText());
 		
-		String sdiff = (btndiff.getSelection() ? "AND (a.msgcd <> b.msgcd or a.sflag ='2' or b.sflag='2') ": "");
+		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
 		List<Object[]> resultList = em.createNativeQuery(
-				"WITH tmpt AS (SELECT a.svcid, a.uuid FROM Ttransaction a JOIN Ttransaction b"
-				+ " ON ( a.tcode = '" + cmbCode1.getTcode() + "' and b.tcode = '" + cmbCode2.getTcode() + "' AND  a.svcid = b.svcid AND a.uuid = b.uuid)  " + 
-				"WHERE a.uuid > '0' " + sdiff + "  ) " + 
-				"select  a.svcid, ifnull(svckor,'no register') , a.scrno, sum(a.tcnt1) , sum(a.avgt1) ,sum(a.scnt1) ,sum(a.fcnt1)  " + 
+				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b"
+				+ " ON ( a.tcode = '" + cmbCode1.getTcode() + "' and b.tcode = '" + cmbCode2.getTcode() + "' AND  a.cmpid = b.cmpid )  " + 
+				"WHERE 1=1 " + sdiff + "  ) " + 
+				"select  a.uri, ifnull(svckor,'no register') ,  sum(a.tcnt1) , sum(a.avgt1) ,sum(a.scnt1) ,sum(a.fcnt1)  " + 
 				", sum(a.tcnt2), sum(a.avgt2) ,sum(a.scnt2)  ,sum(a.fcnt2)  " + 
 				"from   ( " + 
-				"select t.tcode, t.svcid, t.scrno, count(1) tcnt1, avg(t.svctime) avgt1 " + 
-				"    , sum(case when t.sflag = '1' then 1 else 0 end) scnt1 " + 
-				"    , sum(case when t.sflag = '2' then 1 else 0 end) fcnt1,0 tcnt2,0 avgt2,0 scnt2,0 fcnt2 " + 
-				"from   Ttransaction t, tmpt x where t.tcode = '" + cmbCode1.getTcode() + "' AND t.svcid = x.svcid AND t.uuid = x.uuid " + 
-				"group by t.tcode, t.svcid " + 
+				"select t.tcode, t.uri,  count(1) tcnt1, avg(t.svctime) avgt1 " + 
+				"    , sum(case when t.rcode between 200 and 399 then 1 else 0 end) scnt1 " + 
+				"    , sum(case when t.rcode >= 400 then 1 else 0 end) fcnt1,0 tcnt2,0 avgt2,0 scnt2,0 fcnt2 " + 
+				"from   Ttcppacket t, tmpt x where t.tcode = '" + cmbCode1.getTcode() + "' AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
+				"group by t.tcode, t.uri " + 
 				"UNION ALL  " + 
-				"select t.tcode, t.svcid, t.scrno, 0,0,0,0,count(1) tcnt2, avg(t.svctime) avgt2 " + 
-				"    , sum(case when t.sflag = '1' then 1 else 0 end) scnt2 " + 
-				"    , sum(case when t.sflag = '2' then 1 else 0 end) fcnt2 " + 
-				"from   Ttransaction t, tmpt x where t.tcode = '" + cmbCode2.getTcode() + "' AND t.svcid = x.svcid AND t.uuid = x.uuid " + 
-				"group by t.tcode, t.svcid " + 
+				"select t.tcode, t.uri, 0,0,0,0,count(1) tcnt2, avg(t.svctime) avgt2 " + 
+				"    , sum(case when t.rcode between 200 and 399 then 1 else 0 end) scnt2 " + 
+				"    , sum(case when t.rcode >= 400 then 1 else 0 end) fcnt2 " + 
+				"from   Ttcppacket t, tmpt x where t.tcode = '" + cmbCode2.getTcode() + "' AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
+				"group by t.tcode, t.uri " + 
 				") as a " + 
-				"left outer join Tservice s on a.svcid = s.svcid  " + 
-				"GROUP BY a.svcid "  
+				"left outer join Tservice s on a.uri = s.svcid  " + 
+				"GROUP BY a.uri "  
 				)
 				.getResultList();
 		
@@ -558,72 +559,80 @@ public class AqtCompare {
 		tempTrxCompList = new ArrayList<TrxCompList>();
 
 		tempTrxCompList = resultList.stream()
-				.map(r -> new TrxCompList(r[0].toString(), r[1].toString(), r[2].toString(),
-						((BigDecimal) r[3]).longValue(), ((Double) r[4]), ((BigDecimal) r[5]).longValue(),
-						((BigDecimal) r[6]).longValue(), ((BigDecimal) r[7]).longValue(), ((Double) r[8]),
-						((BigDecimal) r[9]).longValue(), ((BigDecimal) r[10]).longValue()))
+				.map(r -> new TrxCompList(r[0].toString(), r[1].toString(), 
+						((BigDecimal) r[2]).longValue(), ((Double) r[3]), ((BigDecimal) r[4]).longValue(),
+						((BigDecimal) r[5]).longValue(), ((BigDecimal) r[6]).longValue(), ((Double) r[7]),
+						((BigDecimal) r[8]).longValue(), ((BigDecimal) r[9]).longValue() ) )
 				.collect(Collectors.toCollection(ArrayList::new));
-
-		em.close();
 
 		tableViewer.setInput(tempTrxCompList);
 		tableViewer.getTable().setSelection(0);
-		tbl2data(tempTrxCompList.get(0).getSvcid());
+		if ( tempTrxCompList.size() > 0 )
+			tbl2data(tempTrxCompList.get(0).getSvcid());
 		
 	}
 
 	private void tbl2data(String svcid) {
-		EntityManager em = AqtMain.emf.createEntityManager();
+
 		em.clear();
 		
-		tempTrxList1 = new ArrayList<Ttranabbr>();
-		tempTrxList2 = new ArrayList<Ttranabbr>();
+		tempTrxList1 = new ArrayList<Ttcppacket>();
+		tempTrxList2 = new ArrayList<Ttcppacket>();
 		String tcode = cmbCode1.getTcode();
-		String sdiff = (btndiff.getSelection() ? "AND (a.msgcd <> b.msgcd or a.sflag ='2' or b.sflag='2') ": "");
-//		TypedQuery<Ttranabbr> qTrx = em
-//				.createQuery("select t from Ttranabbr t where t.tcode = :tcode and t.svcid = :svcid",
-//						Ttranabbr.class)
-//				.setParameter("tcode", tcode).setParameter("svcid", svcid);
-//
-//		tempTrxList1 = qTrx.getResultList();
-		Query query  = em.createNativeQuery(
-				"WITH tmpt AS (SELECT a.svcid, a.uuid FROM Ttransaction a JOIN Ttransaction b ON ( a.svcid = b.svcid AND a.uuid = b.uuid)  " + 
-				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.svcid = '"+svcid+"'  " + sdiff + "  ) " + 
-				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
-					" ifnull(cast(rdata as char(150)),'') rdata,  t.rlen , t.rtime,  t.scrno, " +
-					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
-					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
-					 "FROM 	ttransaction t, tmpt x where t.tcode = '" + tcode + "' and  t.svcid = x.svcid and t.uuid = x.uuid " ) ;
+		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
+		Query qTrx = em.createNativeQuery(
+				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
+				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
+				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid " ,
+						Ttcppacket.class) ;
 
-		List<Object[]> resultList = query.getResultList();
-		tempTrxList1 = resultList.stream().map( (r) -> 
-		    new Ttranabbr((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
-		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
-		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
-		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
-		    		r[15].toString(), (double)r[16], r[17].toString()) 
-				)
-				.collect(Collectors.toCollection(ArrayList::new));
+		tempTrxList1 = qTrx.getResultList();
+
+//		Query query  = em.createNativeQuery(
+//				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
+//				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
+//				 "SELECT pkey , t.cmpid, t.rcode,  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
+//					" ifnull(cast(rdata as char(150)),'') rdata,  t.rlen , t.rtime,  t.scrno, " +
+//					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
+//					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
+//					 "FROM 	Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.svcid = x.svcid and t.uuid = x.uuid " ) ;
+//
+//		List<Object[]> resultList = query.getResultList();
+//		tempTrxList1 = resultList.stream().map( (r) -> 
+//		    new Ttcppacket((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
+//		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
+//		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
+//		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
+//		    		r[15].toString(), (double)r[16], r[17].toString()) 
+//				)
+//				.collect(Collectors.toCollection(ArrayList::new));
 		
 
 		tcode = cmbCode2.getTcode();
-		query  = em.createNativeQuery(
-				"WITH tmpt AS (SELECT a.svcid, a.uuid FROM Ttransaction a JOIN Ttransaction b ON ( a.svcid = b.svcid AND a.uuid = b.uuid)  " + 
-				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.svcid = '"+svcid+"'  " + sdiff + "  ) " + 
-				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
-					" cast(rdata as char(150)) rdata,  t.rlen , t.rtime,  t.scrno, " +
-					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
-					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
-					 "FROM 	ttransaction t, tmpt x where t.tcode = '" + tcode + "' and  t.svcid = x.svcid and t.uuid = x.uuid " ) ;
-		resultList = query.getResultList();
-		tempTrxList2 = resultList.stream().map( (r) -> 
-	    new Ttranabbr((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
-	    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
-	    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
-	    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
-	    		r[15].toString(), (double)r[16], r[17].toString()) 
-			)
-			.collect(Collectors.toCollection(ArrayList::new));
+		qTrx = em.createNativeQuery(
+				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
+				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
+				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid " ,
+						Ttcppacket.class) ;
+
+		tempTrxList2 = qTrx.getResultList();
+//		query  = em.createNativeQuery(
+//				"WITH tmpt AS (SELECT a.svcid, a.uuid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.svcid = b.svcid AND a.uuid = b.uuid)  " + 
+//				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.svcid = '"+svcid+"'  " + sdiff + "  ) " + 
+//				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
+//					" cast(rdata as char(150)) rdata,  t.rlen , t.rtime,  t.scrno, " +
+//					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
+//					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
+//					 "FROM 	ttransaction t, tmpt x where t.tcode = '" + tcode + "' and  t.svcid = x.svcid and t.uuid = x.uuid " ) ;
+//		resultList = query.getResultList();
+//		tempTrxList2 = resultList.stream().map( (r) -> 
+//	    new Ttcppacket((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
+//	    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
+//	    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
+//	    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
+//	    		r[15].toString(), (double)r[16], r[17].toString()) 
+//			)
+//			.collect(Collectors.toCollection(ArrayList::new));
 		
 		txtSend1.setText("");
 		txtReceive1.setText("");
@@ -702,7 +711,7 @@ public class AqtCompare {
 		return chart;
 	}
 
-	private void redrawChart(List<Ttranabbr> tempTrxList, Chart chart) {
+	private void redrawChart(List<Ttcppacket> tempTrxList, Chart chart) {
 		
 		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
 		double[] ySeries = { 1.0, 2.0 };
@@ -732,7 +741,7 @@ public class AqtCompare {
 		@Override
 		public Object[] getElements(Object input) {
 			// return new Object[0];
-			List<Ttranabbr> arrayList = (List<Ttranabbr>) input;
+			List<Ttcppacket> arrayList = (List<Ttcppacket>) input;
 			return arrayList.toArray();
 		}
 
@@ -767,11 +776,11 @@ public class AqtCompare {
 		 */
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
 		public String getColumnText(Object element, int columnIndex) {
-			Ttranabbr trx = (Ttranabbr) element;
+			Ttcppacket trx = (Ttcppacket) element;
 			if (trx != null)
 				switch (columnIndex) {
 				case 0:
-					return trx.getUuid();
+					return trx.getCmpid()+"";
 				case 1:
 					return smdfmt.format(trx.getStime());
 				case 2:
@@ -779,9 +788,9 @@ public class AqtCompare {
 				case 3:
 					return String.format("%.3f", trx.getSvctime());
 				case 4:
-					return (trx.getMsgcd() == null ? "" : trx.getMsgcd());
+					return trx.getRcode()+"";
 				case 5:
-					return trx.getRcvmsg();
+					return trx.getRhead();
 				}
 			return null;
 		}
@@ -853,22 +862,20 @@ public class AqtCompare {
 				case 1:
 					return trx.getSvckor();
 				case 2:
-					return trx.getScrno();
-				case 3:
 					return String.format("%,d", trx.getTcnt1());
-				case 4:
+				case 3:
 					return String.format("%.3f", trx.getAvgt1());
-				case 5:
+				case 4:
 					return String.format("%,d", trx.getScnt1());
-				case 6:
+				case 5:
 					return String.format("%,d", trx.getFcnt1());
-				case 7:
+				case 6:
 					return String.format("%,d", trx.getTcnt2());
-				case 8:
+				case 7:
 					return String.format("%.3f", trx.getAvgt2());
-				case 9:
+				case 8:
 					return String.format("%,d", trx.getScnt2());
-				case 10:
+				case 9:
 					return String.format("%,d", trx.getFcnt2());
 				}
 			return null;
@@ -914,9 +921,9 @@ public class AqtCompare {
 	private void alignTblHeader() {
 		for (int i = 0; i < topTable.getColumnCount(); i++) {
 
-			if (i < 3)
+			if (i < 2)
 				topTable.getColumn(i).setWidth(tblResult.getColumn(i).getWidth() );
-			else if (i == 3) {
+			else if (i == 2) {
 				int len = tblResult.getColumn(i).getWidth() + tblResult.getColumn(i + 1).getWidth()
 						+ tblResult.getColumn(i + 2).getWidth() + tblResult.getColumn(i + 3).getWidth() ;
 				topTable.getColumn(i).setWidth(len);

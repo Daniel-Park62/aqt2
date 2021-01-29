@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -24,23 +24,21 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IAxisTick;
-import org.eclipse.swtchart.ILegend;
 import org.eclipse.swtchart.ILineSeries;
 import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
 import org.eclipse.swtchart.IPlotArea;
+import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.ChartData;
-import aqtclient.model.Tmaster;
 import aqtclient.model.TrxCount;
-import aqtclient.model.Ttransaction;
+import aqtclient.model.Ttcppacket;
 
 public class AqtView {
 
@@ -55,6 +53,7 @@ public class AqtView {
 	private Composite compChart;
 
 	private Chart chart;
+	private EntityManager em = AqtMain.emf.createEntityManager();
 
 	public AqtView(Composite parent, int style) {
 		create(parent, style);
@@ -67,19 +66,22 @@ public class AqtView {
 	}
 
 	private void create(Composite parent, int style) {
-		SashForm sashForm;
 
-		parent.setLayout(new FillLayout());
+//		parent.setLayout(new GridLayout(1, false));
+//		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
 
-		sashForm = new SashForm(parent, SWT.VERTICAL);
-
-		Composite compHeader = new Composite(sashForm, SWT.NONE);
+		Composite mainform = new Composite(parent, SWT.NONE); 
+		mainform.setLayout(new GridLayout(1, false));
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(mainform);
+		
+		Composite compHeader = new Composite(mainform, SWT.NONE);
 		GridLayout headerLayout = new GridLayout(1, false);
 		headerLayout.verticalSpacing = 20;
 		headerLayout.marginTop = 20;
 		headerLayout.marginBottom = 20;
 		headerLayout.marginWidth = 15;
 		compHeader.setLayout(headerLayout);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(compHeader);
 
 		Label ltitle = new Label(compHeader, SWT.NONE);
 //		ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
@@ -168,8 +170,9 @@ public class AqtView {
 		textTrxOccrCnt.setFont(IAqtVar.font1);
 		textTrxOccrCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
-		compChart = new Composite(sashForm, SWT.NONE);
+		compChart = new Composite(mainform, SWT.NONE);
 		compChart.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compChart);
 		FillLayout dtlLayout = new FillLayout();
 		dtlLayout.marginHeight = 20;
 		dtlLayout.marginWidth = 20;
@@ -178,21 +181,21 @@ public class AqtView {
 //		Composite compChart = new Composite(composite, SWT.NONE);
 
 //		compChart.setLayout(new FillLayout());
-		sashForm.setWeights(new int[] { 20, 80 });
+//		sashForm.setWeights(new int[] { 20, 80 });
 		chart = createChart(compChart);
 
 	}
 
 	/* 데이터를 추출하여 화면에 보여준다. */
 	public void refreshScreen() {
-		EntityManager em = AqtMain.emf.createEntityManager();
+
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-
+		SimpleDateFormat sfmt = new SimpleDateFormat("yyyy-MM-dd");
 		String tcode = "" ;
 		if (cmbCode.getItemCount() > 0) {
 			tcode = cmbCode.getTcode() ;
-			textTstDt.setText(cmbCode.getTmaster().getTdate());
+			textTstDt.setText( sfmt.format( cmbCode.getTmaster().getTdate() ) );
 			textHost.setText(cmbCode.getTmaster().getThost());
 			textHost.requestLayout();
 		}
@@ -203,8 +206,8 @@ public class AqtView {
 
 		long countResultT = (long) query.getSingleResult();
 
-//		query = em.createQuery("select count(distinct t.svcid) from Ttransaction t") ;
-		query = em.createNamedQuery("Ttransaction.SvcCnt", Integer.class).setParameter("tcode", tcode);
+//		query = em.createQuery("select count(distinct t.svcid) from Ttcppacket t") ;
+		query = em.createNamedQuery("Ttcppacket.SvcCnt", Integer.class).setParameter("tcode", tcode);
 
 		long countResultS = (long) query.getSingleResult();
 
@@ -218,9 +221,9 @@ public class AqtView {
 		 * query = em.createQuery("select count(t.uuid) trxCnt " +
 		 * ", count(case when t.sflag = '1' then 1 else null end) validCnt " +
 		 * ", count(case when t.sflag = '2' then 1 else null end) invalidCnt " +
-		 * " from Ttransaction t where t.tcode = :tcode") ;
+		 * " from Ttcppacket t where t.tcode = :tcode") ;
 		 */
-		query = em.createNamedQuery("Ttransaction.FlagCnt");
+		query = em.createNamedQuery("Ttcppacket.FlagCnt");
 
 		query.setParameter("tcode", tcode);
 
@@ -236,7 +239,6 @@ public class AqtView {
 
 		textTrxOccrCnt.setText(strRslt);
 		textTrxOccrCnt.requestLayout();
-		em.close();
 
 		redrawChart();
 		chart.setFocus();
@@ -291,9 +293,11 @@ public class AqtView {
 		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "aqtview");
 
 		lineSeries.setAntialias(SWT.ON);
-		lineSeries.setLineColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+		lineSeries.setSymbolColor(SWTResourceManager.getColor(SWT.COLOR_RED));
 
-		lineSeries.setSymbolType(PlotSymbolType.NONE);
+		lineSeries.setSymbolType(PlotSymbolType.CIRCLE);
+		lineSeries.setSymbolSize(3);
+		lineSeries.setLineStyle(LineStyle.NONE);
 //	lineSeries.setXDateSeries(xSeries);
 		lineSeries.setYSeries(ySeries);
 //		lineSeries.setYAxisId(0);
@@ -320,22 +324,30 @@ public class AqtView {
 	// 선택된 값에 따라 Chart에 값을 설정 한다.
 	public void redrawChart() {
 
-		EntityManager em = AqtMain.emf.createEntityManager();
-		ArrayList<ChartData> chartData = new ArrayList<ChartData>();
-
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-//        Query query = em.createNativeQuery("select date_format(t.stime, '%Y-%m-%d %H:%i:%s') stime, count(t.uuid) cnt from Ttransaction t where t.tcode = ? group by date_format(t.stime, '%Y-%m-%d %H:%i:%s')");
-		Query query = em.createNamedQuery("Ttransaction.chartData", Ttransaction.class);
+        Query query = em.createNativeQuery(
+        		"SELECT DATE_ADD( MIN(t.stime),interval -1 MINute) dtime  , 0 trxCnt from Ttcppacket t  where t.tcode = ?1 " + 
+        		" union " + 
+        		"select cast( date_format(t.stime, '%Y-%m-%d %H:%i:00') as datetime) dtime,"
+        		+ " count(t.pkey) trxCnt from Ttcppacket t "
+        		+ " where t.tcode = ?2 group by date_format(t.stime, '%Y-%m-%d %H:%i:00') "
+        		+ " UNION " + 
+        		"SELECT DATE_ADD( Max(t.stime),interval 1 MINute)  , 0 from Ttcppacket t  where t.tcode = ?3 "  
+        	, ChartData.class)
+        		.setParameter(1, cmbCode.getTcode())
+        		.setParameter(2, cmbCode.getTcode())
+        		.setParameter(3, cmbCode.getTcode());
+//		Query query = em.createNamedQuery("Ttcppacket.chartData", Ttcppacket.class);
 
-		query.setParameter(1, cmbCode.getTcode());
+//		query.setParameter(1, cmbCode.getTcode());
+//
+//		List<Object[]> resultList = query.getResultList();
+//
+//		chartData = resultList.stream().map(r -> new ChartData(Timestamp.valueOf(r[0].toString()), (Long) r[1]))
+//				.collect(Collectors.toCollection(ArrayList::new));
 
-		List<Object[]> resultList = query.getResultList();
-
-		chartData = resultList.stream().map(r -> new ChartData(Timestamp.valueOf(r[0].toString()), (Long) r[1]))
-				.collect(Collectors.toCollection(ArrayList::new));
-
-		em.close();
+        List<ChartData> chartData =  query.getResultList() ;
 		
 		double[] ySeries = chartData.stream().mapToDouble(d -> d.getTrxCnt()).toArray();
 		Date[] xSeries = chartData.stream().map(a -> a.getDtime()).toArray(Date[]::new) ;

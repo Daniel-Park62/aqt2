@@ -25,17 +25,17 @@ public class Tservice implements Serializable {
 	private String svckor = "";
 	
 	@Transient
-	private boolean isNew = false ;
+	private boolean newFlag = false ;
 	
 	public Tservice() {
 	}
 
 	public boolean isNew() {
-		return isNew;
+		return newFlag;
 	}
 
 	public void setNew(boolean isNew) {
-		this.isNew = isNew;
+		this.newFlag = isNew;
 	}
 
 	public String getSvcid() {

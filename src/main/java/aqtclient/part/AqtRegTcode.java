@@ -10,6 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -20,6 +23,8 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ICellEditorListener;
+import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -40,6 +45,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -65,7 +71,7 @@ public class AqtRegTcode {
 	private List <Tmaster> tcodeList;
 	private Text txCode , txCodenm ;
 	EntityManager em = AqtMain.emf.createEntityManager();
-
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -200,6 +206,27 @@ public class AqtRegTcode {
 	    	TableColumn tableColumn = tableViewerColumn.getColumn();
 	    	tableColumn.setText(cols1[i]);
 	    	tableColumn.setWidth(columnWidths1[i]);
+	    	if ( i == 5) {
+	    		tableColumn.addListener(SWT.MouseDoubleClick, new Listener() {
+					
+					@Override
+					public void handleEvent(Event e) {
+			    		Point pt = parent.getDisplay().getCursorLocation() ; 
+			        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
+			        	
+			            String s = (String)cd.open();
+			            try {
+							Date dt =  sdf.parse(s) ;
+							TableItem item = (TableItem) tblList.getSelection() [0];
+							Tmaster tmaster = (Tmaster) item.getData() ;
+							tmaster.setTdate(dt);
+						} catch (Exception e2) {
+							// TODO: handle exception
+						}
+						
+					}
+				});
+	    	}
 //	    	tableColumn.setResizable(i != 0);
 
 	    }
@@ -235,6 +262,26 @@ public class AqtRegTcode {
 				CELL_EDITORS[i] = new TextCellEditor(tblList);
 			}
 		}
+		CELL_EDITORS[0].setValidator( new ICellEditorValidator() {
+			
+			@Override
+			public String isValid(Object input) {
+				if(input == null || input.toString().isEmpty()){
+					AqtMain.aqtmain.setStatus("코드값을 입력하세요." );
+					return "코드값을 입력하세요." ;
+				}
+				TableItem[] items = tblList.getItems() ;
+	            for(int i = 0 ; i < items.length ; i++ ){
+	                if( ((Tmaster)items[i].getData()).getCode() .equals(input)){
+	                	AqtMain.aqtmain.setStatus("이미 사용된 코드값입니다." );
+	                    return "이미 사용된 코드값입니다." ;
+	                }
+	            }
+	            AqtMain.aqtmain.setStatus("" );
+				return null;
+			}
+		});
+		
 //		CELL_EDITORS[0] = new CheckboxCellEditor(tblList) ;
 		tvList.setCellEditors(CELL_EDITORS);
 		tvList.setCellModifier(new ICellModifier() {
@@ -251,7 +298,9 @@ public class AqtRegTcode {
 					element = ((Item) element).getData();
 
 				Tmaster m = (Tmaster) element;
-				if (property.equals(cols1[1]))
+				if (property.equals(cols1[0]))
+					m.setCode(value.toString());
+				else if (property.equals(cols1[1]))
 					m.setDesc1(value.toString());
 				else if (property.equals(cols1[2]))
 					m.setType(value.toString());
@@ -259,8 +308,13 @@ public class AqtRegTcode {
 					m.setLvl(value.toString());
 				else if (property.equals(cols1[4]))
 					m.setCmpCode(value.toString());
-				else if (property.equals(cols1[5]))
-					m.setTdate(value.toString());
+				else if (property.equals(cols1[5])) 
+					try {
+						m.setTdate(sdf.parse(value.toString()) );
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+					}
+					
 				else if (property.equals(cols1[7]))
 					m.setThost(value.toString());
 				else
@@ -276,7 +330,7 @@ public class AqtRegTcode {
 				// TODO Auto-generated method stub
 				Tmaster t = (Tmaster)element ;
 				if (property.equals(cols1[0]))
-					return t.getTcode();
+					return t.getCode();
 				else if (property.equals(cols1[1]))
 					return t.getDesc1();
 				else if (property.equals(cols1[2]))
@@ -286,9 +340,9 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[4]))
 					return t.getCmpCode() ;
 				else if (property.equals(cols1[5]))
-					return t.getTdate() ;
+					return t.getTdate() != null ? sdf.format(t.getTdate()):"" ;
 				else if (property.equals(cols1[6]))
-					return t.getEndDate() ;
+					return t.getEndDate() != null ? sdf.format(t.getEndDate()):"" ;
 				else if (property.equals(cols1[7]))
 					return t.getThost() ;
 
@@ -300,9 +354,9 @@ public class AqtRegTcode {
 				// TODO Auto-generated method stub
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
-					if ( ! property.equals(cols1[0]) ) return true ;
+					if ( ! (property.equals(cols1[0]) || property.equals(cols1[6]))  ) return true ;
 
-					return ( t.getTcode() == 0 ) ;
+					return ( t.isNew() ) ;
 				}
 				else
 					return false ;
@@ -364,7 +418,7 @@ public class AqtRegTcode {
 				  if ( s != null )
 					  switch (columnIndex) {
 					  case 0:
-						  return s.getTcode() + "" ;
+						  return s.getCode() ;
 					  case 1:
 						  return s.getDesc1() ;
 					  case 2:
@@ -374,9 +428,9 @@ public class AqtRegTcode {
 					  case 4:
 						  return s.getCmpCode();
 					  case 5:
-						  return s.getTdate();
+						  return s.getTdate() != null ? sdf.format(s.getTdate()) : "";
 					  case 6:
-						  return s.getEndDate();
+						  return s.getEndDate() != null ? sdf.format(s.getEndDate()) : "";
 					  case 7:
 						  return s.getThost();
 					  }
@@ -401,6 +455,7 @@ public class AqtRegTcode {
 				int i = tblList.getSelectionIndex() ;
 				Tmaster t = new Tmaster() ;
 				t.setDesc1("new");
+				t.setNew(true);
 				em.persist(t);
 				tcodeList.add(i,t) ;
 				tvList.refresh();

@@ -15,9 +15,11 @@ public class Trequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int pkey;
+	private long pkey;
 
-	private Timestamp reqDt;
+	private long cmpid;
+
+//	private Timestamp reqDt;
 
 	private String reqUser;
 
@@ -29,14 +31,15 @@ public class Trequest implements Serializable {
 	}
 	
 
-	public Trequest(int pkey2, String tcode2, String uuid2, String reqUser) {
+	public Trequest(long pkey2, String tcode2, long cmpid2, String reqUser) {
 		pkey = pkey2;
 		tcode = tcode2;
-		uuid = uuid2 ;
+		cmpid = cmpid2 ;
 		this.reqUser = reqUser ;
+//		reqDt = new Timestamp(System.currentTimeMillis()) ;
 	}
 
-	public int getPkey() {
+	public long getPkey() {
 		return this.pkey;
 	}
 
@@ -44,13 +47,13 @@ public class Trequest implements Serializable {
 		this.pkey = pkey;
 	}
 
-	public Timestamp getReqDt() {
-		return this.reqDt;
-	}
-
-	public void setReqDt(Timestamp reqDt) {
-		this.reqDt = reqDt;
-	}
+//	public Timestamp getReqDt() {
+//		return this.reqDt;
+//	}
+//
+//	public void setReqDt(Timestamp reqDt) {
+//		this.reqDt = reqDt;
+//	}
 
 	public String getReqUser() {
 		return this.reqUser;
@@ -74,6 +77,11 @@ public class Trequest implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+
+	public long getCmpid() {
+		return cmpid;
 	}
 
 }

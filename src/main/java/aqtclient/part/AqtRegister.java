@@ -1,5 +1,6 @@
 package aqtclient.part;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -34,7 +35,6 @@ public class AqtRegister extends Dialog {
 	private Text txtCode;
 	private Text txtCmpCode;
 	private Text txtDesc;
-	private Text txtDir;
 	private Text txtUser;
 	private Text txtHost;
 	private Text txtPort;
@@ -45,7 +45,8 @@ public class AqtRegister extends Dialog {
 	
 	private static Tmaster tmaster;
 	private DateText txtSdate, txtEdate;
-
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -66,12 +67,12 @@ public class AqtRegister extends Dialog {
 		super(parent, style);
 	}
 
-	public void setTdate() {
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-	    Calendar calendar = Calendar.getInstance();
-	    String strToday = sdf.format(calendar.getTime());
-	    tmaster.setTdate(strToday);
-	}
+//	public void setTdate() {
+//	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+//	    Calendar calendar = Calendar.getInstance();
+//	    String strToday = sdf.format(calendar.getTime());
+//	    tmaster.setTdate(strToday);
+//	}
 	/**
 	 * Open the dialog.
 	 * @return the result
@@ -82,7 +83,7 @@ public class AqtRegister extends Dialog {
 
 		shell.open();
 		shell.layout();
-		shell.setBounds(50, 50, 700, 600);
+		shell.setSize( 800, 600);
 
 		Display display = getParent().getDisplay();
 
@@ -215,7 +216,7 @@ public class AqtRegister extends Dialog {
 		lblCode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		
 //		txtSdate = new Text(compHeader, SWT.BORDER);
-		DateText txtSdate = new DateText(compHeader, SWT.SINGLE | SWT.BORDER | SWT.CENTER  );
+		txtSdate = new DateText(compHeader, SWT.SINGLE | SWT.BORDER | SWT.CENTER  );
 		txtSdate.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtSdate.setFont(IAqtVar.font1);
 		txtSdate.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -261,8 +262,6 @@ public class AqtRegister extends Dialog {
 		txtStep.setFont(IAqtVar.font1);
 		txtDesc.setTextLimit(1);
 		*/
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-
 	    Calendar calendar = Calendar.getInstance();
 	    String strToday = sdf.format(calendar.getTime());
 		
@@ -366,7 +365,8 @@ public class AqtRegister extends Dialog {
 			}
 		});
 		btnUpsert.setText("등록(수정)");
-		btnUpsert.setEnabled(AqtMain.authtype == AuthType.TESTADM  && tmaster.getTdate() .compareTo( tmaster.getEndDate() ) > 0);
+		btnUpsert.setEnabled(AqtMain.authtype == AuthType.TESTADM  
+				&& ( tmaster.getEndDate() == null || tmaster.getTdate() .before( tmaster.getEndDate() ) ) );
 
 		Button btnEnd = new Button(compButton, SWT.NONE);
 		btnEnd.setLayoutData(new GridData(SWT.END, SWT.TOP, true, true));
@@ -379,7 +379,7 @@ public class AqtRegister extends Dialog {
 			}
 		});
 		btnEnd.setText("테스트종료");
-		btnEnd.setEnabled(AqtMain.authtype == AuthType.TESTADM && tmaster.getTdate() .compareTo( tmaster.getEndDate() ) > 0);
+		btnEnd.setEnabled(AqtMain.authtype == AuthType.TESTADM && tmaster.getEndDate() == null );
 
 		Button btnDelete = new Button(compButton, SWT.NONE);
 		btnDelete.setLayoutData(new GridData(SWT.END, SWT.TOP, true, false));
@@ -418,7 +418,7 @@ public class AqtRegister extends Dialog {
 
 		txtDesc.setText("");
 		txtCmpCode.setText("");
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+
 	    Calendar calendar = Calendar.getInstance();
 	    String strToday = sdf.format(calendar.getTime());
 	    txtSdate.setText(strToday);
@@ -444,8 +444,8 @@ public class AqtRegister extends Dialog {
 		else
 			txtCmpCode.setText("");
 		
-		txtSdate.setText(tmaster.getTdate());
-		txtEdate.setText(tmaster.getEndDate());
+		txtSdate.setText(tmaster.getTdate() != null ? sdf.format(tmaster.getTdate() ) : "" );
+		txtEdate.setText(tmaster.getEndDate() != null ? sdf.format(tmaster.getEndDate()) : "");
 		
 		btnLevel[0].setSelection("0".equals(tmaster.getLvl()) ? true : false);
 		btnLevel[1].setSelection("1".equals(tmaster.getLvl()) ? true : false);
@@ -489,7 +489,12 @@ public class AqtRegister extends Dialog {
 	    tmaster.setType(strType);
 	    tmaster.setDesc1(txtDesc.getText());
 	    tmaster.setCmpCode(txtCmpCode.getText());
-	    tmaster.setTdate(txtSdate.getText());
+	    try {
+	    	tmaster.setTdate(sdf.parse( txtSdate.getText() ) );
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	    
 	    
 	    String strLevel = "1";
 	    
@@ -538,14 +543,17 @@ public class AqtRegister extends Dialog {
 		if (flag == SWT.NO)
 			return;
 
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 	    Calendar calendar = Calendar.getInstance();
 	    String strToday = sdf.format(calendar.getTime());
 	    txtEdate.setText(strToday);
 		
 	    EntityManager em = AqtMain.emf.createEntityManager();
 	    
-	    tmaster.setEndDate(strToday);
+	    try {
+			tmaster.setEndDate(sdf.parse( strToday) );
+		} catch (ParseException e) {
+			txtEdate.setText("");
+		}
 
 		em.getTransaction().begin();
 		em.merge(tmaster);

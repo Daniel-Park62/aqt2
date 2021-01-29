@@ -3,7 +3,6 @@ package aqtclient.model;
 public class TrxCompList {
     private String svcid;
     private String svckor;
-    private String scrno;
     private Long tcnt1;
     private Double avgt1;
     private Long scnt1;
@@ -14,12 +13,11 @@ public class TrxCompList {
     private Long fcnt2;
  
 	
-	public TrxCompList(String svcid, String svckor, String scrno,
+	public TrxCompList(String svcid, String svckor, 
 			Long tcnt1, Double avgt1, Long scnt1, Long fcnt1,
 			Long tcnt2, Double avgt2, Long scnt2, Long fcnt2) {
 		this.svcid = svcid;
 		this.svckor = svckor;
-		this.scrno = scrno;
 		this.tcnt1 = tcnt1;
 		this.avgt1 = avgt1;
 		this.scnt1 = scnt1;
@@ -47,14 +45,6 @@ public class TrxCompList {
         this.svckor = svckor;
     }
     
-    public String getScrno() {
-        return scrno;
-    }
- 
-    public void setScrno(String scrno) {
-        this.scrno = scrno;
-    }
-   
     public Long getTcnt1() {
         return tcnt1;
     }

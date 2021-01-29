@@ -143,6 +143,7 @@ public class AqtStatus {
 //	    sashForm = new SashForm(parent, SWT.VERTICAL);
 	    Composite container = new Composite(parent, SWT.NONE) ;
 	    container.setLayout(new GridLayout(1, false));
+	    GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(container);
 //	    container.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 	    
 		Composite compHeader = new Composite(container, SWT.NONE);
@@ -282,7 +283,7 @@ public class AqtStatus {
     	compDetail.setLayoutData(gd_compDetail);
     	GridLayout gl_compDetail = new GridLayout();
     	gl_compDetail.marginWidth = 20;
-    	gl_compDetail.marginHeight = 20;
+    	gl_compDetail.marginTop = 20;
     	gl_compDetail.numColumns = 1;
 //    	gl_compDetail.verticalSpacing = 20;
 
@@ -321,12 +322,12 @@ public class AqtStatus {
 		});
 	    
         String[] columnNames1 = new String[] {
-   	         "", "테스트ID", "  테스트명", "테스트일자", "단계", "대상호스트", "서비스수", "전문건수", "성공건수", "실패건수", "실패서비스","성공율(%)","잔여건수"};
+   	         "", "테스트ID", "  테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수", "실패URI","성공율(%)","잔여건수"};
 
         int width = 1500 / 10;
 
         int[] columnWidths1 = new int[] {
-        		0, 150, 280, 150, 130, 130, 90, 90, 90, 90, 110,90,90};
+        		0, 150, 280, 150, 130, 130, 110, 110, 110, 110, 120,110,110};
 
 	    int[] columnAlignments1 = new int[] {
 	    		SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
@@ -361,14 +362,14 @@ public class AqtStatus {
 				int i = tblTestList.getSelectionIndex() ;
 				if (  i >= 0 ) {
 					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '" 
-					 + ( vlist.getFcnt() > 0  ?  "2'" : "1'")  
-					+ " order by t.svcid " ) ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "'" 
+					+ " order by t.uri " ) ;
 				}
 			}
 
 		});
 	    
+	    /*
 	    Button btn = new Button(compDetail, SWT.PUSH);
 	    btn.setText("Off");
 	    btn.setToolTipText("자동조회끄기");
@@ -398,6 +399,8 @@ public class AqtStatus {
 				
 			}
 		});
+	    
+	    */
 		
 	}
 	
