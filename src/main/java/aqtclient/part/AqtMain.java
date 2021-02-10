@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 
 import javax.persistence.EntityManager;
@@ -18,6 +19,7 @@ import javax.persistence.Persistence;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.StatusLineManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -66,7 +68,7 @@ public class AqtMain extends ApplicationWindow {
 	final public static Color bluecol = SWTResourceManager.getColor(9,72,220);
 	final public static Color htcol = SWTResourceManager.getColor(77,123,230);
 	final public static Color forecol = SWTResourceManager.getColor(SWT.COLOR_WHITE);
-	public static Tmaster tmaster = new Tmaster();
+	private Tmaster tmaster = new Tmaster();
 	public static EntityManagerFactory emf ;
 	public String gv_tcode ;
 	public static Timer jobScheduler ;
@@ -88,8 +90,7 @@ public class AqtMain extends ApplicationWindow {
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip + "/aqtdb2"  
         			+ (sEtc != null ? sEtc  :"") );
-//        properties.put("javax.persistence.jdbc.user", "aqtdb");
-//        properties.put("javax.persistence.jdbc.password", "Dawinit1!"); 
+ 
         properties.put("javax.persistence.jdbc.driver","org.mariadb.jdbc.Driver") ;
         
         emf = Persistence.createEntityManagerFactory("aqtclient", properties) ;
@@ -97,9 +98,14 @@ public class AqtMain extends ApplicationWindow {
 		System.out.println("AQT Started !!");
 		aqtmain = this ;
 		addStatusLine();
+		gv_tcode = em.createNativeQuery("select m.code from Tmaster m where lvl > '0' order by m.tdate desc limit 1"  )
+				.getSingleResult().toString() ;
 		
 	}
 
+	public String getGtcode() {
+		return Optional.ofNullable(gv_tcode).orElse("") ;
+	}
 	/**
 	 * Create contents of the application window.
 	 * @param parent
@@ -233,7 +239,7 @@ public class AqtMain extends ApplicationWindow {
 	 */
 	@Override
 	protected Point getInitialSize() {
-		return new Point(1900, 1000);
+		return new Point(1900, 1030);
 	}
 
 	/*
@@ -331,7 +337,7 @@ public class AqtMain extends ApplicationWindow {
 
 		lblist = new Label(comp_1, SWT.BOLD);
 		menuLabel(lblist);
-		lblist.setText("상세수행현황");
+		lblist.setText("테스트별수행현황");
 		lblist.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -343,6 +349,19 @@ public class AqtMain extends ApplicationWindow {
 			}
 		});
 
+		lblist = new Label(comp_1, SWT.BOLD);
+		menuLabel(lblist);
+		lblist.setText("업무별수행현황");
+		lblist.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				if (container.getToolTipText() == "AqtListTask" ) return;
+				delWidget(container);
+				new AqtListTask(container, SWT.NONE);
+				container.layout();
+				container.setToolTipText("AqtListTask");
+			}
+		});
 		
 		lblist = new Label(comp_1, SWT.BOLD);
 		menuLabel(lblist);
@@ -679,7 +698,7 @@ public class AqtMain extends ApplicationWindow {
     	{
     		return ;
     	}
-    	if (!fileName.matches("\\.csv$") ) fileName += ".csv" ;
+    	if (!fileName.matches("(?i)\\.csv$") ) fileName += ".csv" ;
 //      File  file = new File(fileName + "." + ext[ dlg.getFilterIndex() ] );
     	    
     	    
@@ -699,7 +718,7 @@ public class AqtMain extends ApplicationWindow {
                 if (tableColumn.getText().equals("ID")) 
                 	writer.write("SID");
                 else
-                    writer.write(tableColumn.getText());
+                    writer.write('"'+tableColumn.getText() + '"');
                 if ( columnOrderIndex+1 < colcnt ) writer.write(",");
             }
             writer.write("\r\n");
@@ -712,7 +731,7 @@ public class AqtMain extends ApplicationWindow {
                         columnOrderIndex < colcnt; 
                         columnOrderIndex++) {
                     int columnIndex = columnOrder[columnOrderIndex];
-                    writer.write(item.getText(columnIndex));
+                    writer.write('"'+ item.getText(columnIndex).replace("\"", "\"\"" ) + '"');
                     if ( columnOrderIndex+1 < colcnt ) writer.write(",");
                 }
                 writer.write("\r\n");
@@ -721,7 +740,8 @@ public class AqtMain extends ApplicationWindow {
         } catch(IOException ioe) {
             // TODO: add logic to inform the user of the problem
             System.err.println("trouble exporting table data to file");
-            ioe.printStackTrace();
+			MessageDialog.openError(aqtmain.getShell()  , "파일저장오류", ioe.toString() );
+//            ioe.printStackTrace();
 		}
         
     }

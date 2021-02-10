@@ -3,16 +3,17 @@
 	<persistence-unit name="aqtclient" transaction-type="RESOURCE_LOCAL">
 		<description>aqt db2</description>
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<class>aqtclient.model.ChartData</class>
 		<class>aqtclient.model.Tconfig</class>
 		<class>aqtclient.model.Texecjob</class>
 		<class>aqtclient.model.Tmaster</class>
 		<class>aqtclient.model.Trequest</class>
 		<class>aqtclient.model.Tservice</class>
+		<class>aqtclient.model.Ttcppacket</class>
+		<class>aqtclient.model.Ttcppacket2</class>
 		<class>aqtclient.model.Ttransaction</class>
 		<class>aqtclient.model.Vtrxdetail</class>
 		<class>aqtclient.model.Vtrxlist</class>
-		<class>aqtclient.model.Ttcppacket</class>
-		<class>aqtclient.model.ChartData</class>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/aqtdb2"/>
 			<property name="javax.persistence.jdbc.user" value="aqtdb"/>

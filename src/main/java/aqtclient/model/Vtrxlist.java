@@ -1,14 +1,21 @@
 package aqtclient.model;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 import org.eclipse.persistence.annotations.ReadOnly;
+
+import aqtclient.part.IAqtVar;
 
 
 /**
@@ -17,7 +24,7 @@ import org.eclipse.persistence.annotations.ReadOnly;
  */
 @Entity
 @ReadOnly
-@NamedQuery(name="Vtrxlist.findAll", query="SELECT v FROM Vtrxlist v  order by v.tdate desc")
+@NamedQuery(name="Vtrxlist.findAll", query="SELECT v FROM Vtrxlist v  order by v.lvl desc, v.tdate desc")
 public class Vtrxlist  {
 	
 	@Id
@@ -100,7 +107,7 @@ public class Vtrxlist  {
 	}
 
 	public String getLvlNm() {
-		return "1".equals(this.lvl) ? "단위테스트" : "2".equals(this.lvl) ? "통합테스트" : "실시간" ;
+		return Optional.ofNullable(IAqtVar.lvlnm.get(lvl)).orElse("") ;
 	}
 
 }

@@ -1,42 +1,22 @@
 package aqtclient.part;
 
-import java.awt.Toolkit;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.wb.swt.SWTResourceManager;
-
-import aqtclient.model.Tmaster;
-
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class AqtLogin extends Dialog {
 
@@ -96,9 +76,10 @@ public class AqtLogin extends Dialog {
 				}
 			}
 		});
+		AqtMain.authtype = AuthType.TESTADM ;
 		
 		lbluser = new Label(container,SWT.NONE); 
-		lbluser.setImage(AqtMain.getMyimage("user2.png"));
+		lbluser.setImage(AqtMain.getMyimage("user1.png"));
 //		lbluser.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lbluser.setBounds(720, 383,64,36);
 
@@ -114,7 +95,7 @@ public class AqtLogin extends Dialog {
 
 		
 		lbltester = new Label(container,SWT.NONE); 
-		lbltester.setImage(AqtMain.getMyimage("tester1.png"));
+		lbltester.setImage(AqtMain.getMyimage("tester2.png"));
 //		lbltester.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lbltester.setBounds(795, 383,64,36);
 		lbltester.addMouseListener(new MouseAdapter() {
@@ -142,11 +123,11 @@ public class AqtLogin extends Dialog {
 		});
 
 		
-		lblmsg = new Label(container, SWT.NONE );
-		lblmsg.setBounds(631, 742, 400, 60);
+		lblmsg = new Label(container, SWT.NONE | SWT.CENTER );
+		lblmsg.setBounds(631, 740, 400, 60);
 		lblmsg.setText(" ");
 		lblmsg.setFont(font);
-//		lblmsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+		lblmsg.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		
 		Label lbl = new Label(container , SWT.NONE) ;
 		lbl.setImage(AqtMain.getMyimage("loginbtn.png"));
@@ -174,6 +155,7 @@ public class AqtLogin extends Dialog {
 			
 		});
 //		parent2.pack();
+		txtPwd.setFocus();
 		return parent2 ;
 
 	}

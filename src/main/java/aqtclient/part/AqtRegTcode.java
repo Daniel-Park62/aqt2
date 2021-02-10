@@ -221,6 +221,7 @@ public class AqtRegTcode {
 							Tmaster tmaster = (Tmaster) item.getData() ;
 							tmaster.setTdate(dt);
 						} catch (Exception e2) {
+							System.out.println(e2);
 							// TODO: handle exception
 						}
 						
@@ -453,8 +454,13 @@ public class AqtRegTcode {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				int i = tblList.getSelectionIndex() ;
+				Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
 				Tmaster t = new Tmaster() ;
 				t.setDesc1("new");
+				t.setCmpCode(to.getCmpCode());
+				t.setThost(to.getThost());
+				t.setLvl(to.getLvl());
+				t.setTdate(to.getTdate());
 				t.setNew(true);
 				em.persist(t);
 				tcodeList.add(i,t) ;
@@ -502,9 +508,27 @@ public class AqtRegTcode {
 				}
 			}
 		});
+
+	    MenuItem copysvc = new MenuItem(popupMenu, SWT.NONE);
+	    copysvc.setText("데이터 복제");
+	    copysvc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				String tcode = "";
+				int i = tblList.getSelectionIndex() ;
+				if ( i >= 0 ) {
+					tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
+				}
+				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), tcode );
+				aqtcopy.open() ;
+
+			}
+		});
+
 	    addsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
 	    savesvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
 	    delsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
+	    copysvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
 	    
 	    tblList.setMenu(popupMenu);
 

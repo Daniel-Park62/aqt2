@@ -1,7 +1,7 @@
 package aqtclient.part;
 
 /*
-   상세수행현황
+   상세수행현황( 업무별 )
 */
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +41,9 @@ import aqtclient.model.Vtrxdetail;
 import aqtclient.model.Vtrxlist;
 
 @SuppressWarnings("unchecked")
-public class AqtList  {
-	private Table tblTestList;
-	private Table tblDetailList;
+public class AqtListTask  {
+	private Table tblLst;
+	private Table tblDetail;
 	private Text txtServiceCnt;
 	private AqtTableView tblViewerList, tblViewerDetail;
 	private long countResultT;
@@ -55,7 +55,7 @@ public class AqtList  {
 	 * @param parent
 	 * @param style
 	 */
-	public AqtList(Composite parent, int style) {
+	public AqtListTask(Composite parent, int style) {
 		create (parent, style);
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		
@@ -64,64 +64,67 @@ public class AqtList  {
 	}
 	
 	private void create (Composite parent, int style) {
+		SashForm sashForm;
+
+//		parent.setLayout(new FillLayout());
 	    
-//		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
-		Composite sashForm = new Composite(parent, SWT.NONE );
-//		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(sashForm);
-		GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(false).applyTo(sashForm);
+	    sashForm = new SashForm(parent, SWT.VERTICAL);
+	    
+//	    sashForm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 	    
 		Composite compHeader = new Composite(sashForm, SWT.NONE);
 		
-		GridLayoutFactory.fillDefaults().margins(15, 10).numColumns(2).equalWidth(false).applyTo(compHeader);
+		GridLayoutFactory.fillDefaults().margins(15, 15).numColumns(2).equalWidth(false).applyTo(compHeader);
 		
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
 //    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-    	ltitle.setImage(AqtMain.getMyimage("tit_list.png"));
-    	ltitle.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false));
+    	ltitle.setImage(AqtMain.getMyimage("tit_listtask.png"));
+    	ltitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
     	txtServiceCnt = new Text(compHeader, SWT.READ_ONLY );
 //    	txtServiceCnt.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	txtServiceCnt.setEnabled(false);
     	txtServiceCnt.setText("대상URI수:");
     	txtServiceCnt.setFont(IAqtVar.font13b);
-    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.TOP, true, true));
+    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, true, true));
 
     	Composite compTestList = new Composite(compHeader, SWT.NONE);
 //    	compTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	
-    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(2, 1).applyTo(compTestList);
+    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(compTestList);
     	
     	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(3).applyTo(compTestList);
     	
-    	tblViewerList = new AqtTableView(compTestList, SWT.NONE | SWT.FULL_SELECTION);
+    	tblViewerList = new AqtTableView(compTestList, SWT.NONE  | SWT.FULL_SELECTION);
     	
-    	tblTestList = tblViewerList.getTable();
-    	
-    	tblTestList.addSelectionListener(new SelectionAdapter() {
+    	tblLst = tblViewerList.getTable();
+    	tblLst.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
-    			fillDetail();
+				int i = tblLst.getSelectionIndex() ;
+				if (i >= 0) {
+					String cond = tblLst.getItem(i).getText(8) ;
+					fillDetail(cond);
+				}
     		}
     	});
 
-    	tblTestList.setHeaderBackground(AqtMain.htcol);
-    	tblTestList.setHeaderForeground(AqtMain.forecol);
-    	tblTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		tblTestList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+    	tblLst.setHeaderBackground(AqtMain.htcol);
+    	tblLst.setHeaderForeground(AqtMain.forecol);
+    	tblLst.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		tblLst.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 
         int width = 1500 / 10;
 
         String[] columnNames1 = new String[] {
-   	         "","테스트ID", "테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수","실패URI", "성공율(%)"};
+   	         " 업무명 ", "단계",  "URI수", "패킷건수", "성공건수", "실패건수","실패URI", "성공율(%)", ""};
         
-        int[] columnWidths1 = new int[] {
-//        		115, 350, 130, 130, 115, 115, 115, 110, 110};
-        		0,180, 300, 150, 130,130, 100, 100, 100, 100, 100,100};
+        int[] columnWidths1 = new int[] { 180, 150, 130,130, 100, 100, 110, 110 ,0};
 
 	    int[] columnAlignments1 = new int[] {
-	    		SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
+	    		SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER,SWT.CENTER,0};
 	      
 		for (int i = 0; i < columnNames1.length; i++) {
 			TableViewerColumn tableViewerColumn = new TableViewerColumn(tblViewerList, columnAlignments1[i]);
@@ -129,43 +132,41 @@ public class AqtList  {
 			TableColumn tableColumn = tableViewerColumn.getColumn();
 			tableColumn.setText(columnNames1[i]);
 			tableColumn.setWidth(columnWidths1[i]);
-			tableColumn.setResizable(i != 0);
-
+			tableColumn.setResizable(i != 8);
 		}
-	    GridDataFactory.fillDefaults().span(2, 1).grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(tblTestList);
-	    
-		tblTestList.setHeaderVisible(true);
-		tblTestList.setLinesVisible(true);
 		
-		tblTestList.setFont(IAqtVar.font1b);
+	    GridDataFactory.fillDefaults().span(2, 1).grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(tblLst);
+	    
+		tblLst.setHeaderVisible(true);
+		tblLst.setLinesVisible(true);
+		
+		tblLst.setFont(IAqtVar.font1b);
 
 	    tblViewerList.setUseHashlookup(true);
 
 	    tblViewerList.setContentProvider(new ContentProvider());
 	    tblViewerList.setLabelProvider(new VtrxLabelProvider());
 	    
-	    tblTestList.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDoubleClick(MouseEvent arg0) {
-				int i = tblTestList.getSelectionIndex() ;
-				if (  i >= 0 ) {
-					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = " 
-					 + ( vlist.getFcnt() > 0  ?  "'2'" : "'1'") ) ;
-				}
-			}
-
-		});
+//	    tblLst.addMouseListener(new MouseAdapter() {
+//			@Override
+//			public void mouseDoubleClick(MouseEvent arg0) {
+//				int i = tblLst.getSelectionIndex() ;
+//				if (i >= 0) {
+//					String cond = tblLst.getItem(i).getText(8) ;
+//					fillDetail(cond);
+//				}
+//			}
+//
+//		});
 
 	    
 	    Composite compDetail = new Composite(sashForm, SWT.NONE);
 	    
 		GridLayoutFactory.fillDefaults().margins(15, 5).numColumns(2).equalWidth(false).applyTo(compDetail);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compDetail);
 		
 		CLabel clb1 = new CLabel(compDetail, SWT.NONE ) ;
 		clb1.setText("Search:");
-//		clb1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
 		Text txtFind1 = new Text(compDetail, SWT.BORDER) ;
 
 		txtFind1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -174,15 +175,15 @@ public class AqtList  {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
 				arg0.doit = true ;
-				TableItem[] tia = tblDetailList.getItems() ;
+				TableItem[] tia = tblDetail.getItems() ;
 				if (tia == null) return ;
 				String sval = txtFind1.getText() ;
 				if (sval.isEmpty() )  return ;
 				
 				loop1 : for(int i=0; i<tia.length ; i++) {
-					for (int j=0; j < tblDetailList.getColumnCount(); j++)
+					for (int j=0; j < tblDetail.getColumnCount(); j++)
 						if ((tia[i].getText(j)).contains(sval)) {
-							tblDetailList.setSelection(i);
+							tblDetail.setSelection(i);
 							break loop1;
 						}
 				}
@@ -197,15 +198,16 @@ public class AqtList  {
 	    
 		tblViewerDetail = new AqtTableView(compDetail, SWT.NONE | SWT.FULL_SELECTION);
 		
-		tblDetailList = tblViewerDetail.getTable();
-		tblDetailList.setHeaderBackground(AqtMain.htcol);
-		tblDetailList.setHeaderForeground(AqtMain.forecol);
-		tblDetailList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		tblDetailList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		tblDetail = tblViewerDetail.getTable();
+		tblDetail.setHeaderBackground(AqtMain.htcol);
+		tblDetail.setHeaderForeground(AqtMain.forecol);
+		tblDetail.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+		tblDetail.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(tblDetailList);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(tblDetail);
 
-//		sashForm.setWeights(new int[] {4,6});
+		sashForm.setWeights(new int[] {4,6});
+		sashForm.setSashWidth(5);
 		
 		width = 1500 / 8;
 		
@@ -229,27 +231,27 @@ public class AqtList  {
 	         tableColumn.setResizable(i != 0);
 	     }
 
-	    tblDetailList.setHeaderVisible(true);
-	    tblDetailList.setLinesVisible(true);
-	    tblDetailList.setFont(IAqtVar.font1);
+	    tblDetail.setHeaderVisible(true);
+	    tblDetail.setLinesVisible(true);
+	    tblDetail.setFont(IAqtVar.font1);
 		
 	    tblViewerDetail.setUseHashlookup(true);
 	    
 		tblViewerDetail.setContentProvider(new ContentProvider());
 		tblViewerDetail.setLabelProvider(new TrxDtlLabelProvider());
-		tblDetailList.addMouseListener(new MouseAdapter() {
+		tblDetail.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
-				int i = tblDetailList.getSelectionIndex() ;
+				int i = tblDetail.getSelectionIndex() ;
 				if (  i >= 0 ) {
-					Vtrxdetail vlist = (Vtrxdetail) tblDetailList.getItem(i).getData() ;
+					Vtrxdetail vlist = (Vtrxdetail) tblDetail.getItem(i).getData() ;
 					AqtMain.openTrList("t.tcode = '"+ vlist.getTcode() + "' and t.uri = '" + vlist.getSvcid() + "'") ;
 				}
 			}
 
 		});
-
-		
+//		parent.setRedraw(false);
+//		sashForm.pack();
 //		compHeader.pack();
 //		compTitle.pack();
 //		ltitle.pack();
@@ -259,7 +261,7 @@ public class AqtList  {
 	
 	private void initScreen () {
 	    EntityManager em = AqtMain.emf.createEntityManager();
-	    tempVtrxList = new ArrayList<Vtrxlist>();
+	    List<Object[]> tList = new ArrayList();
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		
@@ -272,30 +274,26 @@ public class AqtList  {
         
         txtServiceCnt.setText( String.format("대상URI수: %,d ", countResultT));
 
-//        TypedQuery<Vtrxlist> qVlist = em.createQuery("select t from Vtrxlist t order by t.tdate desc ", Vtrxlist.class);
-        TypedQuery<Vtrxlist> qVlist = em.createNamedQuery("Vtrxlist.findAll", Vtrxlist.class);
-    	
-//        qVlist.getResultList().stream().forEach( t -> tempVtrxList.add(t));
-        tempVtrxList = qVlist.getResultList() ;
+        tList = em.createNativeQuery(
+        		"select task,lvl,svc_cnt,data_cnt, scnt, fcnt, fsvc_cnt, ifnull(scnt * 100 / (scnt+fcnt) ,0.0)  spct from ttasksum ")
+        		.getResultList() ;
 
-	    tblViewerList.setInput(tempVtrxList);
-	    
-	    tblTestList.setSelection(0);
+	    tblViewerList.setInput(tList);
+	    tblLst.setSelection(0);
 	    em.close();
-
-        for( TableItem item : tblTestList.getItems() ) 
+        for( TableItem item : tblLst.getItems() ) 
         {
-            if (item.getText(4).equals("Origin"))
+            if (item.getText(1).equals("Origin"))
             {
                 item.setBackground( SWTResourceManager.getColor(SWT.COLOR_YELLOW));
             }
         }
-
-	    if ( tblTestList.getSelectionIndex() >= 0 )	    fillDetail();
+	    
+	    if ( tblLst.getSelectionIndex() >= 0 )	    fillDetail(tblLst.getItem(0).getText(8));
 		
 	}
 	
-	private void fillDetail () {
+	private void fillDetail (String acond ) {
 
 	    EntityManager em = AqtMain.emf.createEntityManager();
 		em.clear();
@@ -303,7 +301,7 @@ public class AqtList  {
 		AqtMain.container.setCursor(IAqtVar.busyc);
 
 //		TypedQuery <Vtrxdetail> qTrxList = em.createNamedQuery("Vtrxdetail.findByCode", Vtrxdetail.class);
-//		qTrxList.setParameter("tcode", tempVtrxList.get(tblTestList.getSelectionIndex()).getCode());
+//		qTrxList.setParameter("tcode", tempVtrxList.get(tblLst.getSelectionIndex()).getCode());
 //		List<Vtrxdetail> listtrx = qTrxList.getResultList() ;
 
 		List<Vtrxdetail> listtrx = em.createNativeQuery(
@@ -312,10 +310,9 @@ public class AqtList  {
 				"FROM   ((" + 
 				"select t.tcode, t.uri svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
-				"from   Ttcppacket t, tmaster m \r\n" + 
-				"WHERE m.code = '" + tempVtrxList.get(tblTestList.getSelectionIndex()).getCode() + 
-				"' and m.code = t.tcode " + 
-				"group by t.tcode, t.uri) a " + 
+				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid) " + 
+				"WHERE  " + acond +  
+				" group by t.tcode, t.uri) a " + 
 				"left outer join tservice s on a.svcid = s.svcid )" , Vtrxdetail.class)
 			.getResultList() ;
 
@@ -361,31 +358,24 @@ public class AqtList  {
 		   * @return String
 		   */
 		  public String getColumnText(Object element, int columnIndex) {
-			  Vtrxlist trx = (Vtrxlist) element;
+			  Object[] trx = (Object[]) element;
 			  if ( trx != null )
+				  
 				  switch (columnIndex) {
+				  case 0:
+					  return trx[0].toString() ;
 				  case 1:
-					  return trx.getCode();
+					  return IAqtVar.lvlnm.get(trx[1]).toString() ;
 				  case 2:
-					  return trx.getDesc1();
 				  case 3:
-					  return trx.getTdate();
 				  case 4:
-					  return trx.getLvlNm();
 				  case 5:
-					  return trx.getThost();
 				  case 6:
-					  return String.format("%,d", trx.getSvcCnt() ) ;
+					  return String.format("%,d", trx[columnIndex] );
 				  case 7:
-					  return String.format("%,d", trx.getDataCnt());
+					  return String.format("%.2f",  trx[7]) ;
 				  case 8:
-					  return String.format("%,d", trx.getScnt());
-				  case 9:
-					  return String.format("%,d", trx.getFcnt());
-				  case 10:
-					  return String.format("%,d", trx.getFsvcCnt()) ;
-				  case 11:
-					  return String.format("%.2f",  trx.getSpct()) ;
+					  return String.format("task = '%s' and lvl = '%s'", trx[0].toString(), trx[1].toString()) ;
 				  }
 			  return null;
 		  }

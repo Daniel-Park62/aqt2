@@ -12,15 +12,8 @@ import java.util.Date;
  * 
  */
 @Entity
-@NamedQuery(name="Ttcppacket.SvcCnt", query="SELECT COUNT(DISTINCT t.uri) FROM Ttcppacket t where t.tcode = :tcode")
-@NamedQuery(name="Ttcppacket.FlagCnt", query="SELECT COUNT(t.pkey) trxCnt " +
-		", COUNT(CASE WHEN t.sflag = '1' THEN 1 ELSE NULL END) validCnt " + 
-		", COUNT(CASE WHEN t.sflag = '2' THEN 1 ELSE NULL END) invalidCnt " +
-		" FROM Ttcppacket t WHERE t.tcode = :tcode")
-@NamedNativeQuery(name="Ttcppacket.chartData", 
-query="select date_format(t.stime, '%Y-%m-%d %H:%i:00') dtime, count(t.pkey) trxCnt from Ttcppacket t where t.tcode = ? group by date_format(t.stime, '%Y-%m-%d %H:%i:00') ")
-
-public class Ttcppacket implements Serializable {
+@Table(name = "ttcppacket") 
+public class Ttcppacket2 implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -50,12 +43,9 @@ public class Ttcppacket implements Serializable {
 
 	private int rcode;
 	
-	private char sflag ;
+	private String sflag ;
 	
 	private String rhead;
-
-	@Lob
-	private byte[] rdata;
 
 	private int rlen;
 
@@ -87,7 +77,7 @@ public class Ttcppacket implements Serializable {
 	@JoinColumn(name = "tcode", referencedColumnName = "code" ,updatable=false, insertable=false ) 
 	public Tmaster tmaster ;
 	
-	public Ttcppacket() {
+	public Ttcppacket2() {
 	}
 
 	public long getPkey() {
@@ -95,7 +85,7 @@ public class Ttcppacket implements Serializable {
 	}
 
 	public char getSflag() {
-		return sflag ;
+		return this.rcode > 399 ? '2' : this.rcode > 200 ? '1': '0' ;
 	}
 	public long getCmpid() {
 		return cmpid;
@@ -175,29 +165,6 @@ public class Ttcppacket implements Serializable {
 
 	public String getRhead() {
 		return rhead;
-	}
-
-	public String getRdata()  {
-		try {
-			return this.rdata == null ? "" : new String(this.rdata, rhead.contains("UTF-8") || rhead.contains("utf-8")  ? "utf-8" : "euc-kr") ;
-		} catch (UnsupportedEncodingException e) {
-			return "";
-		}
-	}
-
-	public String getRdataUTF()  {
-		try {
-			return this.rdata == null ? "" : new String(this.rdata, "utf-8") ;
-		} catch (UnsupportedEncodingException e) {
-			return "";
-		}
-	}
-	public String getRdatam()  {
-		return this.rdata == null ? "" : new String( this.rdata,0, this.rdata.length > 256 ? 256 :  this.rdata.length ) ;
-	}
-	
-	public byte[] getRdatab() {
-		return this.rdata == null ? "".getBytes() : this.rdata ;
 	}
 
 	public int getRlen() {

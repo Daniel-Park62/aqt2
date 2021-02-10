@@ -86,20 +86,26 @@ public class AqtRegSvc {
 //	    
 //	    sashForm = new SashForm(parent, SWT.VERTICAL);
 	    Composite container = new Composite(parent, SWT.NONE) ;
-	    GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(false).applyTo(container);
+	    GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(true).applyTo(container);
 	    
 		Composite compHeader = new Composite(container, SWT.NONE);
 		GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(compHeader);
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(compHeader);
 		
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
     	ltitle.setImage(AqtMain.getMyimage("tit_regsvc.png"));
 
+		Label lbl = new Label(compHeader, SWT.SEPARATOR | SWT.HORIZONTAL);
+		lbl.setBackground(container.getBackground());
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
+
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(5).equalWidth(false).applyTo(compTit);
+		GridLayoutFactory.fillDefaults().margins(20, 0).numColumns(5).equalWidth(false).applyTo(compTit);
+
 		
 		Label lblt = new Label(compTit, SWT.NONE);
-		lblt.setText(" *서비스ID");
+		lblt.setText(" *URI");
 		lblt.setFont(IAqtVar.font1);
 
 		textsvc = new Text(compTit, SWT.BORDER);
@@ -111,7 +117,7 @@ public class AqtRegSvc {
 		textsvc.setText("");
 
 		lblt = new Label(compTit, SWT.NONE);
-		lblt.setText("서비스명");
+		lblt.setText("URI명");
 		lblt.setFont(IAqtVar.font1);
 		textsvcnm = new Text(compTit, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(300, -1).applyTo(textsvcnm);
@@ -141,13 +147,10 @@ public class AqtRegSvc {
 		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 
 		
-    	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
-		lbl.setBackground(container.getBackground());
-		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
 
  	    Composite compDetail = new Composite(container, SWT.NONE);
  	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(compDetail);
-		GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(compDetail);
+		GridLayoutFactory.fillDefaults().margins(20, 0).numColumns(1).equalWidth(true).applyTo(compDetail);
 
     	tblViewerList = CheckboxTableViewer.newCheckList(compDetail, SWT.NONE | SWT.FULL_SELECTION );
     	
@@ -182,12 +185,12 @@ public class AqtRegSvc {
 		});
 	    
         String[] cols1 = new String[] 
-        		{  " 서비스ID", "  서비스한글명", "  서비스영문명", "서비스종류"};
+        		{  " URI", "  내용설명(한글)", "  설명(영문)", "업무명", "담당자", "서비스종류"};
 
-        int[] columnWidths1 = new int[] {  200, 300, 300, 200};
+        int[] columnWidths1 = new int[] {  200, 300, 300, 300,150, 200};
 
 	    int[] colas1 = new int[] 
-	    		{SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.CENTER };
+	    		{SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.CENTER };
 	    TableViewerColumn tableViewerColumn ;
 	    for (int i = 0; i < cols1.length; i++) {
 	    	tableViewerColumn =
@@ -201,7 +204,7 @@ public class AqtRegSvc {
 	    }
 	    tblList.addListener(SWT.MeasureItem ,  new Listener() {
 	    	public void handleEvent(Event arg0) {
-	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.8);
+	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.6);
 
 	    	}
 	    });
@@ -235,6 +238,10 @@ public class AqtRegSvc {
 				else if (property.equals(cols1[2]))
 					m.setSvceng(value.toString());
 				else if (property.equals(cols1[3]))
+					m.setTask(value.toString());
+				else if (property.equals(cols1[4]))
+					m.setManager(value.toString());
+				else if (property.equals(cols1[5]))
 					m.setSvckind(value.toString());
 				else
 					return ;
@@ -255,6 +262,10 @@ public class AqtRegSvc {
 				else if (property.equals(cols1[2]))
 					return t.getSvceng();
 				else if (property.equals(cols1[3]))
+					return t.getTask() ;
+				else if (property.equals(cols1[4]))
+					return t.getManager() ;
+				else if (property.equals(cols1[5]))
 					return t.getSvckind() ;
 			
 				return null;
@@ -335,6 +346,10 @@ public class AqtRegSvc {
 					  case 2:
 						  return s.getSvceng();
 					  case 3:
+						  return s.getTask();
+					  case 4:
+						  return s.getManager();
+					  case 5:
 						  return s.getSvckind();
 					  }
 				  return "";
@@ -477,23 +492,40 @@ public class AqtRegSvc {
     	    tsvcList.clear();
     	    while ((line = br.readLine()) != null) {
     	        String[] v = line.split(",");
-    	        if (v.length < 4) continue ;
+    	        if (v.length < 2) continue ;
     	        Tservice s = new Tservice() ;
-    	        s.setSvcid(v[0]);
-    	        s.setSvckor(v[1]);
-    	        s.setSvceng(v[2]);
-    	        s.setSvckind(v[3]);
     	        s.setNew(true);
+    	        for (int i=0; v.length > i ; i++) {
+    	        	switch (i) {
+    	        	case 0:
+    	        		s.setSvcid(v[i]);
+    	        		continue ;
+    	        	case 1:
+    	        		s.setSvckor(v[i]);
+    	        		continue ;
+    	        	case 2:
+    	        		s.setSvceng(v[i]);
+    	        		continue ;
+    	        	case 3:
+    	        		s.setTask(v[i]);
+    	        		continue ;
+    	        	case 4:
+    	        		s.setManager(v[i]);
+    	        		continue ;
+    	        	case 5:
+    	        		s.setSvcid(v[i]);
+    	        		continue ;
+    	        	}
+    	        }
+    	        
     	        s = em.merge(s);
     	        tsvcList.add(s) ;
     	    }
     	    tblViewerList.setInput(tsvcList);
     	    
-    	} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageDialog.openError(AqtMain.aqtmain.getShell()  , "파일입력오류", e.toString() );
 		}
 		
 	}

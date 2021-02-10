@@ -164,6 +164,7 @@ public class AqtCompare {
 		
 		btndiff = new Button(compTitle, SWT.CHECK | SWT.NONE) ;
 		btndiff.setText("값이다른전문만 보기");
+		btndiff.setFont(IAqtVar.font1);
 
 		Label btnSearch = new Label(compTitle, SWT.NONE);
 		btnSearch.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false));
@@ -370,11 +371,11 @@ public class AqtCompare {
 				int ix = tblDetailResult1.getSelectionIndex() ;
 				if (ix >= 0) {
 					txtSend1.setText(tempTrxList1.get(ix).getSdata());
-					txtReceive1.setText(tempTrxList1.get(ix).getRdata());
+					txtReceive1.setText(tempTrxList1.get(ix).getRdatam());
 					String suid = tblDetailResult1.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult2, suid)) >= 0) {
 						txtSend2.setText(tempTrxList2.get(ix).getSdata());
-						txtReceive2.setText(tempTrxList2.get(ix).getRdata());
+						txtReceive2.setText(tempTrxList2.get(ix).getRdatam());
 					}
 				}
 			}
@@ -426,11 +427,11 @@ public class AqtCompare {
 				int ix = tblDetailResult2.getSelectionIndex() ;
 				if (ix >=0) {
 					txtSend2.setText(tempTrxList2.get(ix).getSdata());
-					txtReceive2.setText(tempTrxList2.get(ix).getRdata());
+					txtReceive2.setText(tempTrxList2.get(ix).getRdatam());
 					String suid = tblDetailResult1.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult1, suid)) >= 0) {
 						txtSend1.setText(tempTrxList1.get(ix).getSdata());
-						txtReceive1.setText(tempTrxList1.get(ix).getRdata());
+						txtReceive1.setText(tempTrxList1.get(ix).getRdatam());
 					}
 
 				}
@@ -642,12 +643,12 @@ public class AqtCompare {
 		if (!tempTrxList1.isEmpty()) {
 
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdata());
+			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
 		}
 
 		if (!tempTrxList2.isEmpty()) {
 			txtSend2.setText(tempTrxList2.get(0).getSdata());
-			txtReceive2.setText(tempTrxList2.get(0).getRdata());
+			txtReceive2.setText(tempTrxList2.get(0).getRdatam());
 		}
 		tableViewerDR1.setInput(tempTrxList1);
 		tableViewerDR2.setInput(tempTrxList2);

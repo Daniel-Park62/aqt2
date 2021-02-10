@@ -1,5 +1,9 @@
 package aqtclient.part;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -22,6 +26,15 @@ public interface IAqtVar {
     final public static Cursor arrow = SWTResourceManager.getCursor( SWT.CURSOR_ARROW);
     final String titnm = "Application Quarity Test";
     
+    final public static Map<String, String> lvlnm = Collections.unmodifiableMap(new HashMap<String, String>() {
+		{
+			put("0", "Origin");
+			put("1", "단위");
+			put("2", "통합");
+			put("3", "실시간");
+		}
+	});
+
     public static void setAllFont(Composite parent, Font font) {
 		
 	    for (Control kid : parent.getChildren()) {

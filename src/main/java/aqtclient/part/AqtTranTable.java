@@ -82,11 +82,11 @@ public class AqtTranTable extends AqtTableView {
 					
 					Tmaster tmst = tr.tmaster ;
 					
-//					if (tmst != null && "3".equals(tmst.getLvl() ) ) {
-//						MessageDialog.openInformation(parent.getShell(), "Info", "실시간은 재전송 불가합니다.");
-//						em.close();
-//						return ;
-//					}
+					if (tmst != null && "3".equals(tmst.getLvl() ) ) {
+						MessageDialog.openInformation(parent.getShell(), "Info", "실시간은 재전송 불가합니다.");
+						em.close();
+						return ;
+					}
 					Trequest treq = em.find(Trequest.class, tr.getPkey()) ;
 					if (treq != null) {
 						MessageDialog.openInformation(parent.getShell(), "Info", "이미 재전송 요청되었습니다.");
@@ -172,7 +172,7 @@ public class AqtTranTable extends AqtTableView {
 
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
 
-		tvc = createTableViewerColumn("comp id", 150, 0);
+		tvc = createTableViewerColumn("패킷id", 120, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -208,7 +208,16 @@ public class AqtTranTable extends AqtTableView {
 				return String.format("%.3f", tr.getSvctime());
 			}
 		});
-		tvc = createTableViewerColumn("URI", 200, 4);
+		tvc = createTableViewerColumn("Method", 80, 4);
+		tvc.setLabelProvider(new ColumnLabelProvider() {
+			public String getText(Object element) {
+				if (element == null)
+					return super.getText(element);
+				Ttcppacket tr = (Ttcppacket) element;
+				return tr.getMethod();
+			}
+		});
+		tvc = createTableViewerColumn("URI", 200, 5);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -217,7 +226,7 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getUri();
 			}
 		});
-		tvc = createTableViewerColumn("응답코드", 80, 5);
+		tvc = createTableViewerColumn("응답코드", 80, 6);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -226,7 +235,7 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getRcode() + ""  ;
 			}
 		});
-		tvc = createTableViewerColumn("응답Header", 500, 6);
+		tvc = createTableViewerColumn("응답Header", 500, 7);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {

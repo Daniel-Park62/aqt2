@@ -45,7 +45,7 @@ public class AqtRegister extends Dialog {
 	
 	private static Tmaster tmaster;
 	private DateText txtSdate, txtEdate;
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	/**
 	 * Create the composite.
@@ -443,8 +443,9 @@ public class AqtRegister extends Dialog {
 			txtCmpCode.setText(tmaster.getCmpCode());
 		else
 			txtCmpCode.setText("");
-		
+
 		txtSdate.setText(tmaster.getTdate() != null ? sdf.format(tmaster.getTdate() ) : "" );
+
 		txtEdate.setText(tmaster.getEndDate() != null ? sdf.format(tmaster.getEndDate()) : "");
 		
 		btnLevel[0].setSelection("0".equals(tmaster.getLvl()) ? true : false);

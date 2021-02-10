@@ -1,5 +1,18 @@
 package aqtclient.part;
 
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.IntStream;
+
+import javax.persistence.EntityManager;
+
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 /*
  * 총괄현황
 */
@@ -12,48 +25,24 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.wb.swt.SWTResourceManager;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.OptionalDouble;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Widget;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Ttransaction;
+import aqtclient.model.Ttcppacket;
 import aqtclient.model.Vtrxlist;
 
 public class AqtStatus {
@@ -147,10 +136,11 @@ public class AqtStatus {
 //	    container.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 	    
 		Composite compHeader = new Composite(container, SWT.NONE);
-		GridLayout glo = new GridLayout(1,true);
+		GridLayout glo = new GridLayout(2,true);
 		glo.marginHeight = 20;
 		glo.marginWidth = 20;
 		compHeader.setLayout(glo);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(compHeader);
 		
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
@@ -158,7 +148,18 @@ public class AqtStatus {
 		
 //    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	ltitle.setImage(AqtMain.getMyimage("tit_status.png"));
+    	ltitle = new Label(compHeader, SWT.NONE);
+    	ltitle.setImage(AqtMain.getMyimage("refresh.png"));
+    	ltitle.setCursor(IAqtVar.handc);
+	    GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, true).applyTo(ltitle);
 
+    	ltitle.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				initScreen();
+			}
+		});
+    	
     	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		lbl.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		lbl.setBackground(container.getBackground());
@@ -225,7 +226,7 @@ public class AqtStatus {
      	lbl.setText("최신 테스트현황");
      	lbl.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, true,2,2));
 
-     	lblstatus[3] = status_data(compS,  "전문건수",  "99,999");
+     	lblstatus[3] = status_data(compS,  "수행건수",  "99,999");
      	lblstatus[4] = status_data(compS,  "성공건수",  "99,990");
      	lblstatus[5] = status_data(compS,  "성공률"  ,  "99%");
 
@@ -266,7 +267,7 @@ public class AqtStatus {
      	lbl.setText("최신 테스트현황");
      	lbl.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, true,2,2));
 
-     	lblstatus[9] = status_data(compS,  "전문건수",  "99,999");
+     	lblstatus[9] = status_data(compS,  "수행건수",  "99,999");
      	lblstatus[10] = status_data(compS,  "성공건수",  "99,990");
      	lblstatus[11] = status_data(compS,  "성공률"  ,  "99%");
 
@@ -300,8 +301,6 @@ public class AqtStatus {
     	tblTestList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	tblTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
     	
-	    tblTestList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
-	    
 	    tblViewerList.setUseHashlookup(true);
 	    tblTestList.addKeyListener(new KeyAdapter() {
 			@Override
@@ -324,10 +323,8 @@ public class AqtStatus {
         String[] columnNames1 = new String[] {
    	         "", "테스트ID", "  테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수", "실패URI","성공율(%)","잔여건수"};
 
-        int width = 1500 / 10;
-
         int[] columnWidths1 = new int[] {
-        		0, 150, 280, 150, 130, 130, 110, 110, 110, 110, 120,110,110};
+        		0, 100, 200, 150, 130, 130, 100, 100, 100, 100, 120,110,100};
 
 	    int[] columnAlignments1 = new int[] {
 	    		SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
@@ -368,7 +365,41 @@ public class AqtStatus {
 			}
 
 		});
+		Menu popupMenu = tblTestList.getMenu();
+
+		MenuItem flitem = new MenuItem(popupMenu, SWT.NONE);
+		flitem.setText("실패건만 보기");
+		flitem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				
+				int i = tblTestList.getSelectionIndex() ;
+				if (  i >= 0 ) {
+					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '2' " 
+					+ " order by t.uri " ) ;
+				}
+				
+			}
+		});
+		
+		MenuItem scitem = new MenuItem(popupMenu, SWT.NONE);
+		scitem.setText("성공건만 보기");
+		scitem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				
+				int i = tblTestList.getSelectionIndex() ;
+				if (  i >= 0 ) {
+					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '1' " 
+					+ " order by t.uri " ) ;
+				}
+				
+			}
+		});
 	    
+		tblTestList.setMenu(popupMenu);
 	    /*
 	    Button btn = new Button(compDetail, SWT.PUSH);
 	    btn.setText("Off");
@@ -445,7 +476,7 @@ public class AqtStatus {
         
         lblstatus[0].setText(String.format("%.1f", icnt * 100.0 / tcnt) + "%") ;
         
-	    long dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).mapToLong(  a -> a.getDataCnt() ).sum() ;
+	    long dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).mapToLong(  a -> a.getScnt() + a.getFcnt() ).sum() ;
         lblstatus[3].setText(String.format("%,d", dcnt)) ;
 
 	    int scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).flatMapToInt( a -> IntStream.of(a.getScnt().intValue()) ).sum() ;
@@ -485,6 +516,14 @@ public class AqtStatus {
         for (int i = 0 ; i < lblstatus.length ; i++) {
     		lblstatus[i].requestLayout();
     	}
+        
+        for( TableItem item : tblTestList.getItems() ) 
+        {
+            if (item.getText(4).equals("Origin"))
+            {
+                item.setBackground( SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+            }
+        }
 
 	}
 	

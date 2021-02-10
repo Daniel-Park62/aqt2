@@ -149,7 +149,7 @@ public class AqtDetail extends Dialog {
 
 
 		lblcomm = new Label(compDetail, SWT.NONE);
-		lblcomm.setText("CMP ID");
+		lblcomm.setText("패킷ID");
 		lblcomm.setFont( IAqtVar.font1);
 		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.TOP,false, false) );
 		

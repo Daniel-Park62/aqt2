@@ -437,7 +437,7 @@ public class AqtExec  {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				texecjob = new Texecjob() ;
-				texecjob.setTcode(AqtMain.tmaster.getCode());
+				texecjob.setTcode(AqtMain.aqtmain.getGtcode());
 				fillData(texecjob);
 				txtcode.setFocus() ;
 			}

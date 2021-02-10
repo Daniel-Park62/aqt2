@@ -110,9 +110,12 @@ public class AqtDetailComp extends Dialog {
 //	    Composite comp2 = new Composite(sashForm, SWT.NONE) ;
 		
 		tran2 = new TranInfo(sashForm, SWT.BORDER, tr2);
+//		tran1.pack();
+//		tran2.pack();
 		
 		sashForm.setWeights(new int[] { 5,5 });
 		sashForm.setSashWidth(0);
+		sashForm.pack();
 		try {
 			compTrMsg( tran1.getTxtSendMsg() , tran2.getTxtSendMsg() ) ;
 			compTrMsg( tran1.getTxtReceiveMsg() , tran2.getTxtReceiveMsg() ) ;
@@ -125,8 +128,8 @@ public class AqtDetailComp extends Dialog {
 	private void compTrMsg(StyledText stext1, StyledText stext2 ) throws UnsupportedEncodingException {
 //		String text1 = stext1.getText() ;
 //		String text2 = stext2.getText() ;
-		byte[] text1 = stext1.getText().getBytes() ;
-		byte[] text2 = stext2.getText().getBytes("utf-8") ;
+		byte[] text1 = stext1.getText().getBytes("euc-kr") ;
+		byte[] text2 = stext2.getText().getBytes("euc-kr") ;
 
 		List<StyleRange> ranges = new ArrayList<StyleRange>();
 		int st = -1, n = text2.length , n1 = text1.length ;
@@ -211,7 +214,7 @@ public class AqtDetailComp extends Dialog {
 			txtRhead.setText(tr.getRhead());
 			txtCdate.setText(dformat.format(tr.getCdate()));
 			compDetail.pack();
-//			compMessage.pack();
+			compMessage.pack();
 
 		}
 		public TranInfo(Composite parent, int style) {
@@ -247,7 +250,7 @@ public class AqtDetailComp extends Dialog {
 			txtPkey.setFont( IAqtVar.font1);
 			
 			lblcomm = new Label(compDetail, SWT.NONE);
-			lblcomm.setText("CMP ID");
+			lblcomm.setText("패킷ID");
 			lblcomm.setFont( IAqtVar.font1);
 			lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
 
@@ -343,10 +346,10 @@ public class AqtDetailComp extends Dialog {
 			compMessage.setLayout(glm);
 			
 			Label lblm = new Label(compMessage, SWT.NONE);
-			lblm.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, SWT.CENTER, true, false));
+			lblm.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 			lblm.setText("송신Data");
 			lblm.setFont( IAqtVar.font1) ;
-			lblm.pack();
+//			lblm.pack();	
 			
 			lblm = new Label(compMessage, SWT.NONE);
 			lblm.setText("송신Data길이");
@@ -356,13 +359,16 @@ public class AqtDetailComp extends Dialog {
 			txtSlen.setEditable(false);
 			txtSlen.setFont( IAqtVar.font1);
 			txtSlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			txtSlen.setSize(120, -1);
 			
 			txtSendMsg = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP| SWT.V_SCROLL);
-			GridData gd_txtSendMsg = new GridData(GridData.FILL_BOTH );
-			gd_txtSendMsg.horizontalSpan = 3;
-			gd_txtSendMsg.verticalSpan = 40;
+//			GridData gd_txtSendMsg = new GridData(GridData.FILL_BOTH );
+//			gd_txtSendMsg.horizontalSpan = 3;
+//			gd_txtSendMsg.verticalSpan = 40;
+//			txtSendMsg.setLayoutData(gd_txtSendMsg);
 
-			txtSendMsg.setLayoutData(gd_txtSendMsg);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(3, 1).hint(-1, 180).applyTo(txtSendMsg);
+
 			txtSendMsg.setFont( IAqtVar.font1);
 			txtSendMsg.setEditable(false);
 			txtSendMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -373,7 +379,7 @@ public class AqtDetailComp extends Dialog {
 			lblReceiveMsg.setText("수신Header");
 			lblReceiveMsg.setFont( IAqtVar.font1) ;
 			txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP| SWT.V_SCROLL);
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(false, false).span(3, 1).hint(-1, 180).applyTo(txtRhead);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(3, 1).hint(-1, 180).applyTo(txtRhead);
 			txtRhead.setFont( IAqtVar.font1);
 			txtRhead.setEditable(false);
 			txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -393,13 +399,15 @@ public class AqtDetailComp extends Dialog {
 			txtRlen.setEditable(false);
 			txtRlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			txtRlen.setFont( IAqtVar.font1);
-			txtRlen.setSize(100, -1);
+			txtRlen.setSize(120, -1);
 
 			txtReceiveMsg = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			GridData gd_txtReceiveMsg = new GridData(GridData.FILL_BOTH );
-			gd_txtReceiveMsg.horizontalSpan = 3;
-			gd_txtReceiveMsg.verticalSpan = 40;
-			txtReceiveMsg.setLayoutData(gd_txtReceiveMsg);
+//			GridData gd_txtReceiveMsg = new GridData(GridData.FILL_BOTH );
+//			gd_txtReceiveMsg.horizontalSpan = 3;
+//			gd_txtReceiveMsg.verticalSpan = 40;
+//			txtReceiveMsg.setLayoutData(gd_txtReceiveMsg);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(3, 1).hint(-1, 180).applyTo(txtReceiveMsg);
+
 			txtReceiveMsg.setFont( IAqtVar.font1);
 			txtReceiveMsg.setEditable(false);
 			txtReceiveMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));

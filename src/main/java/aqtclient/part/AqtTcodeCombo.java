@@ -22,12 +22,7 @@ public class AqtTcodeCombo  {
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		combo.setFont(IAqtVar.font1);
-		
-		EntityManager em = AqtMain.emf.createEntityManager();
-
-		tlist = em.createNamedQuery("Tmaster.findAll", Tmaster.class).getResultList();
-		combo.setItems(	tlist.stream().map((m) -> (" " + m.getCode() + " : " + m.getDesc1())).toArray(String[]::new));
-		combo.select(0);
+		resetData() ;
 	}
 	public Combo getControl() {
 		return combo ;
@@ -70,5 +65,15 @@ public class AqtTcodeCombo  {
 			}
 		}
 		return -1;
+	}
+	
+	public void resetData() {
+		EntityManager em = AqtMain.emf.createEntityManager();
+		combo.removeAll();
+		tlist = em.createNamedQuery("Tmaster.findAll", Tmaster.class).getResultList();
+		combo.setItems(	tlist.stream().map((m) -> (" " + m.getCode() + " : " + m.getDesc1())).toArray(String[]::new));
+		combo.select(0);
+		em.close();
+		
 	}
 }

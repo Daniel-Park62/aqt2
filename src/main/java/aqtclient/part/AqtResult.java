@@ -76,6 +76,7 @@ public class AqtResult {
 	private Chart chart1;
 	
 	int gcol = 0 ;
+	EntityManager em = AqtMain.emf.createEntityManager();
 
 	public AqtResult(Composite parent, int style) {
 		this.parent = parent ;
@@ -324,7 +325,7 @@ public class AqtResult {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
-				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdata());
+				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdatam());
 			}
 		});
 		tblDetailResult1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -387,8 +388,9 @@ public class AqtResult {
 	}
 
 	public void refreshScreen() {
-		EntityManager em = AqtMain.emf.createEntityManager();
 		em.clear();
+		em.getEntityManagerFactory().getCache().evictAll();
+
 		String tcode = cmbCode.getTcode(); 
 		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
 		String ssvc  = textService.getText().trim().isEmpty() ? "": "and uri like '" + textService.getText().trim() + "' ";
@@ -422,7 +424,6 @@ public class AqtResult {
 
 		tempTrxCompList = qTrxList.getResultList();
 
-		em.close();
 		tableViewerDR1.setResendEnabled (cmbCode.getTmaster() != null
 					   && ! "3".equals(cmbCode.getTmaster().getLvl() )
 				       && !cmbCode.getTmaster().getThost().isEmpty() );
@@ -434,11 +435,12 @@ public class AqtResult {
 	}
 
 	private void tbl2data(String tcode, String svcid) {
-		EntityManager em = AqtMain.emf.createEntityManager();
 		em.clear();
+		em.getEntityManagerFactory().getCache().evictAll();
+
 		tempTrxList1 = new ArrayList<Ttcppacket>();
 
-		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
+		String sfail = btnfail.getSelection() ? "and t.sflag ='2' " : "";
 		TypedQuery<Ttcppacket> qTrx = em
 				.createQuery("select t from Ttcppacket t where t.tcode = :tcode and t.uri = :svcid " + sfail ,
 						Ttcppacket.class)
@@ -474,12 +476,11 @@ public class AqtResult {
 
 			qSvc.getResultList();
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdata());
+			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
 			tblDetailResult1.setSelection(0);
 
 		}
 
-		em.close();
 		tableViewerDR1.setInput(tempTrxList1);
 		redrawChart(tempTrxList1, chart1);
 

@@ -297,7 +297,8 @@ public class AqtView {
 
 		lineSeries.setSymbolType(PlotSymbolType.CIRCLE);
 		lineSeries.setSymbolSize(3);
-		lineSeries.setLineStyle(LineStyle.NONE);
+		lineSeries.setLineStyle(LineStyle.DOT);
+		lineSeries.setLineWidth(2);
 //	lineSeries.setXDateSeries(xSeries);
 		lineSeries.setYSeries(ySeries);
 //		lineSeries.setYAxisId(0);
@@ -326,7 +327,8 @@ public class AqtView {
 
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-        Query query = em.createNativeQuery(
+		
+		List<ChartData> chartData = em.createNativeQuery(
         		"SELECT DATE_ADD( MIN(t.stime),interval -1 MINute) dtime  , 0 trxCnt from Ttcppacket t  where t.tcode = ?1 " + 
         		" union " + 
         		"select cast( date_format(t.stime, '%Y-%m-%d %H:%i:00') as datetime) dtime,"
@@ -337,7 +339,8 @@ public class AqtView {
         	, ChartData.class)
         		.setParameter(1, cmbCode.getTcode())
         		.setParameter(2, cmbCode.getTcode())
-        		.setParameter(3, cmbCode.getTcode());
+        		.setParameter(3, cmbCode.getTcode())
+        		.getResultList() ;
 //		Query query = em.createNamedQuery("Ttcppacket.chartData", Ttcppacket.class);
 
 //		query.setParameter(1, cmbCode.getTcode());
@@ -347,8 +350,6 @@ public class AqtView {
 //		chartData = resultList.stream().map(r -> new ChartData(Timestamp.valueOf(r[0].toString()), (Long) r[1]))
 //				.collect(Collectors.toCollection(ArrayList::new));
 
-        List<ChartData> chartData =  query.getResultList() ;
-		
 		double[] ySeries = chartData.stream().mapToDouble(d -> d.getTrxCnt()).toArray();
 		Date[] xSeries = chartData.stream().map(a -> a.getDtime()).toArray(Date[]::new) ;
 		

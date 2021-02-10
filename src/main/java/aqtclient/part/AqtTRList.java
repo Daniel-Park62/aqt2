@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.KeyEvent;
@@ -38,7 +39,7 @@ public class AqtTRList extends Dialog {
 	private Table tblDetailResult1;
 
 	private Text txtReceive1;
-	private Text txtSend1;
+	private Text txtSend1, txtcnt;
 	
 	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
 	private AqtTranTable tableViewerDR1;
@@ -96,7 +97,7 @@ public class AqtTRList extends Dialog {
     	ltitle.setFont( IAqtVar.title_font );
 
 		Composite compCode1 = new Composite(compHeader, SWT.NONE);
-		GridLayout gl_compCode1 = new GridLayout(2,false);
+		GridLayout gl_compCode1 = new GridLayout(3,false);
 		gl_compCode1.verticalSpacing = 5;
 		gl_compCode1.marginHeight = 10;
 		gl_compCode1.marginWidth = 15;
@@ -109,7 +110,7 @@ public class AqtTRList extends Dialog {
 		Text txtFind = new Text(compCode1, SWT.BORDER) ;
 		txtFind.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtFind.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//		txtFind.setSize(600, -1);
+		
 		txtFind.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
@@ -133,6 +134,11 @@ public class AqtTRList extends Dialog {
 				
 			}
 		});
+		
+		txtcnt =  new Text(compCode1, SWT.BORDER) ;
+		txtcnt.setText("0 건");
+		GridDataFactory.fillDefaults().align(SWT.RIGHT,SWT.TOP) .grab(true, false).applyTo(txtcnt);
+		
 		tableViewerDR1 = new AqtTranTable(compCode1, SWT.NONE | SWT.FULL_SELECTION | SWT.VIRTUAL );
 		tblDetailResult1 = tableViewerDR1.getTable();
 //		final TableCursor cursor = new TableCursor(tblDetailResult1, SWT.NONE);
@@ -151,11 +157,11 @@ public class AqtTRList extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
-				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdata());
+				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdatam());
 			}
 		});
 		
-		tblDetailResult1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		tblDetailResult1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
 
 		Label lblSend1 = new Label(compCode1, SWT.NONE);
 		lblSend1.setText("SEND");
@@ -163,7 +169,7 @@ public class AqtTRList extends Dialog {
 //		lblSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		txtSend1 = new Text(compCode1, SWT.BORDER);
-		txtSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		txtSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
 		txtSend1.setEditable(false);
 		txtSend1.setFont(IAqtVar.font1);
 
@@ -173,7 +179,7 @@ public class AqtTRList extends Dialog {
 //		lblReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		txtReceive1 = new Text(compCode1, SWT.BORDER);
-		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
 		txtReceive1.setEditable(false);
 		txtReceive1.setFont(IAqtVar.font1);
 		refreshScreen() ;
@@ -213,16 +219,16 @@ public class AqtTRList extends Dialog {
 
 		txtSend1.setText("");
 		txtReceive1.setText("");
-
+		txtcnt.setText(String.format("%,d 건", tempTrxList1.size()));
+		
 		/* 상단 서비스정보 및 화면 정보의 정확한 정의가 필요함 -> 추후 수정 */
 		if (!tempTrxList1.isEmpty()) {
 
 //			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
 //			qSvc.setParameter("svcid", tempTrxList1.get(0).getSvcid());
-//
-//			qSvc.getResultList();
+			
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdata());
+			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
 			tblDetailResult1.setSelection(0);
 
 		}

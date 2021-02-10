@@ -23,6 +23,8 @@ public class Tservice implements Serializable {
 	private String svckind  = "";
 
 	private String svckor = "";
+	private String task = "";
+	private String manager = "";
 	
 	@Transient
 	private boolean newFlag = false ;
@@ -68,5 +70,21 @@ public class Tservice implements Serializable {
 
 	public void setSvckor(String svckor) {
 		this.svckor = svckor;
+	}
+
+	public String getTask() {
+		return task == null ? "" : task ;
+	}
+
+	public void setTask(String task) {
+		this.task = task;
+	}
+
+	public String getManager() {
+		return manager == null ? "" : manager ;
+	}
+
+	public void setManager(String manager) {
+		this.manager = manager;
 	}
 }

@@ -104,7 +104,7 @@ public class DateText extends Text {
 		          int index = 0;
 		          for (int i = 0; i < chars.length; i++) {
 		            if (start + index == 4 || start + index == 7) {
-		              if (chars[i] == '-') {
+		              if (  chars[i] == '-' || chars[i] == '/' ) {
 		                index++;
 		                continue;
 		              }
