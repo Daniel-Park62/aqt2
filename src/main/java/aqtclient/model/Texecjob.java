@@ -23,6 +23,8 @@ public class Texecjob implements Cloneable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int pkey;
 
+	private int jobkind;
+
 	private String dbskip = "0";
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -32,7 +34,7 @@ public class Texecjob implements Cloneable {
 
 	private int exectype = 0;
 
-	private String inlog = "";
+	private String infile = "";
 
 	@Lob
 	private String msg;
@@ -78,6 +80,14 @@ public class Texecjob implements Cloneable {
 		this.pkey = pkey;
 	}
 
+	public int getJobkind() {
+		return jobkind;
+	}
+
+	public void setJobkind(int jobkind) {
+		this.jobkind = jobkind;
+	}
+
 	public String getDbskip() {
 		return this.dbskip;
 	}
@@ -110,12 +120,12 @@ public class Texecjob implements Cloneable {
 		this.exectype = exectype;
 	}
 
-	public String getInlog() {
-		return this.inlog;
+	public String getInfile() {
+		return this.infile;
 	}
 
-	public void setInlog(String inlog) {
-		this.inlog = inlog;
+	public void setInfile(String infile) {
+		this.infile = infile;
 	}
 
 	public String getMsg() {

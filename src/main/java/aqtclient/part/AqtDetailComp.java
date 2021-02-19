@@ -126,6 +126,50 @@ public class AqtDetailComp extends Dialog {
 	}
 
 	private void compTrMsg(StyledText stext1, StyledText stext2 ) throws UnsupportedEncodingException {
+		String text1 = stext1.getText() ;
+		String text2 = stext2.getText() ;
+//		byte[] text1 = stext1.getText().getBytes("euc-kr") ;
+//		byte[] text2 = stext2.getText().getBytes("euc-kr") ;
+
+		List<StyleRange> ranges = new ArrayList<StyleRange>();
+		int st = -1, n = text2.length() , n1 = text1.length() , hcnt = 0;
+		boolean sw = false ;
+		for (int i = 0 ; i < n; i++) {
+			String x2 = text2.substring(i,i+1); //.charAt(i);
+			String x1 = i < n1 ? text1.substring(i,i+1) :  "" ;
+			if (x1.equals(x2) ) {
+				if (sw) {
+					ranges.add( new StyleRange(st+1, i - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
+					sw = false ;
+					hcnt = 0 ;
+//					System.out.format("%d : %d\n" ,st+1 , st - 1 );
+				}
+				st = i ;
+			} else {
+				sw = true ;
+			}
+//			if (Character.getType(x1.charAt(0)) == 5 ) hcnt++ ;
+		}
+		try {
+			if (!ranges.isEmpty()) {
+				stext1.setStyleRanges( (StyleRange[]) ranges.toArray(new StyleRange[0] ) );
+				stext2.setStyleRanges( (StyleRange[]) ranges.toArray(new StyleRange[0] ) );
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		if (sw) {
+			n1 = stext1.getText().length() ;
+			if (st+1 < n1)
+				stext1.setStyleRange(new StyleRange(st+1, n1 - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
+			n = stext2.getText().length() ;
+			if (st+1 < n )
+				stext2.setStyleRange(new StyleRange(st+1, n - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
+		}
+		
+	}
+/*
+	private void compTrMsg(StyledText stext1, StyledText stext2 ) throws UnsupportedEncodingException {
 //		String text1 = stext1.getText() ;
 //		String text2 = stext2.getText() ;
 		byte[] text1 = stext1.getText().getBytes("euc-kr") ;
@@ -165,7 +209,8 @@ public class AqtDetailComp extends Dialog {
 		}
 		
 	}
-	
+*/	
+
 	private class  TranInfo extends Composite {
 		private Ttcppacket tr;  // testcode1 의 tr
 		private Text txtSlen;

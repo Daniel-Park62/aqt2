@@ -139,7 +139,7 @@ public class AqtCompare {
 		Label lblTestCode1 = new Label(compTitle, SWT.NONE);
 //		lblTestCode1.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblTestCode1.setFont(IAqtVar.font1);
-		lblTestCode1.setText("테스트코드1");
+		lblTestCode1.setText("테스트ID-1");
 
 		cmbCode1 = new AqtTcodeCombo(compTitle, SWT.READ_ONLY) ;
 		cmbCode1.getControl().addSelectionListener(new SelectionAdapter() {
@@ -151,7 +151,7 @@ public class AqtCompare {
 		});
 		Label lblTestCode2 = new Label(compTitle, SWT.NONE);
 //		lblTestCode2.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-		lblTestCode2.setText("테스트코드2");
+		lblTestCode2.setText("테스트ID-2");
 		lblTestCode2.setFont(IAqtVar.font1);
 
 		cmbCode2 = new AqtTcodeCombo(compTitle, SWT.READ_ONLY);
@@ -681,7 +681,7 @@ public class AqtCompare {
 				Date x = new Date((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(arg0.x));
 				double y = chart.getAxisSet().getYAxis(0).getDataCoordinate(arg0.y);
 				try {
-					chart.getPlotArea().setToolTipText(dtfmt.format(x) + "\n 응답시간:" + String.format("%.2f", y));
+					chart.getPlotArea().setToolTipText(dtfmt.format(x) + "\n 소요시간:" + String.format("%.2f", y));
 				} catch (Exception arg1) {
 					// TODO: handle exception
 				}
@@ -693,7 +693,7 @@ public class AqtCompare {
 		// set titles
 		chart.getTitle().setText("시간대별 TR 현황");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("수행시간");
-		chart.getAxisSet().getYAxis(0).getTitle().setText("응답시간");
+		chart.getAxisSet().getYAxis(0).getTitle().setText("소요시간");
 
 		// create line series
 		ILineSeries scatterSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "CMPCHART");

@@ -64,7 +64,7 @@ public class AqtTRList extends Dialog {
     
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.ABORT_ID, "Refresh", true);
+        createButton(parent, IDialogConstants.ABORT_ID, "새로고침", true);
         
         createButton(parent, IDialogConstants.CLOSE_ID, "Close", true);
     }

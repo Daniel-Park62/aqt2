@@ -11,6 +11,7 @@ import javax.persistence.EntityTransaction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
@@ -51,9 +52,10 @@ public class AqtExec  {
 	private TableViewer tv ;
 
 	private Text txtjobno ;
-	private Text txtcode ;
+//	private Text txtcode ;
+	private AqtTcodeCombo cmbCode ;
 	private Text txtdesc ;
-	Button type0 ;
+	private Button type0 ;
 	Button type1 ;
 	Button chkDbSkip ;
 	Button btn1, btn2, btn3 ,btnsave ;
@@ -110,7 +112,7 @@ public class AqtExec  {
 	private void fillData(Texecjob tjob) {
 		
 		txtjobno.setText(tjob.getPkey() +"");
-		txtcode.setText(tjob.getTcode());
+		cmbCode.findSelect(tjob.getTcode());
 		txtdesc.setText(tjob.getTdesc());
 		type0.setSelection(tjob.getExectype() == 0);
 		type1.setSelection(tjob.getExectype() == 1);
@@ -129,7 +131,7 @@ public class AqtExec  {
 	
 	private RTN saveData(Texecjob tjob) throws ParseException {
 
-		tjob.setTcode(txtcode.getText().toUpperCase());
+		tjob.setTcode(cmbCode.getTcode() );
 		tjob.setTdesc(txtdesc.getText());
 		tjob.setExectype(type0.getSelection() ? 0 : 1);
 		tjob.setDbskip(chkDbSkip.getSelection() ? "1" : "0");
@@ -154,14 +156,14 @@ public class AqtExec  {
 	}
 	private void create (Composite parent, int style) {
 
-		parent.setLayout(new FillLayout());
+//		parent.setLayout(new FillLayout());
 	    
 //		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);	
 //	    sashForm.setBackground(parent.getBackground());
 		Composite compHeader = new Composite(parent, SWT.NONE);
 		GridLayout headerLayout = new GridLayout(1,true);
-		headerLayout.verticalSpacing = 10;
-		headerLayout.marginHeight = 10;
+		headerLayout.verticalSpacing = 10; 
+//		headerLayout.marginHeight = 10;
 		headerLayout.marginWidth = 15;
 		compHeader.setLayout(headerLayout);
 
@@ -180,11 +182,12 @@ public class AqtExec  {
 		compTitle.setBackground(parent.getBackground());
 		
 		Label lbl = new Label(compTitle, SWT.NONE);
-		lbl.setText("보기선택");
+		lbl.setText("◆ 보기선택");
 		lbl.setFont( IAqtVar.font1) ;
 		
 		Composite compchk = new Composite(compTitle, SWT.BORDER ) ;
-		compchk.setLayout(new RowLayout(SWT.HORIZONTAL));
+//		compchk.setLayout(new RowLayout(SWT.HORIZONTAL));
+		RowLayoutFactory.fillDefaults().margins(10, -1).type(SWT.HORIZONTAL).spacing(10).applyTo(compchk);
 		btn1 = new Button(compchk, SWT.RADIO);
 		btn2 = new Button(compchk, SWT.RADIO);
 		btn3 = new Button(compchk, SWT.RADIO);
@@ -255,7 +258,7 @@ public class AqtExec  {
 						// TODO: handle exception
 					}
 					fillData(texecjob);
-					txtcode.setFocus() ;
+					cmbCode.getControl().setFocus() ;
 				}
 				
 			}
@@ -322,7 +325,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("테스트코드", 120, 1);
+		tvc = createTableViewerColumn("테스트ID", 120, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -331,7 +334,8 @@ public class AqtExec  {
 				return tj.getTcode() ;
 			}
 		});
-		tvc = createTableViewerColumn("테스트내용", 200, 2);
+		tvc = createTableViewerColumn("테스트내용", 250, 2);
+		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -340,7 +344,7 @@ public class AqtExec  {
 				return tj.getTdesc() ;
 			}
 		});
-		tvc = createTableViewerColumn("Proc갯수", 100, 3);
+		tvc = createTableViewerColumn("작업갯수", 100, 3);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -350,7 +354,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업시작요청일시", 180, 4);
+		tvc = createTableViewerColumn("작업시작요청일시", 200, 4);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -360,7 +364,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업방법", 100, 5);
+		tvc = createTableViewerColumn("작업방법", 120, 5);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -370,7 +374,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("status", 80, 6);
+		tvc = createTableViewerColumn("상태", 80, 6);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -380,17 +384,17 @@ public class AqtExec  {
 			}
 		});
 		
-		tvc = createTableViewerColumn("DB Skip", 120, 7);
-		tvc.setLabelProvider(new myColumnProvider() {
-			public String getText(Object element) {
-				if (element == null)
-					return super.getText(element);
-				Texecjob tj = (Texecjob) element;
-				return tj.getDbskip() == "1" ? "Skip" : "";
-			}
-		});
+//		tvc = createTableViewerColumn("DB Skip", 120, 7);
+//		tvc.setLabelProvider(new myColumnProvider() {
+//			public String getText(Object element) {
+//				if (element == null)
+//					return super.getText(element);
+//				Texecjob tj = (Texecjob) element;
+//				return tj.getDbskip() == "1" ? "Skip" : "";
+//			}
+//		});
 
-		tvc = createTableViewerColumn("작업시작시간", 160, 8);
+		tvc = createTableViewerColumn("작업시작시간", 180, 8);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -400,7 +404,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업종료시간", 160, 9);
+		tvc = createTableViewerColumn("작업종료시간", 180, 9);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -417,7 +421,7 @@ public class AqtExec  {
 		compLayout.verticalSpacing = 10;
 		compLayout.marginTop = 20;
 		compLayout.marginWidth = 10;
-		compLayout.marginBottom = 5;
+		compLayout.marginBottom = 0;
 		
 		composite.setLayout(compLayout);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -439,14 +443,14 @@ public class AqtExec  {
 				texecjob = new Texecjob() ;
 				texecjob.setTcode(AqtMain.aqtmain.getGtcode());
 				fillData(texecjob);
-				txtcode.setFocus() ;
+				cmbCode.getControl().setFocus() ;
 			}
 		});
 		btnsave = new Button(composite, SWT.PUSH) ;
-		btnsave.setText("테스트요청등록");
+		btnsave.setText(" 저장 ");
 		btnsave.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
 		btnsave.setFont( IAqtVar.font1) ;
-		btnsave.setEnabled( AqtMain.authtype == AuthType.TESTADM) ; 
+		btnsave.setEnabled( AqtMain.authtype == AuthType.TESTADM ) ; 
 		btnsave.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -491,51 +495,54 @@ public class AqtExec  {
 //		gd_form1.minimumHeight = 200;
 		gd_form1.heightHint = 250 ;
 		form1.setLayoutData(gd_form1);
-		form1.setLayout(new GridLayout(4, true) );
+		form1.setLayout(new GridLayout(4, false) );
 		
 		Label lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("1. Job No :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		txtjobno = new Text(form1,SWT.CENTER | SWT.BORDER | SWT.READ_ONLY) ;
-		txtjobno.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		txtjobno.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
-		lbl1.setText("2. 테스트코드 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		txtcode = new Text(form1,SWT.LEFT | SWT.BORDER ) ;
-		txtcode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		txtcode.setTextLimit(20);
-		txtcode.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		lbl1.setText("2. 테스트ID :");
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+
+		cmbCode = new AqtTcodeCombo(form1, SWT.READ_ONLY);
+		cmbCode.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//		txtcode = new Text(form1,SWT.LEFT | SWT.BORDER ) ;
+//		txtcode.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//		txtcode.setTextLimit(10);
+//		txtcode.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("3. 테스트내용 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		txtdesc = new Text(form1,SWT.LEFT | SWT.BORDER) ;
-		txtdesc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		txtdesc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtdesc.setTextLimit(20);
 		txtdesc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("4. 작업방법 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		Composite compo_exectype = new Composite(form1, SWT.BORDER ) ;
 
-		compo_exectype.setLayout(new RowLayout(SWT.HORIZONTAL));
+		RowLayoutFactory.fillDefaults().margins(10, -1).type(SWT.HORIZONTAL).spacing(10).applyTo(compo_exectype);
 		type0 = new Button(compo_exectype, SWT.RADIO);
 		type1 = new Button(compo_exectype, SWT.RADIO);
 
 		type0.setText("즉시실행");
-		type1.setText("ASIS송신시간에 맞추어 송신");
+		type1.setText("원본시간간격 송신");
 		type0.setSelection(true);
 		
 		type0.setSelection(true);
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("5. 작업갯수(최대 400) :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		sptnum  = new Spinner( form1, SWT.BORDER) ;
 		sptnum.setMaximum(400);
@@ -544,7 +551,7 @@ public class AqtExec  {
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("6. DB Update 여부 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		chkDbSkip = new Button(form1, SWT.CHECK) ;
 		chkDbSkip.setSelection(false);
@@ -553,19 +560,19 @@ public class AqtExec  {
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("7. 기타 대상선택조건 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		txtetc = new Text(form1, SWT.BORDER) ;
-		txtetc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false,3,1));
+		txtetc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,3,1));
 		txtetc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("8. 작업시작 요청일 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		txtreqdt = new Text(form1, SWT.BORDER) ;
-		txtreqdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		txtreqdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		txtreqdt.setText(dformat.format( System.currentTimeMillis() ));
 		txtreqdt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtreqdt.addMouseListener(new MouseAdapter() {
@@ -592,26 +599,26 @@ public class AqtExec  {
 
 		lbl1 = new Label(form1,SWT.RIGHT ) ;
 		lbl1.setText("9. 작업상태 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		cmbstatus = new Combo(form1, SWT.BORDER | SWT.READ_ONLY) ;
-		cmbstatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		cmbstatus.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		cmbstatus.setItems( stat );
 		cmbstatus.setEnabled(false);
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("10. 작업시작일시 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		txtstart = new Text(form1, SWT.BORDER | SWT.READ_ONLY) ;
-		txtstart.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		txtstart.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		lbl1 = new Label(form1,SWT.RIGHT) ;
 		lbl1.setText("11. 작업종료일시 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
 		txtend = new Text(form1, SWT.BORDER | SWT.READ_ONLY) ;
-		txtend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+		txtend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Composite compMessage = new Composite(composite, SWT.NONE);
 		GridData gd_txtMsg = new GridData(GridData.FILL_BOTH );
@@ -638,7 +645,7 @@ public class AqtExec  {
 	
     private TableViewerColumn createTableViewerColumn(String header, int width, int idx) 
     {
-        TableViewerColumn column = new TableViewerColumn(tv, SWT.CENTER, idx);
+        TableViewerColumn column = new TableViewerColumn(tv, SWT.CENTER );
         column.getColumn().setText(header);
         column.getColumn().setWidth(width);
         column.getColumn().setResizable(true);
@@ -670,10 +677,12 @@ public class AqtExec  {
 	    
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-		String cond = (btn1.getSelection() ? "<2" : btn2.getSelection() ? ">0" : ">=0") ;
+		String cond = btn1.getSelection() ? "< 2" : btn2.getSelection() ? "> 0" : ">= 0" ;
 		
-        List<Texecjob> lst = em.createQuery("select e from Texecjob e where e.resultstat" + cond 
-        			+ " order by e.resultstat,e.pkey desc", Texecjob.class)
+		String qstmt = "select e.* from Texecjob e where e.resultstat " + cond 
+    			+ " order by e.resultstat,e.pkey desc" ;
+//		System.out.println(qstmt);
+        List<Texecjob> lst = em.createNativeQuery(qstmt, Texecjob.class)
         		.getResultList();
         tv.setInput(lst);
         

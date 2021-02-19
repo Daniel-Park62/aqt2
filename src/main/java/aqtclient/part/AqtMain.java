@@ -454,7 +454,7 @@ public class AqtMain extends ApplicationWindow {
 
 		lblist = new Label(comp_1, SWT.BOLD);
 		menuLabel(lblist);
-		lblist.setText("Step0.\n 서비스관리");
+		lblist.setText("Step0.\n 서비스등록");
 		lblist.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
@@ -471,7 +471,7 @@ public class AqtMain extends ApplicationWindow {
 			lbl = new Label(comp_1, SWT.NONE);
 
 			menuLabel(lbl);
-			lbl.setText("Step1.\n 테스트코드 등록");
+			lbl.setText("Step1.\n 테스트등록/전문생성");
 			lbl.addMouseListener(new MouseAdapter() {
 
 				@Override
@@ -489,7 +489,7 @@ public class AqtMain extends ApplicationWindow {
 
 			lbl = new Label(comp_1, SWT.NONE);
 			menuLabel(lbl);
-			lbl.setText("Step2.\n 테스트전문송신");
+			lbl.setText("Step2.\n 테스트실행");
 			lbl.addMouseListener(new MouseAdapter() {
 
 				@Override
@@ -703,11 +703,15 @@ public class AqtMain extends ApplicationWindow {
     	    
     	    
 //        BufferedWriter bw = new BufferedWriter(osw);
+		FileOutputStream fos = null ;
+		OutputStreamWriter osw = null ;
+    	BufferedWriter writer = null ;
         
         try {
-    		FileOutputStream fos = new FileOutputStream(fileName );
-    		OutputStreamWriter osw = new OutputStreamWriter(fos, "MS949");
-        	BufferedWriter writer = new BufferedWriter(new BufferedWriter(osw)) ;
+    		fos = new FileOutputStream(fileName );
+    		osw = new OutputStreamWriter(fos, "MS949");
+        	writer = new BufferedWriter(osw) ;
+        	
             final Table table = tableViewer.getTable();
             final int[] columnOrder = table.getColumnOrder();
             final int colcnt = table.getColumnCount() ;
@@ -716,7 +720,7 @@ public class AqtMain extends ApplicationWindow {
                 int columnIndex = columnOrder[columnOrderIndex];
                 TableColumn tableColumn = table.getColumn(columnIndex);
                 if (tableColumn.getText().equals("ID")) 
-                	writer.write("SID");
+                	writer.write("'ID");
                 else
                     writer.write('"'+tableColumn.getText() + '"');
                 if ( columnOrderIndex+1 < colcnt ) writer.write(",");
@@ -736,7 +740,9 @@ public class AqtMain extends ApplicationWindow {
                 }
                 writer.write("\r\n");
             }
-            writer.close();
+			if (writer != null) writer.close();
+			if (osw != null) osw.close();
+			if (fos != null) fos.close();
         } catch(IOException ioe) {
             // TODO: add logic to inform the user of the problem
             System.err.println("trouble exporting table data to file");

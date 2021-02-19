@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -38,6 +39,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -86,26 +88,30 @@ public class AqtRegSvc {
 //	    
 //	    sashForm = new SashForm(parent, SWT.VERTICAL);
 	    Composite container = new Composite(parent, SWT.NONE) ;
-	    GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(true).applyTo(container);
+	    GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(container);
+	    GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(container);
 	    
-		Composite compHeader = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(compHeader);
-		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(compHeader);
+//		Composite compHeader = new Composite(container, SWT.NONE);
+//		GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(compHeader);
+//		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(compHeader);
 		
-		Label ltitle = new Label(compHeader, SWT.NONE);
+//		CLabel ltitle = new CLabel(compHeader, SWT.NONE);
+//    	ltitle.setImage(AqtMain.getMyimage("icon_1.png"));
+//    	ltitle.setText(" 서비스 등록");
+//    	ltitle.setFont(IAqtVar.font15b);
+//    	ltitle.setForeground(SWTResourceManager.getColor(58,115,255));
+		new AqtTitle(container, SWT.NONE, "서비스 등록", "tit_icon.png");
 		
-    	ltitle.setImage(AqtMain.getMyimage("tit_regsvc.png"));
-
-		Label lbl = new Label(compHeader, SWT.SEPARATOR | SWT.HORIZONTAL);
+		Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		lbl.setBackground(container.getBackground());
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
 
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().margins(20, 0).numColumns(5).equalWidth(false).applyTo(compTit);
-
+		GridLayoutFactory.fillDefaults().numColumns(6).equalWidth(false).applyTo(compTit);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compTit);
 		
 		Label lblt = new Label(compTit, SWT.NONE);
-		lblt.setText(" *URI");
+		lblt.setText(" *서비스");
 		lblt.setFont(IAqtVar.font1);
 
 		textsvc = new Text(compTit, SWT.BORDER);
@@ -117,7 +123,7 @@ public class AqtRegSvc {
 		textsvc.setText("");
 
 		lblt = new Label(compTit, SWT.NONE);
-		lblt.setText("URI명");
+		lblt.setText("서비스명");
 		lblt.setFont(IAqtVar.font1);
 		textsvcnm = new Text(compTit, SWT.BORDER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(300, -1).applyTo(textsvcnm);
@@ -135,24 +141,45 @@ public class AqtRegSvc {
 		    }
 		  });
 		
-		Label btnSearch = new Label(compTit, SWT.NONE);
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(btnSearch);
+		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).minSize(100, -1).applyTo(btnSearch);
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				queryScr();
 			}
 		});
-		btnSearch.setCursor(IAqtVar.handc);
-		btnSearch.setImage(AqtMain.getMyimage("search.png"));
-
+		
+		AqtButton btnimp = new AqtButton(compTit, SWT.PUSH,"파일에서가져오기");
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).minSize(100, -1).applyTo(btnimp);
+		btnimp.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				try {
+					importCsv();
+				} catch (FileNotFoundException ef) {
+					// TODO Auto-generated catch block
+					ef.printStackTrace();
+				} catch (UnsupportedEncodingException eu) {
+					// TODO Auto-generated catch block
+					eu.printStackTrace();
+				}
+				tblViewerList.refresh();
+				tblViewerList.setAllChecked(true);
+			}
+		});
+		
+//		btnSearch.setCursor(IAqtVar.handc);
+//		btnSearch.setText("조회");
+//		btnSearch.setFont(IAqtVar.font1b);
+//		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 		
 
- 	    Composite compDetail = new Composite(container, SWT.NONE);
- 	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(compDetail);
-		GridLayoutFactory.fillDefaults().margins(20, 0).numColumns(1).equalWidth(true).applyTo(compDetail);
+// 	    Composite compDetail = new Composite(container, SWT.NONE);
+// 	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(compDetail);
+//		GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(true).applyTo(compDetail);
 
-    	tblViewerList = CheckboxTableViewer.newCheckList(compDetail, SWT.NONE | SWT.FULL_SELECTION );
+    	tblViewerList = CheckboxTableViewer.newCheckList(container, SWT.NONE | SWT.FULL_SELECTION );
     	
     	tblList = tblViewerList.getTable();
     	
@@ -163,7 +190,7 @@ public class AqtRegSvc {
     	tblList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	tblList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
     	
-	    tblList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
+//	    tblList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
 	    
 	    tblViewerList.setUseHashlookup(true);
 	    tblList.addKeyListener(new KeyAdapter() {
@@ -185,7 +212,7 @@ public class AqtRegSvc {
 		});
 	    
         String[] cols1 = new String[] 
-        		{  " URI", "  내용설명(한글)", "  설명(영문)", "업무명", "담당자", "서비스종류"};
+        		{  " 서비스", "  내용설명(한글)", "  설명(영문)", "업무명", "담당자", "서비스종류"};
 
         int[] columnWidths1 = new int[] {  200, 300, 300, 300,150, 200};
 
@@ -456,10 +483,10 @@ public class AqtRegSvc {
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		StringBuilder qstr = new StringBuilder("SELECT t FROM Tservice t") ; 
 		if (! textsvc.getText().isEmpty()  ) {
-			qstr.append(" where t.svcid like '" + textsvc.getText().trim() + "%'");
+			qstr.append(" where t.svcid like '%" + textsvc.getText().trim() + "%'");
 			if (! textsvcnm.getText().isEmpty() ) qstr.append(" and t.svckor like '" + textsvcnm.getText().trim() + "%'");
 		} else if (! textsvcnm.getText().isEmpty()  ) {
-			qstr.append(" where t.svckor like '" + textsvcnm.getText().trim() + "%'");
+			qstr.append(" where t.svckor like '%" + textsvcnm.getText().trim() + "%'");
 		}
         tsvcList = em.createQuery(qstr.toString(), Tservice.class).getResultList();
         		 

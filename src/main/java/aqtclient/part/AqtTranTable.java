@@ -245,7 +245,18 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getRhead() ;
 			}
 		});
+		tvc = createTableViewerColumn("테스트id", 100,0);
+		tvc.setLabelProvider(new myColumnProvider() {
+			public String getText(Object element) {
+				if (element == null)
+					return super.getText(element);
+				Ttcppacket tr = (Ttcppacket) element;
+				return "" + tr.getTcode();
+			}
+		});
 
+
+		
 		this.setContentProvider(new ContentProvider());
 //		this.setLabelProvider(new TrxLabelProvider());
 
@@ -257,7 +268,7 @@ public class AqtTranTable extends AqtTableView {
 
     private TableViewerColumn createTableViewerColumn(String header, int width, int idx) 
     {
-        TableViewerColumn column = new TableViewerColumn(this, SWT.CENTER, idx);
+        TableViewerColumn column = new TableViewerColumn(this, SWT.CENTER );
         column.getColumn().setText(header);
         column.getColumn().setWidth(width);
         column.getColumn().setResizable(true);

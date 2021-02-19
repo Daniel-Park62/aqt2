@@ -123,7 +123,7 @@ public class AqtResult {
 		Label lblTestCode1 = new Label(compTitle, SWT.NONE);
 //		lblTestCode1.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblTestCode1.setFont(IAqtVar.font1);
-		lblTestCode1.setText("테스트코드");
+		lblTestCode1.setText("테스트ID");
 
 		cmbCode = new AqtTcodeCombo(compTitle, SWT.READ_ONLY);
 		cmbCode.getControl().addSelectionListener(new SelectionAdapter() {
@@ -181,6 +181,7 @@ public class AqtResult {
 		
 		btnfail = new Button(compTitle, SWT.CHECK | SWT.NONE) ;
 		btnfail.setText("실패건만 보기");
+		btnfail.setFont(IAqtVar.font1);
 		
 		Label btnSearch = new Label(compTitle, SWT.NONE);
 		btnSearch.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, true, false));
@@ -243,14 +244,13 @@ public class AqtResult {
 		Point point = parent.getSize();
 		int width = (point.x - 70) / 8;
 
-		String[] columnNames1 = new String[] { "", "URI", "URI명", "누적건수", "처리건수", "평균시간", "정상건수", "실패건수" };
+		String[] columnNames1 = new String[] { "", "URI", "URI명", "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수","성공율(%)","미수행" };
 
 		int[] columnWidths1 = new int[] {
-//   	         90, 310, 120/*, 110*/, 95, 95, 95, 95, 95, 95, 95, 95 };
-				0, 250, 250, 120 , 120, 120, 120, 120, 120,	120, 120, 120};
+				0, 250, 250, 120 , 120, 120, 120, 120, 120 ,120};
 
-		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.CENTER,  SWT.CENTER, SWT.CENTER, SWT.CENTER,
-				SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER };
+		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.CENTER,  SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER,
+				SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER };
 
 		TableColumn tc;
 		TableViewerColumn tvc;
@@ -398,7 +398,7 @@ public class AqtResult {
 //		String qstr = "SELECT v FROM Vtrxdetail v WHERE v.tcode = :tcode and v.svcid like :svcid and v.scrno like :scrno" ;
 		String qstr = 
 				"select uuid_short() pkey, a.tcode, a.svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
-				" sum(tcnt) OVER (PARTITION BY a.svcid) cumcnt\r\n" + 
+				" s.cumcnt\r\n" + 
 				"from   (\r\n" + 
 				"select t.tcode, t.uri as svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when rcode between 200 and 399 then 1 else 0 end) scnt\r\n" + 
 				", sum(case when rcode > 399 then 1 else 0 end) fcnt\r\n" + 
@@ -408,20 +408,7 @@ public class AqtResult {
 				"left outer join Tservice s on a.svcid = s.svcid " ;
 				
 		Query qTrxList = em.createNativeQuery(qstr, Vtrxdetail.class);
-//		qTrxList.setParameter("tcode", tcode);
 		
-//		if (textService.getText().trim().isEmpty() )
-//			qTrxList.setParameter("svcid", "%");
-//		else
-//			qTrxList.setParameter("svcid", textService.getText().trim());
-//
-//		if (txtMsgcd.getText().trim().isEmpty() )
-//			qTrxList.setParameter("scrno", "%");
-//		else
-//			qTrxList.setParameter("scrno", txtMsgcd.getText().trim());
-		
-		tempTrxCompList = new ArrayList<Vtrxdetail>();
-
 		tempTrxCompList = qTrxList.getResultList();
 
 		tableViewerDR1.setResendEnabled (cmbCode.getTmaster() != null
@@ -500,7 +487,7 @@ public class AqtResult {
 				Date x = new Date((long) chart.getAxisSet().getXAxis(0).getDataCoordinate(arg0.x));
 				double y = chart.getAxisSet().getYAxis(0).getDataCoordinate(arg0.y);
 				try {
-					chart.getPlotArea().setToolTipText(dtfmt.format(x) + "\n 응답시간:" + String.format("%.3f", y));
+					chart.getPlotArea().setToolTipText(dtfmt.format(x) + "\n 소요시간:" + String.format("%.3f", y));
 				} catch (Exception arg1) {
 					// TODO: handle exception
 				}
@@ -514,7 +501,7 @@ public class AqtResult {
 		// set titles
 		chart.getTitle().setText("시간대별 TR 현황");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("수행시간");
-		chart.getAxisSet().getYAxis(0).getTitle().setText("응답시간");
+		chart.getAxisSet().getYAxis(0).getTitle().setText("소요시간");
 
 		// create line series
 		ILineSeries scatterSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "mychart");
@@ -699,6 +686,11 @@ public class AqtResult {
 					return String.format("%,d", trx.getScnt());
 				case 7:
 					return String.format("%,d", trx.getFcnt());
+				case 8:
+					return String.format("%.2f", trx.getScnt() * 100.0 / ( trx.getScnt() + trx.getFcnt()) );
+				case 9:
+					return String.format("%,d", trx.getTcnt() - trx.getScnt() - trx.getFcnt());
+					
 				}
 			return "";
 		}

@@ -24,7 +24,7 @@ public class AqtCopyTdata extends Dialog {
 	private AqtTcodeCombo srcCode, dstCode;
 	
 	private Label lmsg ;
-	private Text txtUri, txtRcode ;
+	private Text txtUri, txtRcode , txtEtc ;
 	private String acode ;
 	
 	protected AqtCopyTdata(Shell parent, String scode) {
@@ -43,7 +43,7 @@ public class AqtCopyTdata extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(600, 500);
+        return new Point(650, 550);
     }
     
     @Override
@@ -103,6 +103,12 @@ public class AqtCopyTdata extends Dialog {
 				
 			}
 		});
+		lbl = new Label(gr1,SWT.NONE );
+		lbl.setText("기타쿼리 :");
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.TOP).grab(false, false).applyTo(lbl) ;
+
+		txtEtc  = new Text(gr1,SWT.BORDER) ;
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtEtc) ;
 		
 		lmsg = new Label(container, SWT.RIGHT);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).span(2, 1).applyTo(lmsg);
@@ -111,19 +117,32 @@ public class AqtCopyTdata extends Dialog {
 	}
 	
 	private void execCopy() {
+		String cond = (txtUri.getText().toString().isEmpty() ? "" 
+				      : String.format("and uri like '%s' " , txtUri.getText().toString()) ) + 
+				      (txtRcode.getText().toString().isEmpty() ? "" 
+			          : String.format(" and rcode = %s " , txtRcode.getText().toString()) ) +
+				      (txtEtc.getText().toString().isEmpty() ? "" 
+					  : String.format(" and %s " , txtEtc.getText().toString()) ) ;
+				      
+//		System.out.println(cond);
 		EntityManager em = AqtMain.emf.createEntityManager();
-		em.getTransaction().begin();
-		int num = ((Number)em.createNativeQuery("call sp_copytestdata(?,?,?)")
-				.setParameter(1, srcCode.getTcode())
-				.setParameter(2, dstCode.getTcode())
-				.setParameter(2, "")
-                .getSingleResult()).intValue();
-		em.createNativeQuery("call sp_summary(?)")
-				.setParameter(1, dstCode.getTcode())
-				.executeUpdate() ;
-		em.getTransaction().commit();
+		try {
+			em.getTransaction().begin();
+			String rval  = em.createNativeQuery("call sp_copytestdata(?,?,?)")
+					.setParameter(1, srcCode.getTcode())
+					.setParameter(2, dstCode.getTcode())
+					.setParameter(3, cond )
+	                .getSingleResult().toString();
+			em.createNativeQuery("call sp_summary(?)")
+					.setParameter(1, dstCode.getTcode())
+					.executeUpdate() ;
+			em.getTransaction().commit();
+			lmsg.setText(rval);
+			lmsg.requestLayout();
+		} catch (Exception e) {
+			lmsg.setText(e.getMessage() );
+		}
 		
-		lmsg.setText(num + " 건 복제되었음.");
 		em.close();
 	}
 }

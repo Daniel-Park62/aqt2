@@ -96,20 +96,24 @@ public class AqtRegTcode {
 //	    
 //	    sashForm = new SashForm(parent, SWT.VERTICAL);
 	    Composite container = new Composite(parent, SWT.NONE) ;
-	    GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(false).applyTo(container);
+	    GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(false).applyTo(container);
+	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(container);
 	    
-		Composite compHeader = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(compHeader);
-		
-		Label ltitle = new Label(compHeader, SWT.NONE);
-		
-    	ltitle.setImage(AqtMain.getMyimage("tit_register.png"));
+//		Label ltitle = new Label(compHeader, SWT.NONE);
+//    	ltitle.setImage(AqtMain.getMyimage("tit_register.png"));
+    	new AqtTitle(container, SWT.NONE, "테스트등록/전문생성", "tit_icon.png");
 
+    	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
+		lbl.setBackground(container.getBackground());
+		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
+
+    	
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(5).equalWidth(false).applyTo(compTit);
+		GridLayoutFactory.fillDefaults().numColumns(6).equalWidth(false).applyTo(compTit);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compTit);
 		
 		Label lblt = new Label(compTit, SWT.NONE);
-		lblt.setText(" *테스트코드");
+		lblt.setText(" *테스트ID");
 		lblt.setFont(IAqtVar.font1);
 
 		txCode = new Text(compTit, SWT.BORDER);
@@ -139,27 +143,35 @@ public class AqtRegTcode {
 		    }
 		  });
 		
-		Label btnSearch = new Label(compTit, SWT.NONE);
-		GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).applyTo(btnSearch);
+		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).minSize(100, -1).applyTo(btnSearch);
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
 				queryScr();
 			}
 		});
-		btnSearch.setCursor(IAqtVar.handc);
-		btnSearch.setImage(AqtMain.getMyimage("search.png"));
+		
+		AqtButton btnimp = new AqtButton(compTit, SWT.PUSH,"전문가져오기");
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).minSize(100, -1).applyTo(btnimp);
+		btnimp.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				String tcode = "";
+				int i = tblList.getSelectionIndex() ;
+				if ( i >= 0 ) {
+					tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
+				}
+				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), tcode );
+				aqtcopy.open() ;
+			}
+		});
+
+//		btnSearch.setCursor(IAqtVar.handc);
+//		btnSearch.setImage(AqtMain.getMyimage("search.png"));
 
 		
-    	Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
-		lbl.setBackground(container.getBackground());
-		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
-
- 	    Composite compDetail = new Composite(container, SWT.NONE);
- 	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(compDetail);
-		GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(compDetail);
-
-    	tvList = CheckboxTableViewer.newCheckList(compDetail, SWT.NONE | SWT.FULL_SELECTION );
+    	tvList = CheckboxTableViewer.newCheckList(container, SWT.NONE | SWT.FULL_SELECTION );
     	
     	tblList = tvList.getTable();
     	
@@ -170,7 +182,7 @@ public class AqtRegTcode {
     	tblList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	tblList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
     	
-	    tblList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
+//	    tblList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
 	    
 	    tvList.setUseHashlookup(true);
 	    tblList.addKeyListener(new KeyAdapter() {
@@ -192,12 +204,12 @@ public class AqtRegTcode {
 		});
 	    
         String[] cols1 = new String[] 
-        		{  " 테스트코드", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","대상서버정보"};
+        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","대상서버정보", "전문건수"};
 
-        int[] columnWidths1 = new int[] {  150, 300, 80, 80, 150,200,200, 200};
+        int[] columnWidths1 = new int[] {  150, 300, 80, 80, 150,200,200, 200,140};
 
 	    int[] colas1 = new int[] 
-	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER };
+	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER };
 	    TableViewerColumn tableViewerColumn ;
 	    for (int i = 0; i < cols1.length; i++) {
 	    	tableViewerColumn =
@@ -206,6 +218,7 @@ public class AqtRegTcode {
 	    	TableColumn tableColumn = tableViewerColumn.getColumn();
 	    	tableColumn.setText(cols1[i]);
 	    	tableColumn.setWidth(columnWidths1[i]);
+	    	
 	    	if ( i == 5) {
 	    		tableColumn.addListener(SWT.MouseDoubleClick, new Listener() {
 					
@@ -255,13 +268,14 @@ public class AqtRegTcode {
 		CellEditor[] CELL_EDITORS = new CellEditor[cols1.length];
 		
 		for (int i = 0; i < CELL_EDITORS.length; i++) {
-			if ( i == -2 ) {
-				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, new String[] {"1","2","3"} ) ;
-//				CELL_EDITORS[i].setActivationStyle(
-//					    ComboBoxCellEditor.DROP_DOWN_ON_KEY_ACTIVATION | ComboBoxCellEditor.DROP_DOWN_ON_MOUSE_ACTIVATION);
+			if ( i == 2 ) {
+				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.typeArr,  SWT.READ_ONLY ) ;
+			} else if ( i == 3 ) {
+					CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.lvlArr , SWT.READ_ONLY ) ;
 			} else {
 				CELL_EDITORS[i] = new TextCellEditor(tblList);
 			}
+			
 		}
 		CELL_EDITORS[0].setValidator( new ICellEditorValidator() {
 			
@@ -335,9 +349,9 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[1]))
 					return t.getDesc1();
 				else if (property.equals(cols1[2]))
-					return t.getType();
+					return Integer.valueOf(t.getType());
 				else if (property.equals(cols1[3]))
-					return t.getLvl() ;
+					return Integer.valueOf(t.getLvl()) ;
 				else if (property.equals(cols1[4]))
 					return t.getCmpCode() ;
 				else if (property.equals(cols1[5]))
@@ -346,6 +360,8 @@ public class AqtRegTcode {
 					return t.getEndDate() != null ? sdf.format(t.getEndDate()):"" ;
 				else if (property.equals(cols1[7]))
 					return t.getThost() ;
+				else if (property.equals(cols1[8]))
+					return t.getDataCnt() ;
 
 				return null;
 			}
@@ -355,20 +371,16 @@ public class AqtRegTcode {
 				// TODO Auto-generated method stub
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
-					if ( ! (property.equals(cols1[0]) || property.equals(cols1[6]))  ) return true ;
+					if ( ! (property.equals(cols1[0]) || property.equals(cols1[6]) || property.equals(cols1[8]))  ) 
+						return true ;
 
 					return ( t.isNew() ) ;
 				}
-				else
-					return false ;
+
+				return false ;
 				
-//				if (property.equals(cols1[1]) || property.equals(cols1[2]) || property.equals(cols1[3]) ) {
-//					return true ;
-//				}
-//				Tmaster t = (Tmaster)element ;
-//				if ( property.equals(cols1[0]) && t.getSvcid().isEmpty() ) return true;
-//				return false;
 			}
+			
 		});
 	    
 
@@ -415,7 +427,7 @@ public class AqtRegTcode {
 			public String getColumnText(Object element, int columnIndex) {
 				// TODO Auto-generated method stub
 				  Tmaster s = (Tmaster) element;
-				  
+				  int i ;
 				  if ( s != null )
 					  switch (columnIndex) {
 					  case 0:
@@ -423,9 +435,11 @@ public class AqtRegTcode {
 					  case 1:
 						  return s.getDesc1() ;
 					  case 2:
-						  return s.getType();
+						  i = Integer.valueOf(s.getType()) ;
+						  return i < IAqtVar.typeArr.length ? IAqtVar.typeArr[i] : "";
 					  case 3:
-						  return s.getLvl();
+						  i = Integer.valueOf(s.getLvl()) ;
+						  return i < IAqtVar.lvlArr.length ? IAqtVar.lvlArr[i] : "";
 					  case 4:
 						  return s.getCmpCode();
 					  case 5:
@@ -434,6 +448,8 @@ public class AqtRegTcode {
 						  return s.getEndDate() != null ? sdf.format(s.getEndDate()) : "";
 					  case 7:
 						  return s.getThost();
+					  case 8:
+						  return String.format("%,d", s.getDataCnt());
 					  }
 				  return "";
 //				return null;
@@ -509,8 +525,24 @@ public class AqtRegTcode {
 			}
 		});
 
+	    MenuItem impdat = new MenuItem(popupMenu, SWT.NONE);
+	    impdat.setText("전문가져오기");
+	    impdat.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				String tcode = "";
+				int i = tblList.getSelectionIndex() ;
+				if ( i >= 0 ) {
+					tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
+				}
+				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), tcode );
+				aqtcopy.open() ;
+
+			}
+		});
+
 	    MenuItem copysvc = new MenuItem(popupMenu, SWT.NONE);
-	    copysvc.setText("데이터 복제");
+	    copysvc.setText("전문생성");
 	    copysvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {

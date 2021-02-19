@@ -126,7 +126,7 @@ public class AqtDetail extends Dialog {
 
 
 		Label lblcomm = new Label(compDetail, SWT.NONE);
-		lblcomm.setText("테스트코드");
+		lblcomm.setText("테스트ID");
 		lblcomm.setFont( IAqtVar.font1);
 		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.TOP,false, false) );
 
@@ -341,6 +341,8 @@ public class AqtDetail extends Dialog {
 		txtRcode.setText( tpacket.getRcode()+"" );
 		txtRhead.setText(tpacket.getRhead());
 		txtCdate.setText(dformat.format(tpacket.getCdate()));
+		txtRlen.requestLayout();
+		txtSlen.requestLayout();
 	}
 	
 	public void setTrxList(Ttcppacket tpacket) {

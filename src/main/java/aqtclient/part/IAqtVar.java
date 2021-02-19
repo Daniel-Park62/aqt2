@@ -25,6 +25,8 @@ public interface IAqtVar {
     final public static Cursor cross = SWTResourceManager.getCursor( SWT.CURSOR_CROSS);
     final public static Cursor arrow = SWTResourceManager.getCursor( SWT.CURSOR_ARROW);
     final String titnm = "Application Quarity Test";
+    final String[] typeArr = new String[] {"","배치","실시간"};
+    final String[] lvlArr = new String[] {"Origin","단위","통합"};
     
     final public static Map<String, String> lvlnm = Collections.unmodifiableMap(new HashMap<String, String>() {
 		{
@@ -34,7 +36,15 @@ public interface IAqtVar {
 			put("3", "실시간");
 		}
 	});
-
+    
+    
+    public static Object getLvl(Object value) { 
+    	for(Object o: lvlnm.keySet()) { 
+    		if(lvlnm.get(o).equals(value))  return o;  
+    	} 
+    	return null; 
+    }
+    
     public static void setAllFont(Composite parent, Font font) {
 		
 	    for (Control kid : parent.getChildren()) {

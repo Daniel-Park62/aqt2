@@ -192,8 +192,20 @@ public class Ttcppacket implements Serializable {
 			return "";
 		}
 	}
+	
 	public String getRdatam()  {
-		return this.rdata == null ? "" : new String( this.rdata,0, this.rdata.length > 256 ? 256 :  this.rdata.length ) ;
+		if ( rdata == null ) return "";
+		
+		try {
+			byte[] rdatam = new byte[ rdata.length > 250 ? 250 : rdata.length  ] ;
+			for (int i = 0; i < rdatam.length ; i++) {
+				rdatam[i] = rdata[i] ;
+			}
+			return  new String( rdatam, "utf-8" )  ;
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			return "" ;
+		}
 	}
 	
 	public byte[] getRdatab() {

@@ -1,5 +1,8 @@
 package aqtclient.part;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -13,6 +16,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -21,13 +25,15 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class AqtLogin extends Dialog {
 
 	protected Shell shell;
+	
 	private Text txtPwd;
 //  private AuthType authtype ;
 	private String pass ;
-	Label lblmsg , lbluser, lbltester ;
-	
-	final Font font = SWTResourceManager.getFont("Calibri", 14, SWT.NORMAL);
-	final Font fonth = SWTResourceManager.getFont("맑은 고딕", 13, SWT.NORMAL);
+	private Label lblmsg , lbluser, lbltester ;
+
+	private Timer timer ;
+
+	private	final Font font = SWTResourceManager.getFont("Calibri", 14, SWT.BOLD) ;
 
 	/**
 	 * @wbp.parser.constructor
@@ -109,7 +115,7 @@ public class AqtLogin extends Dialog {
 
 		
 		txtPwd = new Text(container, SWT.NONE | SWT.PASSWORD);
-		txtPwd.setBounds(724, 450, 200, 30);
+		txtPwd.setBounds(724, 445, 200, 30);
 		txtPwd.setFont(font);
 //		txtPwd.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		txtPwd.addKeyListener(new KeyAdapter() {
@@ -124,10 +130,26 @@ public class AqtLogin extends Dialog {
 
 		
 		lblmsg = new Label(container, SWT.NONE | SWT.CENTER );
-		lblmsg.setBounds(631, 740, 400, 60);
+		lblmsg.setBounds(631, 730, 400, 60);
 		lblmsg.setText(" ");
 		lblmsg.setFont(font);
-		lblmsg.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
+		lblmsg.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		
+		timer = new Timer() ;
+		timer.scheduleAtFixedRate(new TimerTask() {
+			
+			@Override
+			public void run() {
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					 public void run() {
+						lblmsg.setVisible( !lblmsg.getVisible()) ;
+					 }
+				});
+
+
+			}
+		}, 0, 1000);
 		
 		Label lbl = new Label(container , SWT.NONE) ;
 		lbl.setImage(AqtMain.getMyimage("loginbtn.png"));
@@ -150,6 +172,7 @@ public class AqtLogin extends Dialog {
 		lbl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
+		        timer.cancel();
 				cancelPressed();
 			}
 			
@@ -167,18 +190,18 @@ public class AqtLogin extends Dialog {
     	layout.marginHeight = 0;
     }
 
-
     @Override
     protected void okPressed() {
     	if (AqtMain.authtype == AuthType.TESTADM ) {
     		if (! pass.equals( txtPwd.getText() ) ){
-    			lblmsg.setText("비밀번호가 맞지않습니다.");
+    			lblmsg.setText("비밀번호를 확인하세요!!");
     			return ;
     		}
     	}
     	else
     		AqtMain.authtype = AuthType.USER ;
     	
+        timer.cancel();
         super.okPressed();
     }
     @Override
@@ -188,6 +211,5 @@ public class AqtLogin extends Dialog {
 //        shell.setFullScreen(true);
 //        shell.setText("AQT LOGIN");
     }
-
-
+    
 }

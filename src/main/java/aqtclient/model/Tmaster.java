@@ -2,8 +2,11 @@ package aqtclient.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.persistence.*;
+
+import aqtclient.part.IAqtVar;
 
 
 /**
@@ -43,6 +46,20 @@ public class Tmaster implements Serializable {
 
 	private String type = "1";    // 1.배치테스트 2.실시간
 	
+	@Column(name="svc_cnt")
+	private int svcCnt ;
+	
+	@Column(name="fsvc_cnt")
+	private int fsvcCnt ;
+
+
+	@Column(name="data_cnt")
+	private int dataCnt = 0;
+
+	private int sCnt ;
+	
+	private int fcnt ;
+	
 	@Transient
 	private boolean newFlag = false ;
 
@@ -52,6 +69,21 @@ public class Tmaster implements Serializable {
 	}
 	public boolean isNew() {
 		return newFlag;
+	}
+	public int getSvcCnt() {
+		return svcCnt;
+	}
+	public int getFsvcCnt() {
+		return fsvcCnt;
+	}
+	public int getDataCnt() {
+		return dataCnt;
+	}
+	public int getsCnt() {
+		return sCnt;
+	}
+	public int getFcnt() {
+		return fcnt;
 	}
 
 	public void setNew(boolean isNew) {
@@ -83,10 +115,7 @@ public class Tmaster implements Serializable {
 	}
 
 	public String getLvlNm() {
-		return "1".equals(this.lvl) ? "단위테스트" : 
-			   "2".equals(this.lvl) ? "통합테스트" : 
-			   "3".equals(this.lvl) ? "실시간" : 
-			   "0".equals(this.lvl) ? "Origin" : "" ;
+		return lvl == null ? "" : IAqtVar.lvlnm.get(lvl) ;
 	}
 
 	public Date getTdate() {

@@ -210,7 +210,7 @@ public class AqtList  {
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {
-        		"","URI", "URI명",  "누적건수", "처리건수", "평균시간", "정상건수", "실패건수"};
+        		"","URI", "URI명",  "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수"};
         
         int[] columnWidths2 = new int[] {
 //        		150, 480, 150, 130, 130, 130, 130};
@@ -308,7 +308,7 @@ public class AqtList  {
 
 		List<Vtrxdetail> listtrx = em.createNativeQuery(
 				"select uuid_short()  pkey, a.tcode, a.svcid, s.svckor svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " +
-				" sum(tcnt) OVER (PARTITION BY a.svcid) cumcnt\r\n" + 
+				" s.cumcnt\r\n" + 
 				"FROM   ((" + 
 				"select t.tcode, t.uri svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 

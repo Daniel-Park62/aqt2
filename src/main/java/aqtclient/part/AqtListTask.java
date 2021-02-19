@@ -212,14 +212,14 @@ public class AqtListTask  {
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {
-        		"","URI", "URI명",  "누적건수", "처리건수", "평균시간", "정상건수", "실패건수"};
+        		" URI", " URI명",  "패킷건수", "평균시간", "정상건수", "실패건수", "성공율(%)","미수행","" };
         
         int[] columnWidths2 = new int[] {
 //        		150, 480, 150, 130, 130, 130, 130};
-        		0, 220, width + 200,  width-40, width-40, width-40, width-40, width-40};
+        		220, 240,  width-40, width-40, width-40, width-40, width-40, width-40, 0};
         		
 	    int[] columnAlignments2 = new int[] {
-	    		SWT.CENTER,  SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
+	    		SWT.CENTER,  SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER,SWT.NONE};
 	      
 	     for (int i = 0; i < columnNames2.length; i++) {
 	         TableViewerColumn tableViewerColumn =
@@ -228,7 +228,7 @@ public class AqtListTask  {
 	         TableColumn tableColumn = tableViewerColumn.getColumn();
 	         tableColumn.setText(columnNames2[i]);
 	         tableColumn.setWidth(columnWidths2[i]);
-	         tableColumn.setResizable(i != 0);
+	         tableColumn.setResizable(i != columnNames2.length-1 );
 	     }
 
 	    tblDetail.setHeaderVisible(true);
@@ -244,8 +244,9 @@ public class AqtListTask  {
 			public void mouseDoubleClick(MouseEvent arg0) {
 				int i = tblDetail.getSelectionIndex() ;
 				if (  i >= 0 ) {
-					Vtrxdetail vlist = (Vtrxdetail) tblDetail.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getTcode() + "' and t.uri = '" + vlist.getSvcid() + "'") ;
+					String val =  String.format("t.uri ='%s' and t.tmaster.lvl = '%s' " ,
+							tblDetail.getItem(i).getText(0), tblDetail.getItem(i).getText(8) ) ;
+					AqtMain.openTrList(val) ;
 				}
 			}
 
@@ -304,21 +305,34 @@ public class AqtListTask  {
 //		qTrxList.setParameter("tcode", tempVtrxList.get(tblLst.getSelectionIndex()).getCode());
 //		List<Vtrxdetail> listtrx = qTrxList.getResultList() ;
 
-		List<Vtrxdetail> listtrx = em.createNativeQuery(
-				"select uuid_short()  pkey, a.tcode, a.svcid, s.svckor svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " +
-				" sum(tcnt) OVER (PARTITION BY a.svcid) cumcnt\r\n" + 
+//		List<Vtrxdetail> tList = em.createNativeQuery(
+//				"select uuid_short()  pkey, a.tcode, a.svcid, s.svckor svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " +
+//				" sum(tcnt) OVER (PARTITION BY a.svcid) cumcnt\r\n" + 
+//				"FROM   ((" + 
+//				"select t.tcode, t.uri svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
+//				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
+//				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid) " + 
+//				"WHERE  " + acond +  
+//				" group by t.tcode, t.uri) a " + 
+//				"left outer join tservice s on a.svcid = s.svcid )" , Vtrxdetail.class)
+//			.getResultList() ;
+		List<Object[]> tList = new ArrayList();
+        tList = em.createNativeQuery(
+				"select a.svcid, s.svckor svckor, a.tcnt, a.avgt ,cast(a.scnt as int) ,cast(a.fcnt as int), "
+				+ "ifnull(scnt * 100 / (scnt+fcnt) ,0.0)  spct,cast( a.tcnt - (scnt+fcnt) as int), lvl " +
 				"FROM   ((" + 
-				"select t.tcode, t.uri svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
+				"select  t.uri svcid, lvl,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
 				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid) " + 
 				"WHERE  " + acond +  
-				" group by t.tcode, t.uri) a " + 
-				"left outer join tservice s on a.svcid = s.svcid )" , Vtrxdetail.class)
-			.getResultList() ;
-
+				" group by t.uri, lvl) a " + 
+				"left outer join tservice s on a.svcid = s.svcid )"  )
+        		.getResultList() ;
+		
+		
 		em.close();
 		
-		tblViewerDetail.setInput(listtrx);
+		tblViewerDetail.setInput(tList);
 		AqtMain.container.setCursor(IAqtVar.arrow);
 	}
 	
@@ -448,24 +462,26 @@ public class AqtListTask  {
 		   *            the column index
 		   * @return String
 		   */
-		  public String getColumnText(Object element, int columnIndex) {
-			  Vtrxdetail trx = (Vtrxdetail) element;
+		  public String getColumnText(Object element, int ci) {
+			  Object[] trx = (Object[]) element;
 			  if ( trx != null )
-				  switch (columnIndex) {
+				  switch (ci) {
+				  case 0:
 				  case 1:
-					  return trx.getSvcid();
+				  case 8:
+					  return trx[ci].toString();
 				  case 2:
-					  return trx.getSvckor();
+					  return String.format("%,d", trx[ci] ) ;
 				  case 3:
-					  return String.format("%,d", trx.getCumcnt() ) ;
+					  return String.format("%.3f", trx[ci] ) ;
 				  case 4:
-					  return String.format("%,d", trx.getTcnt() ) ;
+					  return String.format("%,d", trx[ci] ) ;
 				  case 5:
-					  return String.format("%.3f", trx.getAvgt());
+					  return String.format("%,d", trx[ci] ) ;
 				  case 6:
-					  return String.format("%,d", trx.getScnt() );
+					  return String.format("%.2f", trx[ci] ) ;
 				  case 7:
-					  return String.format("%,d", trx.getFcnt() );
+					  return String.format("%,d", trx[ci] ) ;
 				  }
 			  return null;
 		  }

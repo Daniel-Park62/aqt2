@@ -37,7 +37,6 @@ import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.ChartData;
-import aqtclient.model.TrxCount;
 import aqtclient.model.Ttcppacket;
 
 public class AqtView {
@@ -97,9 +96,9 @@ public class AqtView {
 		compIn.setLayout(glin);
 
 		Label lbl = new Label(compIn, SWT.NONE);
-		lbl.setText("테스트코드:");
+		lbl.setText("테스트ID:");
 		lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		lbl.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,true, false));
+		lbl.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER, false, false));
 		lbl.setFont(IAqtVar.font1b);
 
 		cmbCode = new AqtTcodeCombo(compIn,  SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
@@ -112,21 +111,21 @@ public class AqtView {
 
 		Label lblTstDt = new Label(compIn, SWT.NONE);
 		lblTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		lblTstDt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,true, false));
+		lblTstDt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
 		lblTstDt.setText("테스트기준일자:");
 		lblTstDt.setFont(IAqtVar.font1b);
 
 		textTstDt = new Label(compIn, SWT.NONE);
 		textTstDt.setFont(IAqtVar.font1b);
-		textTstDt.setText("YYYY/MM/DD");
-		textTstDt.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,true, false));
+		textTstDt.setText("YYYY-MM-DD  ");
+		textTstDt.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,false, false));
 		textTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 		
 
 		lblHost = new Label(compIn, SWT.NONE);
 		lblHost.setText("대상호스트:");
 		lblHost.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		lblHost.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,true, false));
+		lblHost.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
 		lblHost.setFont(IAqtVar.font1b);
 		
 		textHost = new Label(compIn, SWT.NONE);
@@ -156,7 +155,7 @@ public class AqtView {
 		textPrgrssRt = new Label(compIn, SWT.NONE);
 		textPrgrssRt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false,1,1));
 		textPrgrssRt.setFont(IAqtVar.font1);
-		textPrgrssRt.setText("  ");
+		textPrgrssRt.setText("0.0% (0 / 0)");
 		textPrgrssRt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
 		Label lblTrxOccrCnt = new Label(compIn, SWT.NONE);
@@ -168,8 +167,11 @@ public class AqtView {
 		textTrxOccrCnt = new Label(compIn, SWT.NONE);
 		textTrxOccrCnt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false,4,1));
 		textTrxOccrCnt.setFont(IAqtVar.font1);
+		textTrxOccrCnt.setText("% 0건 [정상: 0  실패: 0 성공율: 0%]" ) ;
 		textTrxOccrCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
+		compIn.pack();
+		
 		compChart = new Composite(mainform, SWT.NONE);
 		compChart.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compChart);
@@ -191,7 +193,7 @@ public class AqtView {
 
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-		SimpleDateFormat sfmt = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sfmt = new SimpleDateFormat("yyyy-MM-dd  ");
 		String tcode = "" ;
 		if (cmbCode.getItemCount() > 0) {
 			tcode = cmbCode.getTcode() ;
@@ -201,18 +203,15 @@ public class AqtView {
 		}
 		
 		/* Tservice 테이블의 전체 건수 */
-//        Query query = em.createQuery("select count(t.svcid) from Tservice t ");
-		Query query = em.createNamedQuery("Tservice.TotalCnt");
-
-		long countResultT = (long) query.getSingleResult();
+		long countResultT = (long) em.createNamedQuery("Tservice.TotalCnt").getSingleResult();
 
 //		query = em.createQuery("select count(distinct t.svcid) from Ttcppacket t") ;
-		query = em.createNamedQuery("Ttcppacket.SvcCnt", Integer.class).setParameter("tcode", tcode);
+		Query query = em.createNamedQuery("Ttcppacket.SvcCnt", Integer.class).setParameter("tcode", tcode);
 
 		long countResultS = (long) query.getSingleResult();
 
-		String strRslt = String.format("%1.1f%%", countResultT == 0 ? 0 : countResultS * 100.0 / countResultT)
-				+  String.format(" ( %,d / %,d )", countResultS, countResultT ) ;
+		String strRslt = String.format("%1.1f%% (%,d / %,d)", 
+				countResultT == 0 ? 0 : countResultS * 100.0 / countResultT,  countResultS, countResultT ) ;
 
 		textPrgrssRt.setText(strRslt);
 		textPrgrssRt.requestLayout();
@@ -229,14 +228,15 @@ public class AqtView {
 
 		Object[] rst = (Object[]) query.getSingleResult();
 
-		TrxCount trxCnt = new TrxCount((long) rst[0], (long) rst[1], (long) rst[2]);
+//		TrxCount trxCnt = new TrxCount((long) rst[0], (long) rst[1], (long) rst[2]);
+		long tcnt = (long) rst[0] , scnt =  (long) rst[1] , fcnt = (long) rst[2] ;
 
-		strRslt = NumberFormat.getInstance().format(trxCnt.getTrxCnt()) + " 건 ( 정상 : "
-				+ NumberFormat.getInstance().format(trxCnt.getValidCnt()) + " 건   성공률 "
-				+ String.format("%.2f",
-						trxCnt.getTrxCnt() == 0 ? 0.0 : trxCnt.getValidCnt() * 100.0 / trxCnt.getTrxCnt())
-				+ "%   실패 : " + NumberFormat.getInstance().format(trxCnt.getInvalidCnt()) + " 건 ) ";
-
+//		strRslt = NumberFormat.getInstance().format(trxCnt.getTrxCnt()) + " 건 ( 정상 : "
+//				+ NumberFormat.getInstance().format(trxCnt.getValidCnt()) + " 건   성공률 "
+//				+ String.format("%.2f",
+//						trxCnt.getTrxCnt() == 0 ? 0.0 : trxCnt.getValidCnt() * 100.0 / trxCnt.getTrxCnt())
+//				+ "%   실패 : " + NumberFormat.getInstance().format(trxCnt.getInvalidCnt()) + " 건 ) ";
+		strRslt = String.format("%,d건 [정상: %,d  실패: %,d 성공율: %.2f%%]", tcnt, scnt, fcnt , scnt != 0 ? scnt*100.0 / scnt+fcnt : 0 );
 		textTrxOccrCnt.setText(strRslt);
 		textTrxOccrCnt.requestLayout();
 

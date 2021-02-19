@@ -321,7 +321,7 @@ public class AqtStatus {
 		});
 	    
         String[] columnNames1 = new String[] {
-   	         "", "테스트ID", "  테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수", "실패URI","성공율(%)","잔여건수"};
+   	         "", "테스트ID", "  테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수", "실패URI","성공율(%)","미수행"};
 
         int[] columnWidths1 = new int[] {
         		0, 100, 200, 150, 130, 130, 100, 100, 100, 100, 120,110,100};
@@ -501,10 +501,10 @@ public class AqtStatus {
         lblstatus[6].setText(String.format("%.1f", icnt * 100.0 / tcnt) + "%") ;
         
 	    dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).mapToLong( a -> a.getDataCnt()  ).sum() ;
-        lblstatus[9].setText(String.format("%,d", dcnt)) ;
 
 	    scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).flatMapToInt( a -> IntStream.of(a.getScnt().intValue()) ).sum() ;
 	    fcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).flatMapToInt( a -> IntStream.of(a.getFcnt().intValue()) ).sum() ;
+        lblstatus[9].setText(String.format("%,d", scnt+fcnt)) ;
         lblstatus[10].setText(String.format("%,d", scnt)) ;
         try {
         	spct =  scnt * 100 / (scnt+fcnt) ;
