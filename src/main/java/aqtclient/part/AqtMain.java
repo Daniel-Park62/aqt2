@@ -1,7 +1,6 @@
 package aqtclient.part;
 
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -14,6 +13,7 @@ import java.util.Timer;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import org.eclipse.jface.action.MenuManager;
@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Tconfig;
 import aqtclient.model.Tmaster;
 
 @SuppressWarnings("unchecked")
@@ -62,15 +63,15 @@ public class AqtMain extends ApplicationWindow {
 	
 	public static IAqtSetCode cback ;
 	
-	public static AuthType authtype = AuthType.USER;;
+	public static AuthType authtype = AuthType.USER;
 
 	EntityManager em ;
 	final public static Color bluecol = SWTResourceManager.getColor(9,72,220);
 	final public static Color htcol = SWTResourceManager.getColor(77,123,230);
 	final public static Color forecol = SWTResourceManager.getColor(SWT.COLOR_WHITE);
-	private Tmaster tmaster = new Tmaster();
+//	private Tmaster tmaster = new Tmaster();
+	private Tconfig tconfig ;
 	public static EntityManagerFactory emf ;
-	public String gv_tcode ;
 	public static Timer jobScheduler ;
 	public static AqtMain aqtmain ;
 	TableViewer tv ;
@@ -95,16 +96,19 @@ public class AqtMain extends ApplicationWindow {
         
         emf = Persistence.createEntityManagerFactory("aqtclient", properties) ;
         em = AqtMain.emf.createEntityManager() ;
-		System.out.println("AQT Started !!");
+        em.setFlushMode(FlushModeType.AUTO);
+		System.out.println("AQT2 Started !!");
 		aqtmain = this ;
 		addStatusLine();
-		gv_tcode = em.createNativeQuery("select m.code from Tmaster m where lvl > '0' order by m.tdate desc limit 1"  )
-				.getSingleResult().toString() ;
+		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
 		
 	}
 
 	public String getGtcode() {
-		return Optional.ofNullable(gv_tcode).orElse("") ;
+		return tconfig.getTcode() ;
+	}
+	public void setGtcode(String tcode) {
+		tconfig.setTcode(tcode) ;
 	}
 	/**
 	 * Create contents of the application window.
@@ -275,6 +279,7 @@ public class AqtMain extends ApplicationWindow {
 //		container.layout();
 //		container.setToolTipText("AqtTRList");
 	}
+	
 	private List<Tmaster> getTmaster() {
 		em.getEntityManagerFactory().getCache().evictAll();
 		return em.createQuery("select t from Tmaster t order by t.tdate desc", Tmaster.class).getResultList() ;
@@ -372,7 +377,7 @@ public class AqtMain extends ApplicationWindow {
 				delWidget(container);
 				new AqtResult(container, SWT.NONE);
 				try {
-					cback.setTcode(gv_tcode);
+					cback.setTcode(tconfig.getTcode());
 				} catch (Exception e2) {
 					// TODO: handle exception
 				}
@@ -390,7 +395,7 @@ public class AqtMain extends ApplicationWindow {
 				delWidget(container);
 				new AqtCompare(container, SWT.NONE);
 				try {
-					cback.setTcode(gv_tcode);
+					cback.setTcode(tconfig.getTcode());
 				} catch (Exception e2) {
 					// TODO: handle exception
 				}
@@ -411,7 +416,7 @@ public class AqtMain extends ApplicationWindow {
 				container.setLayout(new FillLayout());
 				new AqtView(container, SWT.NONE);
 				try {
-					cback.setTcode(gv_tcode);
+					cback.setTcode(tconfig.getTcode());
 				} catch (Exception e2) {
 					// TODO: handle exception
 				}
@@ -514,7 +519,8 @@ public class AqtMain extends ApplicationWindow {
 //		tbl.removeListener(SWT.MeasureItem, mlisten);
 		
 	}
-	
+
+/*
 	private void testListq( Composite comp_menu) {
 		
 		Color mcfore = SWTResourceManager.getColor(240,250,240) ;
@@ -647,6 +653,7 @@ public class AqtMain extends ApplicationWindow {
 
 		
 	}
+*/	
 	private void menuLabel(Label label) {
 		label.setFont(SWTResourceManager.getFont( "맑은 고딕", 13, SWT.NORMAL));
 		label.setCursor(IAqtVar.handc);

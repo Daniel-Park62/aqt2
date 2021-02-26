@@ -390,8 +390,9 @@ public class AqtResult {
 	public void refreshScreen() {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-
-		String tcode = cmbCode.getTcode(); 
+		
+		String tcode = cmbCode.getTcode();
+		AqtMain.aqtmain.setGtcode(tcode);
 		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
 		String ssvc  = textService.getText().trim().isEmpty() ? "": "and uri like '" + textService.getText().trim() + "' ";
 		String smsg  = txtMsgcd.getText().trim().isEmpty() ? "": "and rcode = " + txtMsgcd.getText().trim() ;

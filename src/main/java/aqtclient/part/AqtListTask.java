@@ -262,7 +262,7 @@ public class AqtListTask  {
 	
 	private void initScreen () {
 	    EntityManager em = AqtMain.emf.createEntityManager();
-	    List<Object[]> tList = new ArrayList();
+	    List<Object[]> tList = new ArrayList<Object[]>();
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		

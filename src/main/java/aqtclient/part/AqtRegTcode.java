@@ -62,6 +62,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Texecjob;
 import aqtclient.model.Tmaster;
 
 public class AqtRegTcode {
@@ -109,7 +110,7 @@ public class AqtRegTcode {
 
     	
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(6).equalWidth(false).applyTo(compTit);
+		GridLayoutFactory.fillDefaults().numColumns(7).equalWidth(false).applyTo(compTit);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compTit);
 		
 		Label lblt = new Label(compTit, SWT.NONE);
@@ -157,6 +158,44 @@ public class AqtRegTcode {
 		btnimp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
+				int i = tblList.getSelectionIndex() ;
+				if ( i < 0 ) {
+					MessageDialog.openInformation(parent.getShell(), "테스트 선택", "대상 테스트ID를 선택(라인클릭)하세요.") ;
+					return ;
+				}
+				String tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
+		    	String[] ext = {  "*.pcap", "*" }  ;
+		    	final FileDialog dlg = new FileDialog ( Display.getDefault().getActiveShell() , SWT.APPLICATION_MODAL | SWT.OPEN );
+//		    	dlg.setFileName("datname");
+		    	dlg.setFilterExtensions ( ext );
+		    	dlg.setText ( "cap 파일 import to " + tcode );
+
+		    	String fileName = dlg.open ();
+		    	if ( fileName == null ) return ;
+		    	try {
+					em.getTransaction().begin();
+					em.createNativeQuery("INSERT INTO texecjob (jobkind, tcode, tdesc, tnum ,`infile`) VALUES (?,?,?,?,?)")
+						.setParameter(1, 1)
+						.setParameter(2, tcode)
+						.setParameter(3, "Import pcap파일")
+						.setParameter(4, 1)
+						.setParameter(5, fileName)
+						.executeUpdate() ;
+					em.getTransaction().commit();
+					MessageDialog.openInformation(parent.getShell(), "알림",
+							"테스트ID " +  tcode + "에 " + fileName + " Import 요청되었습니다." ) ;
+				} catch (Exception e1) {
+					MessageDialog.openError(parent.getShell(), "알림", e1.getMessage() );
+					e1.printStackTrace();
+				}
+			}
+		});
+
+		AqtButton btnCopy = new AqtButton(compTit, SWT.PUSH,"전문생성");
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).minSize(100, -1).applyTo(btnCopy);
+		btnCopy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
 				String tcode = "";
 				int i = tblList.getSelectionIndex() ;
 				if ( i >= 0 ) {
@@ -202,6 +241,99 @@ public class AqtRegTcode {
 				}
 			}
 		});
+	    
+	    Menu popupMenu = new Menu(tblList);
+
+	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
+	    addsvc.setText("테스트코드등록");
+	    addsvc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				int i = tblList.getSelectionIndex() ;
+				Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
+				Tmaster t = new Tmaster() ;
+				t.setDesc1("new");
+				t.setCmpCode(to.getCmpCode());
+				t.setThost(to.getThost());
+				t.setLvl(to.getLvl());
+				t.setTdate(to.getTdate());
+				t.setNew(true);
+				em.persist(t);
+				tcodeList.add(i,t) ;
+				tvList.refresh();
+				tvList.setChecked(t, true);
+			}
+		});
+
+
+	    MenuItem delsvc = new MenuItem(popupMenu, SWT.NONE);
+	    delsvc.setText("삭제");
+	    delsvc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if (tvList.getCheckedElements().length > 0 ) {
+					em.getTransaction().begin();
+					for ( Object s : tvList.getCheckedElements() ) {
+//						if ( ! ((Tmaster)s).isNew() ) em.remove((Tmaster)s);
+						em.remove((Tmaster)s);
+						tcodeList.remove((Tmaster)s) ;
+					}
+						
+					em.getTransaction().commit();
+					tvList.refresh();
+					MessageDialog.openInformation(parent.getShell(), "Delete Infomation", "삭제 되었습니다.") ;
+				}
+			}
+		});
+
+	    MenuItem savesvc = new MenuItem(popupMenu, SWT.NONE);
+	    savesvc.setText("저장");
+	    savesvc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if (tvList.getCheckedElements().length > 0 ) {
+					em.getTransaction().begin();
+//					for ( Object s : tvList.getCheckedElements() ) { 
+//						em.merge((Tmaster)s);
+//						((Tmaster)s).setNew(false);
+//					}
+					em.getTransaction().commit();
+					MessageDialog.openInformation(parent.getShell(), "Save Infomation", "수정 되었습니다.") ;
+					tvList.refresh();
+					tvList.setAllChecked(false);
+				}
+			}
+		});
+
+	    MenuItem impdat = new MenuItem(popupMenu, SWT.NONE);
+	    impdat.setText("전문가져오기");
+	    impdat.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				btnimp.notifyListeners(SWT.MouseDown, null);
+			}
+		});
+
+	    MenuItem copysvc = new MenuItem(popupMenu, SWT.NONE);
+	    copysvc.setText("전문생성");
+	    copysvc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				btnCopy.notifyListeners(SWT.MouseDown, null);
+
+			}
+		});
+
+	    addsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
+	    savesvc.setEnabled( addsvc.getEnabled() );
+	    delsvc.setEnabled( addsvc.getEnabled() );
+	    copysvc.setEnabled( addsvc.getEnabled() );
+	    impdat.setEnabled( addsvc.getEnabled() );
+
+	    tblList.setMenu(popupMenu);
+	    
+	    btnimp.setEnabled(addsvc.getEnabled() );
+	    
 	    
         String[] cols1 = new String[] 
         		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","대상서버정보", "전문건수"};
@@ -462,107 +594,6 @@ public class AqtRegTcode {
 			}
 		});
 	    
-	    Menu popupMenu = new Menu(tblList);
-
-	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
-	    addsvc.setText("테스트코드등록");
-	    addsvc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				int i = tblList.getSelectionIndex() ;
-				Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
-				Tmaster t = new Tmaster() ;
-				t.setDesc1("new");
-				t.setCmpCode(to.getCmpCode());
-				t.setThost(to.getThost());
-				t.setLvl(to.getLvl());
-				t.setTdate(to.getTdate());
-				t.setNew(true);
-				em.persist(t);
-				tcodeList.add(i,t) ;
-				tvList.refresh();
-				tvList.setChecked(t, true);
-			}
-		});
-
-
-	    MenuItem delsvc = new MenuItem(popupMenu, SWT.NONE);
-	    delsvc.setText("삭제");
-	    delsvc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				if (tvList.getCheckedElements().length > 0 ) {
-					em.getTransaction().begin();
-					for ( Object s : tvList.getCheckedElements() ) {
-//						if ( ! ((Tmaster)s).isNew() ) em.remove((Tmaster)s);
-						em.remove((Tmaster)s);
-						tcodeList.remove((Tmaster)s) ;
-					}
-						
-					em.getTransaction().commit();
-					tvList.refresh();
-					MessageDialog.openInformation(parent.getShell(), "Delete Infomation", "삭제 되었습니다.") ;
-				}
-			}
-		});
-
-	    MenuItem savesvc = new MenuItem(popupMenu, SWT.NONE);
-	    savesvc.setText("저장");
-	    savesvc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				if (tvList.getCheckedElements().length > 0 ) {
-					em.getTransaction().begin();
-//					for ( Object s : tvList.getCheckedElements() ) { 
-//						em.merge((Tmaster)s);
-//						((Tmaster)s).setNew(false);
-//					}
-					em.getTransaction().commit();
-					MessageDialog.openInformation(parent.getShell(), "Save Infomation", "수정 되었습니다.") ;
-					tvList.refresh();
-					tvList.setAllChecked(false);
-				}
-			}
-		});
-
-	    MenuItem impdat = new MenuItem(popupMenu, SWT.NONE);
-	    impdat.setText("전문가져오기");
-	    impdat.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				String tcode = "";
-				int i = tblList.getSelectionIndex() ;
-				if ( i >= 0 ) {
-					tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
-				}
-				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), tcode );
-				aqtcopy.open() ;
-
-			}
-		});
-
-	    MenuItem copysvc = new MenuItem(popupMenu, SWT.NONE);
-	    copysvc.setText("전문생성");
-	    copysvc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				String tcode = "";
-				int i = tblList.getSelectionIndex() ;
-				if ( i >= 0 ) {
-					tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
-				}
-				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), tcode );
-				aqtcopy.open() ;
-
-			}
-		});
-
-	    addsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-	    savesvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-	    delsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-	    copysvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-	    
-	    tblList.setMenu(popupMenu);
 
 	}
 	

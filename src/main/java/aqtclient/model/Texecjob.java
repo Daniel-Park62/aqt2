@@ -23,7 +23,7 @@ public class Texecjob implements Cloneable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int pkey;
 
-	private int jobkind;
+	private int jobkind = 9;
 
 	private String dbskip = "0";
 
@@ -59,7 +59,7 @@ public class Texecjob implements Cloneable {
 
 	private String tdesc = "";
 
-	private int tnum;
+	private int tnum = 1;
 
 	private String tuser = "";
 
@@ -80,6 +80,21 @@ public class Texecjob implements Cloneable {
 		this.pkey = pkey;
 	}
 
+	public String getJobkindNm() {
+		switch (jobkind) {
+		case 0:
+			return "패킷캡쳐";
+		case 1:
+			return "Import패킷";
+		case 3:
+			return "전문생성";
+		case 9:
+			return "전문송신";
+		default:
+			return "";
+		}
+	}
+	
 	public int getJobkind() {
 		return jobkind;
 	}

@@ -64,6 +64,7 @@ public class AqtTcodeCombo  {
 				return i;
 			}
 		}
+		combo.select(0);
 		return -1;
 	}
 	
@@ -72,7 +73,7 @@ public class AqtTcodeCombo  {
 		combo.removeAll();
 		tlist = em.createNamedQuery("Tmaster.findAll", Tmaster.class).getResultList();
 		combo.setItems(	tlist.stream().map((m) -> (" " + m.getCode() + " : " + m.getDesc1())).toArray(String[]::new));
-		combo.select(0);
+		findSelect(AqtMain.aqtmain.getGtcode());
 		em.close();
 		
 	}

@@ -18,6 +18,7 @@ public class Tconfig implements Serializable {
 	private int id;
 
 	private String pass1;
+	private String tcode;
 
 	public Tconfig() {
 	}
@@ -36,6 +37,14 @@ public class Tconfig implements Serializable {
 
 	public void setPass1(String pass1) {
 		this.pass1 = pass1;
+	}
+
+	public String getTcode() {
+		return tcode != null ? tcode : "";
+	}
+
+	public void setTcode(String tcode) {
+		this.tcode = tcode;
 	}
 
 }
