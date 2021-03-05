@@ -115,7 +115,7 @@ public class AqtDetail extends Dialog {
 
 		Label ltitle = new Label(compTitle, SWT.NONE);
 		
-    	ltitle.setText("Packet상세보기" ) ;
+    	ltitle.setText("전문상세보기" ) ;
     	ltitle.setFont( IAqtVar.title_font );
 //    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));		
 		

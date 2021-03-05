@@ -68,7 +68,7 @@ public class AqtTranTable extends AqtTableView {
 	    
 	    reSendItem = new MenuItem(popupMenu, SWT.NONE);
 	    reSendItem.setText("재전송");
-	    reSendItem.setEnabled(false);
+	    reSendItem.setEnabled(AuthType.TESTADM == AqtMain.authtype);
 
 	    reSendItem.addSelectionListener(new SelectionAdapter() {
 			@Override

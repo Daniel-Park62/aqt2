@@ -163,7 +163,12 @@ public class AqtRegTcode {
 					MessageDialog.openInformation(parent.getShell(), "테스트 선택", "대상 테스트ID를 선택(라인클릭)하세요.") ;
 					return ;
 				}
-				String tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
+				Tmaster tm = (Tmaster) tblList.getItem(i).getData() ;
+				if ( tm.getEndDate() != null ) {
+					MessageDialog.openInformation(parent.getShell(), "작업불가", tm.getCode() + " 는 종료되었습니다.") ;
+					return ;
+				}
+				String tcode = tm.getCode() ;
 		    	String[] ext = {  "*.pcap", "*" }  ;
 		    	final FileDialog dlg = new FileDialog ( Display.getDefault().getActiveShell() , SWT.APPLICATION_MODAL | SWT.OPEN );
 //		    	dlg.setFileName("datname");
@@ -221,8 +226,7 @@ public class AqtRegTcode {
     	tblList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	tblList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
     	
-//	    tblList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
-	    
+    	tblList.setFont(IAqtVar.font1b);
 	    tvList.setUseHashlookup(true);
 	    tblList.addKeyListener(new KeyAdapter() {
 			@Override
@@ -256,7 +260,7 @@ public class AqtRegTcode {
 				t.setCmpCode(to.getCmpCode());
 				t.setThost(to.getThost());
 				t.setLvl(to.getLvl());
-				t.setTdate(to.getTdate());
+				t.setTdate(new Date());
 				t.setNew(true);
 				em.persist(t);
 				tcodeList.add(i,t) ;
@@ -265,23 +269,31 @@ public class AqtRegTcode {
 			}
 		});
 
-
 	    MenuItem delsvc = new MenuItem(popupMenu, SWT.NONE);
 	    delsvc.setText("삭제");
 	    delsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				if (tvList.getCheckedElements().length > 0 ) {
+					StringBuffer undel = new StringBuffer();
+					StringBuffer del = new StringBuffer();
 					em.getTransaction().begin();
 					for ( Object s : tvList.getCheckedElements() ) {
-//						if ( ! ((Tmaster)s).isNew() ) em.remove((Tmaster)s);
-						em.remove((Tmaster)s);
-						tcodeList.remove((Tmaster)s) ;
+						Tmaster tm = (Tmaster)s ;
+						if (  tm.getEndDate() != null || tm.getDataCnt() > 0 ) {
+							undel.append(tm.getCode() + " ") ;
+							continue ;
+						}
+						del.append(tm.getCode() + " ") ;
+						em.remove(tm);
+						tcodeList.remove(s) ;
 					}
 						
 					em.getTransaction().commit();
 					tvList.refresh();
-					MessageDialog.openInformation(parent.getShell(), "Delete Infomation", "삭제 되었습니다.") ;
+					MessageDialog.openInformation(parent.getShell(), "Delete Infomation", 
+							(del.length() > 0 ? del + "삭제 되었습니다.\r\n\r\n" : "")  + 
+							(undel.length() > 0 ? undel + "삭제 할 수 없습니다.":"")) ;
 				}
 			}
 		});
@@ -324,15 +336,39 @@ public class AqtRegTcode {
 			}
 		});
 
+	    MenuItem pmEndTest = new MenuItem(popupMenu, SWT.NONE);
+	    pmEndTest.setText("테스트종료처리");
+	    pmEndTest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				int ix = tblList.getSelectionIndex() ;
+				if (ix < 0)  return ;
+				TableItem item = tblList.getItem(ix) ;
+				Tmaster tmaster = ((Tmaster)item.getData())  ;
+				boolean result = MessageDialog.openConfirm(parent.getShell(), "테스트종료",
+						"테스트ID ["+ tmaster.getCode() + "] 종료하시겠습니까?\r\n종료후에 이 테스트ID로 어떤작업도 할 수 없습니다." ) ;
+				if (  result ) {
+				
+					em.getTransaction().begin();
+					tmaster.setEndDate(new Date() ); 
+					em.getTransaction().commit();
+					tvList.refresh();
+				}
+
+			}
+		});
+
 	    addsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
 	    savesvc.setEnabled( addsvc.getEnabled() );
 	    delsvc.setEnabled( addsvc.getEnabled() );
 	    copysvc.setEnabled( addsvc.getEnabled() );
 	    impdat.setEnabled( addsvc.getEnabled() );
+	    pmEndTest.setEnabled( addsvc.getEnabled() );
 
 	    tblList.setMenu(popupMenu);
 	    
 	    btnimp.setEnabled(addsvc.getEnabled() );
+	    btnCopy.setEnabled(addsvc.getEnabled() );
 	    
 	    
         String[] cols1 = new String[] 
@@ -352,10 +388,12 @@ public class AqtRegTcode {
 	    	tableColumn.setWidth(columnWidths1[i]);
 	    	
 	    	if ( i == 5) {
+	    		
 	    		tableColumn.addListener(SWT.MouseDoubleClick, new Listener() {
 					
 					@Override
 					public void handleEvent(Event e) {
+						System.out.println(e);
 			    		Point pt = parent.getDisplay().getCursorLocation() ; 
 			        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
 			        	
@@ -405,7 +443,7 @@ public class AqtRegTcode {
 			} else if ( i == 3 ) {
 					CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.lvlArr , SWT.READ_ONLY ) ;
 			} else {
-				CELL_EDITORS[i] = new TextCellEditor(tblList);
+				CELL_EDITORS[i] = new TextCellEditor(tblList, tblList.getColumn(i).getStyle() );
 			}
 			
 		}
@@ -616,7 +654,7 @@ public class AqtRegTcode {
 
 	    AqtMain.container.setCursor(IAqtVar.arrow);
 	    
-	    tblList.setFont(IAqtVar.font1b);
+//	    tblList.setFont(IAqtVar.font1b);
 
 	}
 	

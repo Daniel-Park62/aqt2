@@ -1,7 +1,6 @@
 package aqtclient.part;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -24,9 +22,9 @@ import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -275,7 +273,7 @@ public class AqtCompare {
 		Point point = parent.getSize();
 		int width = (point.x - 70) / 10;
 
-		String[] columnNames1 = new String[] { "URI", "URI명",  "전문건수", "평균시간", "정상건수", "실패건수", "전문건수", "평균시간",
+		String[] columnNames1 = new String[] { "서비스", "서비스명",  "전문건수", "평균시간", "정상건수", "실패건수", "전문건수", "평균시간",
 				"정상건수", "실패건수" };
 
 		int[] columnWidths1 = new int[] { 300, width + 100, width - 20, width - 20, width - 20, width - 20, width - 20,
@@ -668,10 +666,10 @@ public class AqtCompare {
 
 	private Chart createChart(Composite parent) {
 
-		Date[] xSeries = { new Date("11/27/2019 00:00"), // new year
-				new Date("11/27/2019 00:00") };
-
-		double[] ySeries = { 1.3, 3.9 };
+//		Date[] xSeries = { new Date("11/27/2019 00:00"), // new year
+//				new Date("11/27/2019 00:00") };
+//
+		double[] ySeries = {  };
 
 		// create a chart
 		Chart chart = new Chart(parent, SWT.NONE);
@@ -696,7 +694,7 @@ public class AqtCompare {
 		chart.getAxisSet().getYAxis(0).getTitle().setText("소요시간");
 
 		// create line series
-		ILineSeries scatterSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "CMPCHART");
+		ILineSeries<?> scatterSeries = (ILineSeries<?>) chart.getSeriesSet().createSeries(SeriesType.LINE, "CMPCHART");
 
 		IAxisTick xTick = chart.getAxisSet().getXAxis(0).getTick();
 		xTick.setFormat(hmsf);
@@ -705,7 +703,7 @@ public class AqtCompare {
 		scatterSeries.setSymbolSize(2);
 
 		scatterSeries.setLineStyle(LineStyle.NONE);
-		scatterSeries.setXDateSeries(xSeries);
+//		scatterSeries.setXDateSeries(xSeries);
 		scatterSeries.setYSeries(ySeries);
 		chart.getLegend().setVisible(false);
 
@@ -714,7 +712,7 @@ public class AqtCompare {
 
 	private void redrawChart(List<Ttcppacket> tempTrxList, Chart chart) {
 		
-		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
+		Date[] xSeries = { };
 		double[] ySeries = { 1.0, 2.0 };
 
 		if (tempTrxList.size() > 0) {

@@ -84,7 +84,7 @@ public class AqtList  {
     	txtServiceCnt = new Text(compHeader, SWT.READ_ONLY );
 //    	txtServiceCnt.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	txtServiceCnt.setEnabled(false);
-    	txtServiceCnt.setText("대상URI수:");
+    	txtServiceCnt.setText("대상서비스수:");
     	txtServiceCnt.setFont(IAqtVar.font13b);
     	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.TOP, true, true));
 
@@ -114,7 +114,7 @@ public class AqtList  {
         int width = 1500 / 10;
 
         String[] columnNames1 = new String[] {
-   	         "","테스트ID", "테스트명", "테스트일자", "단계", "대상호스트", "URI수", "패킷건수", "성공건수", "실패건수","실패URI", "성공율(%)"};
+   	         "","테스트ID", "테스트명", "테스트일자", "단계", "대상호스트", "서비스수", "패킷건수", "성공건수", "실패건수","실패서비스", "성공율(%)"};
         
         int[] columnWidths1 = new int[] {
 //        		115, 350, 130, 130, 115, 115, 115, 110, 110};
@@ -210,7 +210,7 @@ public class AqtList  {
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {
-        		"","URI", "URI명",  "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수"};
+        		"","서비스", "서비스명",  "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수"};
         
         int[] columnWidths2 = new int[] {
 //        		150, 480, 150, 130, 130, 130, 130};
@@ -270,7 +270,7 @@ public class AqtList  {
 
         countResultT = (long)query.getSingleResult();
         
-        txtServiceCnt.setText( String.format("대상URI수: %,d ", countResultT));
+        txtServiceCnt.setText( String.format("대상서비스수: %,d ", countResultT));
 
 //        TypedQuery<Vtrxlist> qVlist = em.createQuery("select t from Vtrxlist t order by t.tdate desc ", Vtrxlist.class);
         TypedQuery<Vtrxlist> qVlist = em.createNamedQuery("Vtrxlist.findAll", Vtrxlist.class);

@@ -93,7 +93,7 @@ public class AqtTRList extends Dialog {
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
-    	ltitle.setText("Packet 상세목록" ) ;
+    	ltitle.setText("전문상세목록" ) ;
     	ltitle.setFont( IAqtVar.title_font );
 
 		Composite compCode1 = new Composite(compHeader, SWT.NONE);
@@ -137,6 +137,7 @@ public class AqtTRList extends Dialog {
 		
 		txtcnt =  new Text(compCode1, SWT.BORDER) ;
 		txtcnt.setText("0 건");
+		txtcnt.setEditable(false);
 		GridDataFactory.fillDefaults().align(SWT.RIGHT,SWT.TOP) .grab(true, false).applyTo(txtcnt);
 		
 		tableViewerDR1 = new AqtTranTable(compCode1, SWT.NONE | SWT.FULL_SELECTION | SWT.VIRTUAL );
@@ -183,7 +184,7 @@ public class AqtTRList extends Dialog {
 		txtReceive1.setEditable(false);
 		txtReceive1.setFont(IAqtVar.font1);
 		refreshScreen() ;
-		tableViewerDR1.setResendEnabled(true);
+//		tableViewerDR1.setResendEnabled(true);
 		return container ;
 	}
 

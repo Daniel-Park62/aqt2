@@ -1,15 +1,8 @@
 package aqtclient.part;
 
-/*
- * 전문처리현황
-*/
-import java.sql.Timestamp;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -32,12 +25,11 @@ import org.eclipse.swtchart.IAxisTick;
 import org.eclipse.swtchart.ILineSeries;
 import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
 import org.eclipse.swtchart.IPlotArea;
-import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.ChartData;
-import aqtclient.model.Ttcppacket;
 
 public class AqtView {
 
@@ -53,6 +45,7 @@ public class AqtView {
 
 	private Chart chart;
 	private EntityManager em = AqtMain.emf.createEntityManager();
+	private ILineSeries<?> lser0, lser1 ;
 
 	public AqtView(Composite parent, int style) {
 		create(parent, style);
@@ -261,7 +254,7 @@ public class AqtView {
 
 				try {
 					plotArea.setToolTipText(dformat.format(dt)
-							+ "\n-TR 건수:" + String.format("%2.0f", y));
+							+ "\n-전문 건수:" + String.format("%2.0f", y));
 				} catch (Exception arg1) {
 					plotArea.setToolTipText(null);
 				}
@@ -278,38 +271,49 @@ public class AqtView {
 			}
 		});
 		
-		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
-		double[] ySeries = {1.0, 2.0} ;
+//		Date[] xSeries = { new Date("11/27/2021 10:00"), new Date("11/27/2021 10:00") };
+		double[] ySeries = {} ;
 		SimpleDateFormat hmf = new SimpleDateFormat("HH:mm");
 
 
 		chart.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		// set titles
-		chart.getTitle().setText("시간대별 TR 현황");
+		chart.getTitle().setText("시간대별 전문 현황");
 		chart.getAxisSet().getXAxis(0).getTitle().setText("수행시간");
-		chart.getAxisSet().getYAxis(0).getTitle().setText("TR 건수");
-
+		chart.getAxisSet().getYAxis(0).getTitle().setText("전문 건수");
+		chart.getLegend().setVisible(true);
+		chart.getLegend().setFont(IAqtVar.font13) ;
+		chart.getLegend().setPosition(SWT.RIGHT);
+		chart.getAxisSet().getXAxis(0).enableCategory(true);
 		// create line series
-		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "aqtview");
+		lser0 = (ILineSeries<?>) chart.getSeriesSet().createSeries(SeriesType.LINE, "총건수");
+		lser1 = (ILineSeries<?>) chart.getSeriesSet().createSeries(SeriesType.LINE, "실패건수");
 
-		lineSeries.setAntialias(SWT.ON);
-		lineSeries.setSymbolColor(SWTResourceManager.getColor(SWT.COLOR_RED));
-
-		lineSeries.setSymbolType(PlotSymbolType.CIRCLE);
-		lineSeries.setSymbolSize(3);
-		lineSeries.setLineStyle(LineStyle.DOT);
-		lineSeries.setLineWidth(2);
+		lser0.setAntialias(SWT.ON);
+		lser0.setSymbolColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+		lser0.setLineColor(SWTResourceManager.getColor(SWT.COLOR_RED));
+		lser0.setSymbolType(PlotSymbolType.CIRCLE);
+		lser0.setSymbolSize(3);
+		lser0.setLineStyle(LineStyle.DOT);
+		lser0.setLineWidth(2);
 //	lineSeries.setXDateSeries(xSeries);
-		lineSeries.setYSeries(ySeries);
+		lser0.setVisibleInLegend(true);
+		lser0.setYSeries(ySeries);
 //		lineSeries.setYAxisId(0);
+		lser1.setAntialias(SWT.ON);
+		lser1.setSymbolColor(SWTResourceManager.getColor(SWT.COLOR_BLUE));
+		lser1.setLineColor(SWTResourceManager.getColor(SWT.COLOR_BLUE));
+		lser1.setSymbolType(PlotSymbolType.DIAMOND);
+		lser1.setSymbolSize(3);
+		lser1.setLineStyle(LineStyle.DOT);
+		lser1.setLineWidth(1);
+		lser1.setYSeries(ySeries);
+		lser1.setVisibleInLegend(true);
 
 		final IAxisTick xTick = chart.getAxisSet().getXAxis(0).getTick();
 		xTick.setFormat(hmf);
 		xTick.setTickMarkStepHint(30);
 		
-		chart.getLegend().setVisible(false);
-
-
 //		chart.getAxisSet().getXAxis(0).enableCategory(true);
 		
 		/*
@@ -329,13 +333,13 @@ public class AqtView {
 		em.getEntityManagerFactory().getCache().evictAll();
 		
 		List<ChartData> chartData = em.createNativeQuery(
-        		"SELECT DATE_ADD( MIN(t.stime),interval -1 MINute) dtime  , 0 trxCnt from Ttcppacket t  where t.tcode = ?1 " + 
+        		"SELECT DATE_ADD( MIN(t.stime),interval -1 MINute) dtime  , 0 trxCnt, 0 fCnt from Ttcppacket t  where t.tcode = ?1 " + 
         		" union " + 
         		"select cast( date_format(t.stime, '%Y-%m-%d %H:%i:00') as datetime) dtime,"
-        		+ " count(t.pkey) trxCnt from Ttcppacket t "
+        		+ " count(t.pkey) trxCnt , sum(case when sflag = '2' then 1 else 0 end) fCnt from Ttcppacket t "
         		+ " where t.tcode = ?2 group by date_format(t.stime, '%Y-%m-%d %H:%i:00') "
         		+ " UNION " + 
-        		"SELECT DATE_ADD( Max(t.stime),interval 1 MINute)  , 0 from Ttcppacket t  where t.tcode = ?3 "  
+        		"SELECT DATE_ADD( Max(t.stime),interval 1 MINute)  , 0 ,0 from Ttcppacket t  where t.tcode = ?3 "  
         	, ChartData.class)
         		.setParameter(1, cmbCode.getTcode())
         		.setParameter(2, cmbCode.getTcode())
@@ -351,22 +355,27 @@ public class AqtView {
 //				.collect(Collectors.toCollection(ArrayList::new));
 
 		double[] ySeries = chartData.stream().mapToDouble(d -> d.getTrxCnt()).toArray();
+		double[] yS1 = chartData.stream().mapToDouble(d -> d.getfCnt()).toArray();
 		Date[] xSeries = chartData.stream().map(a -> a.getDtime()).toArray(Date[]::new) ;
 		
 		chart.setRedraw(false);
 
 		// create line series
-		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().getSeries("aqtview");
+//		ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().getSeries("aqtview");
 
-		lineSeries.setXDateSeries(xSeries);
-		lineSeries.setYSeries(ySeries);
-		lineSeries.setYAxisId(0);
+		lser0.setXDateSeries(xSeries);
+		lser0.setYSeries(ySeries);
+		lser0.setYAxisId(0);
+
+		lser1.setXDateSeries(xSeries);
+		lser1.setYSeries(yS1);
+		lser1.setYAxisId(0);
 
 		// adjust the axis range
 		chart.getAxisSet().adjustRange();
-		final IAxis yAxis = chart.getAxisSet().getYAxis(0);
-		yAxis.adjustRange();
-		chart.getAxisSet().getXAxis(0).adjustRange();
+		chart.getAxisSet().getYAxis(0).adjustRange();
+//		chart.getAxisSet().getXAxis(0).adjustRange();
+//		chart.getAxisSet().getXAxis(1).adjustRange();
 //		yAxis.zoomOut();
 		chart.setRedraw(true);
 

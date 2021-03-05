@@ -1,11 +1,9 @@
 package aqtclient.part;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -35,13 +33,13 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxisTick;
 import org.eclipse.swtchart.ILineSeries;
@@ -244,7 +242,7 @@ public class AqtResult {
 		Point point = parent.getSize();
 		int width = (point.x - 70) / 8;
 
-		String[] columnNames1 = new String[] { "", "URI", "URI명", "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수","성공율(%)","미수행" };
+		String[] columnNames1 = new String[] { "", "서비스", "서비스명", "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수","성공율(%)","미수행" };
 
 		int[] columnWidths1 = new int[] {
 				0, 250, 250, 120 , 120, 120, 120, 120, 120 ,120};
@@ -494,8 +492,8 @@ public class AqtResult {
 				}
 			}
 		});
-		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
-		double[] ySeries = {1.0, 2.0} ;
+//		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
+		double[] ySeries = {} ;
 
 		chart.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
@@ -511,7 +509,7 @@ public class AqtResult {
 		scatterSeries.setSymbolColor(SWTResourceManager.getColor(SWT.COLOR_RED));
 		scatterSeries.setSymbolType(PlotSymbolType.DIAMOND);
 		scatterSeries.setSymbolSize(2);
-		scatterSeries.setXDateSeries(xSeries);
+//		scatterSeries.setXDateSeries(xSeries);
 		scatterSeries.setYSeries(ySeries);
 
 		IAxisTick xTick = chart.getAxisSet().getXAxis(0).getTick();
@@ -527,8 +525,8 @@ public class AqtResult {
 
 	public void redrawChart(List<Ttcppacket> tempTrxList, Chart chart) {
 
-		Date[] xSeries = { new Date("11/27/2019 10:00"), new Date("11/27/2019 10:00") };
-		double[] ySeries = {1.0, 2.0} ;
+		Date[] xSeries = {  };
+		double[] ySeries = { } ;
 		chart.getTitle().setText("시간대별 TR 현황");
 		if ( tempTrxList.size() > 0 ) {
 			xSeries = tempTrxList.stream().map(a -> a.getStime()).toArray(Date[]::new);

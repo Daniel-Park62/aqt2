@@ -61,7 +61,7 @@ public class AqtRegSvc {
 	private CheckboxTableViewer tblViewerList;
 	
 	private List <Tservice> tsvcList;
-	private Text textsvc , textsvcnm ;
+	private Text textsvc , textsvcnm, textasknm ;
 	EntityManager em = AqtMain.emf.createEntityManager();
 
 	/**
@@ -107,7 +107,7 @@ public class AqtRegSvc {
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
 
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(6).equalWidth(false).applyTo(compTit);
+		GridLayoutFactory.fillDefaults().numColumns(8).equalWidth(false).applyTo(compTit);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compTit);
 		
 		Label lblt = new Label(compTit, SWT.NONE);
@@ -140,7 +140,26 @@ public class AqtRegSvc {
 		        }
 		    }
 		  });
-		
+
+		lblt = new Label(compTit, SWT.NONE);
+		lblt.setText("업무명");
+		lblt.setFont(IAqtVar.font1);
+		textasknm = new Text(compTit, SWT.BORDER);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(300, -1).applyTo(textasknm);
+		textasknm.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		textasknm.setFont(IAqtVar.font1);
+		textasknm.setText("");
+		textasknm.addTraverseListener(new TraverseListener() {
+		    @Override
+		    public void keyTraversed(final TraverseEvent event)
+		    {
+		      if (event.detail == SWT.TRAVERSE_RETURN)
+		        { 
+		    	  queryScr();
+		        }
+		    }
+		  });
+
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).minSize(100, -1).applyTo(btnSearch);
 		btnSearch.addMouseListener(new MouseAdapter() {
@@ -481,13 +500,14 @@ public class AqtRegSvc {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		AqtMain.container.setCursor(IAqtVar.busyc);
-		StringBuilder qstr = new StringBuilder("SELECT t FROM Tservice t") ; 
-		if (! textsvc.getText().isEmpty()  ) {
-			qstr.append(" where t.svcid like '%" + textsvc.getText().trim() + "%'");
-			if (! textsvcnm.getText().isEmpty() ) qstr.append(" and t.svckor like '" + textsvcnm.getText().trim() + "%'");
-		} else if (! textsvcnm.getText().isEmpty()  ) {
-			qstr.append(" where t.svckor like '%" + textsvcnm.getText().trim() + "%'");
-		}
+		StringBuilder qstr = new StringBuilder("SELECT t FROM Tservice t where 1=1 ") ; 
+		if (! textsvc.getText().isEmpty()  ) 
+			qstr.append(" and t.svcid like '%" + textsvc.getText().trim() + "%'");
+		if (! textsvcnm.getText().isEmpty()  ) 
+			qstr.append("  and t.svckor like '%" + textsvcnm.getText().trim() + "%'");
+		if (! textasknm.getText().isEmpty()  ) 
+			qstr.append("  and t.task like '%" + textasknm.getText().trim() + "%'");
+		
         tsvcList = em.createQuery(qstr.toString(), Tservice.class).getResultList();
         		 
 	    tblViewerList.setInput(tsvcList);

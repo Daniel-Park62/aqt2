@@ -97,7 +97,7 @@ public class AqtDetailComp extends Dialog {
 		compTitle.setLayout(new GridLayout(2, false));
 
 		Label ltitle = new Label(compTitle, SWT.NONE);
-    	ltitle.setText(" Packet상세비교" ) ;
+    	ltitle.setText(" 전문상세비교" ) ;
     	ltitle.setFont( IAqtVar.title_font );
     	ltitle.setLayoutData(new GridData(SWT.FILL , SWT.TOP, true, false));
 

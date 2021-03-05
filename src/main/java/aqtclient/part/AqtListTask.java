@@ -86,7 +86,7 @@ public class AqtListTask  {
     	txtServiceCnt = new Text(compHeader, SWT.READ_ONLY );
 //    	txtServiceCnt.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	txtServiceCnt.setEnabled(false);
-    	txtServiceCnt.setText("대상URI수:");
+    	txtServiceCnt.setText("대상서비스수:");
     	txtServiceCnt.setFont(IAqtVar.font13b);
     	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, true, true));
 
@@ -119,7 +119,7 @@ public class AqtListTask  {
         int width = 1500 / 10;
 
         String[] columnNames1 = new String[] {
-   	         " 업무명 ", "단계",  "URI수", "패킷건수", "성공건수", "실패건수","실패URI", "성공율(%)", ""};
+   	         " 업무명 ", "단계",  "서비스수", "패킷건수", "성공건수", "실패건수","실패서비스", "성공율(%)", ""};
         
         int[] columnWidths1 = new int[] { 180, 150, 130,130, 100, 100, 110, 110 ,0};
 
@@ -212,7 +212,7 @@ public class AqtListTask  {
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {
-        		" URI", " URI명",  "패킷건수", "평균시간", "정상건수", "실패건수", "성공율(%)","미수행","" };
+        		" 서비스", " 서비스명",  "패킷건수", "평균시간", "정상건수", "실패건수", "성공율(%)","미수행","" };
         
         int[] columnWidths2 = new int[] {
 //        		150, 480, 150, 130, 130, 130, 130};
@@ -273,7 +273,7 @@ public class AqtListTask  {
 
         countResultT = (long)query.getSingleResult();
         
-        txtServiceCnt.setText( String.format("대상URI수: %,d ", countResultT));
+        txtServiceCnt.setText( String.format("대상서비스수: %,d ", countResultT));
 
         tList = em.createNativeQuery(
         		"select task,lvl,svc_cnt,data_cnt, scnt, fcnt, fsvc_cnt, ifnull(scnt * 100 / (scnt+fcnt) ,0.0)  spct from ttasksum ")
@@ -316,7 +316,7 @@ public class AqtListTask  {
 //				" group by t.tcode, t.uri) a " + 
 //				"left outer join tservice s on a.svcid = s.svcid )" , Vtrxdetail.class)
 //			.getResultList() ;
-		List<Object[]> tList = new ArrayList();
+		List<Object[]> tList = new ArrayList<Object[]>();
         tList = em.createNativeQuery(
 				"select a.svcid, s.svckor svckor, a.tcnt, a.avgt ,cast(a.scnt as int) ,cast(a.fcnt as int), "
 				+ "ifnull(scnt * 100 / (scnt+fcnt) ,0.0)  spct,cast( a.tcnt - (scnt+fcnt) as int), lvl " +

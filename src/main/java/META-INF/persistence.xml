@@ -10,7 +10,6 @@
 		<class>aqtclient.model.Trequest</class>
 		<class>aqtclient.model.Tservice</class>
 		<class>aqtclient.model.Ttcppacket</class>
-		<class>aqtclient.model.Ttcppacket2</class>
 		<class>aqtclient.model.Ttransaction</class>
 		<class>aqtclient.model.Vtrxdetail</class>
 		<class>aqtclient.model.Vtrxlist</class>

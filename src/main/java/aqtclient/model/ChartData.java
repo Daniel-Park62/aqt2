@@ -17,6 +17,7 @@ public class ChartData {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dtime;
 	private long trxCnt;
+	private long fCnt;
 	
 	public ChartData() {
 		
@@ -34,6 +35,9 @@ public class ChartData {
 	}
 	public void setTrxCnt(long trxCnt) {
 		this.trxCnt = trxCnt;
+	}
+	public long getfCnt() {
+		return fCnt;
 	}   
 
 }

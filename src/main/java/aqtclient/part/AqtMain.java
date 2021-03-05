@@ -100,7 +100,8 @@ public class AqtMain extends ApplicationWindow {
 		System.out.println("AQT2 Started !!");
 		aqtmain = this ;
 		addStatusLine();
-		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
+//		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
+		tconfig = em.find(Tconfig.class, 1) ;
 		
 	}
 
@@ -108,7 +109,10 @@ public class AqtMain extends ApplicationWindow {
 		return tconfig.getTcode() ;
 	}
 	public void setGtcode(String tcode) {
+		em.getTransaction().begin();
 		tconfig.setTcode(tcode) ;
+		em.getTransaction().commit();
+
 	}
 	/**
 	 * Create contents of the application window.
