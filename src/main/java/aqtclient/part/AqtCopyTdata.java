@@ -1,7 +1,6 @@
 package aqtclient.part;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;

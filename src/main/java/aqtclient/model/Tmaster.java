@@ -159,7 +159,7 @@ public class Tmaster implements Serializable {
 	}
 
 	public String getThost() {
-		return this.thost;
+		return thost != null ? this.thost : "" ;
 	}
 
 	public void setThost(String thost) {

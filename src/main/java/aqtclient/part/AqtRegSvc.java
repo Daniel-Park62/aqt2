@@ -174,25 +174,11 @@ public class AqtRegSvc {
 		btnimp.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				try {
-					importCsv();
-				} catch (FileNotFoundException ef) {
-					// TODO Auto-generated catch block
-					ef.printStackTrace();
-				} catch (UnsupportedEncodingException eu) {
-					// TODO Auto-generated catch block
-					eu.printStackTrace();
-				}
-				tblViewerList.refresh();
-				tblViewerList.setAllChecked(true);
+				tblList.getMenu().getItem(1).notifyListeners(SWT.Selection, null);
 			}
 		});
 		
-//		btnSearch.setCursor(IAqtVar.handc);
-//		btnSearch.setText("조회");
-//		btnSearch.setFont(IAqtVar.font1b);
-//		btnSearch.setImage(AqtMain.getMyimage("search.png"));
-		
+		btnimp.setEnabled( AqtMain.authtype == AuthType.TESTADM );
 
 // 	    Composite compDetail = new Composite(container, SWT.NONE);
 // 	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(compDetail);
@@ -201,6 +187,7 @@ public class AqtRegSvc {
     	tblViewerList = CheckboxTableViewer.newCheckList(container, SWT.NONE | SWT.FULL_SELECTION );
     	
     	tblList = tblViewerList.getTable();
+	    createPop(parent);
     	
 	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(tblList);
 		tblList.setLinesVisible(true);
@@ -409,7 +396,11 @@ public class AqtRegSvc {
 			}
 		});
 	    
-	    Menu popupMenu = new Menu(tblList);
+
+	}
+
+	private void createPop(Composite parent) {
+		Menu popupMenu = new Menu(tblList);
 
 	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
 	    addsvc.setText("서비스등록");
@@ -490,7 +481,6 @@ public class AqtRegSvc {
 	    delsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
 	    
 	    tblList.setMenu(popupMenu);
-
 	}
 	
 	private void queryScr () {

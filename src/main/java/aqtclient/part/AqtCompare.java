@@ -207,7 +207,7 @@ public class AqtCompare {
 				TableItem[] tia = tblResult.getItems() ;
 				String sval = txtFind1.getText() ;
 				if (sval.isEmpty() )  return ;
-				
+
 				loop1 : for(int i=0; i<tia.length ; i++) {
 					for (int j=0; j < tblResult.getColumnCount(); j++)
 						if ((tia[i].getText(j)).contains(sval)) {
@@ -216,11 +216,11 @@ public class AqtCompare {
 							break loop1;
 						}
 				}
-				
+
 			}
-			
+
 			public void keyPressed(KeyEvent arg0) {
-				
+
 			}
 		});
 		
@@ -236,9 +236,10 @@ public class AqtCompare {
 		topTable = new Table(content, SWT.NO_SCROLL| SWT.HIDE_SELECTION|SWT.SINGLE|SWT.FULL_SELECTION|SWT.NONE);
 		topTable.setFont(IAqtVar.font1b);
 		topTable.setHeaderBackground(AqtMain.htcol);
-		topTable.setLinesVisible(false);
 		topTable.setHeaderForeground(AqtMain.forecol);
+		topTable.setLinesVisible(false);
 		topTable.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		topTable.setHeaderVisible(true);
 		topTable.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
 
 //	    topTable.setHeaderBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
@@ -252,14 +253,10 @@ public class AqtCompare {
 			tableColumn.setResizable(false);
 		}
 
-		topTable.setHeaderVisible(true);
-//		new Label(content, SWT.NONE);
-
 		tableViewer = new TableViewer(content, SWT.NONE | SWT.FULL_SELECTION);
 		
 		tblResult = tableViewer.getTable();
 
-		tblResult.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		tblResult.setHeaderVisible(true);
 		tblResult.setLinesVisible(true);
 		tblResult.setFont(IAqtVar.font1);
@@ -282,7 +279,7 @@ public class AqtCompare {
 		int[] columnAlignments1 = new int[] { SWT.CENTER, SWT.LEFT,  SWT.CENTER, SWT.CENTER, SWT.CENTER,
 				SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER };
 
-		GridDataFactory.fillDefaults().grab(true, true).span(columnNames1.length, 1).applyTo(tblResult);
+		GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(tblResult);
 
 		for (int i = 0; i < columnNames1.length; i++) {
 			TableViewerColumn tableViewerColumn = new TableViewerColumn(tableViewer, columnAlignments1[i]);
@@ -426,7 +423,7 @@ public class AqtCompare {
 				if (ix >=0) {
 					txtSend2.setText(tempTrxList2.get(ix).getSdata());
 					txtReceive2.setText(tempTrxList2.get(ix).getRdatam());
-					String suid = tblDetailResult1.getItem(ix).getText(0);
+					String suid = tblDetailResult2.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult1, suid)) >= 0) {
 						txtSend1.setText(tempTrxList1.get(ix).getSdata());
 						txtReceive1.setText(tempTrxList1.get(ix).getRdatam());
@@ -567,6 +564,7 @@ public class AqtCompare {
 		tableViewer.setInput(tempTrxCompList);
 		tableViewer.getTable().setSelection(0);
 		if ( tempTrxCompList.size() > 0 )
+			AqtMain.aqtmain.setGtcode(cmbCode1.getTcode());
 			tbl2data(tempTrxCompList.get(0).getSvcid());
 		
 	}
@@ -582,7 +580,7 @@ public class AqtCompare {
 		Query qTrx = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
 				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
-				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid " ,
+				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid order by t.cmpid " ,
 						Ttcppacket.class) ;
 
 		tempTrxList1 = qTrx.getResultList();
@@ -611,7 +609,7 @@ public class AqtCompare {
 		qTrx = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
 				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
-				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid " ,
+				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid order by t.cmpid " ,
 						Ttcppacket.class) ;
 
 		tempTrxList2 = qTrx.getResultList();
@@ -656,6 +654,7 @@ public class AqtCompare {
 		tableViewerDR1.setResendEnabled (cmbCode1.getTmaster() != null && !cmbCode1.getTmaster().getThost().isEmpty() );
 		tableViewerDR2.setResendEnabled (cmbCode2.getTmaster() != null && !cmbCode2.getTmaster().getThost().isEmpty() );
 
+		tblDetailResult1.notifyListeners(SWT.Selection, null);
 		redrawChart(tempTrxList1, chart1);
 		redrawChart(tempTrxList2, chart2);
 
@@ -713,7 +712,7 @@ public class AqtCompare {
 	private void redrawChart(List<Ttcppacket> tempTrxList, Chart chart) {
 		
 		Date[] xSeries = { };
-		double[] ySeries = { 1.0, 2.0 };
+		double[] ySeries = { };
 
 		if (tempTrxList.size() > 0) {
 			xSeries = tempTrxList.stream().map(a -> a.getStime()).toArray(Date[]::new);

@@ -290,6 +290,11 @@ public class AqtExec  {
 					EntityManager em = AqtMain.emf.createEntityManager();
 					TableItem item = tbl.getItem(i) ;
 					Texecjob te = ((Texecjob)item.getData())  ;
+					if ( te.getResultstat() > 0 ) {
+						MessageDialog.openInformation(parent.getShell(), "삭제불가", "이 작업은 삭제 할 수 없습니다.") ;
+						return ;
+					}
+
 					boolean result = MessageDialog.openConfirm(parent.getShell(), "작업삭제",
 							"["+ te.getTdesc() + "] 삭제하시겠습니까?" ) ;
 					if (  result ) {
@@ -594,7 +599,7 @@ public class AqtExec  {
 
 		sptnum  = new Spinner( form1, SWT.BORDER | SWT.CENTER) ;
 		sptnum.setMaximum(400);
-		sptnum.setSelection(2);
+		sptnum.setSelection(1);
 		sptnum.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
@@ -603,7 +608,7 @@ public class AqtExec  {
 
 		chkDbSkip = new Button(form1, SWT.CHECK) ;
 		chkDbSkip.setSelection(false);
-		chkDbSkip.setText("DB Update skip");
+		chkDbSkip.setText("DB Update Skip");
 
 
 		lbl1 = new Label(form1,SWT.LEFT) ;

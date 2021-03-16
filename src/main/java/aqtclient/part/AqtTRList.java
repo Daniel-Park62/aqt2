@@ -40,6 +40,7 @@ public class AqtTRList extends Dialog {
 
 	private Text txtReceive1;
 	private Text txtSend1, txtcnt;
+//	private CLabel lblRhead ;
 	
 	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
 	private AqtTranTable tableViewerDR1;
@@ -64,9 +65,9 @@ public class AqtTRList extends Dialog {
     
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.ABORT_ID, "새로고침", true);
+        createButton(parent, IDialogConstants.ABORT_ID, "새로고침", false);
         
-        createButton(parent, IDialogConstants.CLOSE_ID, "Close", true);
+        createButton(parent, IDialogConstants.CLOSE_ID, "Close", false);
     }
     
     @Override
@@ -157,8 +158,10 @@ public class AqtTRList extends Dialog {
 		tblDetailResult1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
-				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdatam());
+				int i = tblDetailResult1.getSelectionIndex() ;
+				txtSend1.setText(tempTrxList1.get(i).getSdata());
+//				lblRhead.setText(tempTrxList1.get(i).getRhead());
+				txtReceive1.setText(tempTrxList1.get(i).getRdatam());
 			}
 		});
 		
@@ -174,10 +177,17 @@ public class AqtTRList extends Dialog {
 		txtSend1.setEditable(false);
 		txtSend1.setFont(IAqtVar.font1);
 
-		Label lblReceive1 = new Label(compCode1, SWT.NONE);
-		lblReceive1.setText("RECEIVE");
-		lblReceive1.setFont(IAqtVar.font1);
-//		lblReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//		lblSend1 = new Label(compCode1, SWT.NONE);
+//		lblSend1.setText("R-HEADER");
+//		lblSend1.setFont(IAqtVar.font1);
+//
+//		lblRhead = new CLabel(compCode1, SWT.BORDER);
+//		lblRhead.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
+//		lblRhead.setFont(IAqtVar.font1);
+
+		lblSend1 = new Label(compCode1, SWT.NONE);
+		lblSend1.setText("RECEIVE");
+		lblSend1.setFont(IAqtVar.font1);
 
 		txtReceive1 = new Text(compCode1, SWT.BORDER);
 		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
@@ -229,6 +239,7 @@ public class AqtTRList extends Dialog {
 //			qSvc.setParameter("svcid", tempTrxList1.get(0).getSvcid());
 			
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
+//			lblRhead.setText(tempTrxList1.get(0).getRhead());
 			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
 			tblDetailResult1.setSelection(0);
 

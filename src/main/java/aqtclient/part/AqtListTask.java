@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -20,15 +19,14 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -37,7 +35,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Vtrxdetail;
 import aqtclient.model.Vtrxlist;
 
 @SuppressWarnings("unchecked")
@@ -48,8 +45,6 @@ public class AqtListTask  {
 	private AqtTableView tblViewerList, tblViewerDetail;
 	private long countResultT;
 	
-	private List <Vtrxlist> tempVtrxList;
-
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -73,6 +68,7 @@ public class AqtListTask  {
 //	    sashForm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 	    
 		Composite compHeader = new Composite(sashForm, SWT.NONE);
+    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compHeader);
 		
 		GridLayoutFactory.fillDefaults().margins(15, 15).numColumns(2).equalWidth(false).applyTo(compHeader);
 		
@@ -171,7 +167,7 @@ public class AqtListTask  {
 
 		txtFind1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtFind1.setLayoutData(new GridData(400,-1));
-		txtFind1.addKeyListener(new KeyListener() {
+		txtFind1.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
 				arg0.doit = true ;
@@ -189,10 +185,6 @@ public class AqtListTask  {
 				}
 			}
 			
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				
-			}
 		});
 	    
 	    

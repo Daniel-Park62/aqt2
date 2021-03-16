@@ -2,6 +2,7 @@ package aqtclient.model;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,6 +35,7 @@ public class Texecjob implements Cloneable {
 
 	private int exectype = 0;
 
+	@Column(name="in_file")
 	private String infile = "";
 
 	@Lob

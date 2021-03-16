@@ -171,21 +171,27 @@ public class AqtRegTcode {
 				String tcode = tm.getCode() ;
 		    	String[] ext = {  "*.pcap", "*" }  ;
 		    	final FileDialog dlg = new FileDialog ( Display.getDefault().getActiveShell() , SWT.APPLICATION_MODAL | SWT.OPEN );
-//		    	dlg.setFileName("datname");
 		    	dlg.setFilterExtensions ( ext );
-		    	dlg.setText ( "cap 파일 import to " + tcode );
+		    	dlg.setText ( "pcap 파일 import to " + tcode );
 
 		    	String fileName = dlg.open ();
 		    	if ( fileName == null ) return ;
 		    	try {
 					em.getTransaction().begin();
-					em.createNativeQuery("INSERT INTO texecjob (jobkind, tcode, tdesc, tnum ,`infile`) VALUES (?,?,?,?,?)")
-						.setParameter(1, 1)
-						.setParameter(2, tcode)
-						.setParameter(3, "Import pcap파일")
-						.setParameter(4, 1)
-						.setParameter(5, fileName)
-						.executeUpdate() ;
+					Texecjob texecjob = new Texecjob() ;
+					texecjob.setJobkind(1);
+					texecjob.setTcode(tcode);
+					texecjob.setInfile(fileName);
+					texecjob.setTdesc("Import pcap파일");
+					texecjob.setTnum(1);
+//					em.createNativeQuery("INSERT INTO texecjob (jobkind, tcode, tdesc, tnum ,`infile`) VALUES (?,?,?,?,?)")
+//						.setParameter(1, 1)
+//						.setParameter(2, tcode)
+//						.setParameter(3, "Import pcap파일")
+//						.setParameter(4, 1)
+//						.setParameter(5, fileName)
+//						.executeUpdate() ;
+					em.persist(texecjob);
 					em.getTransaction().commit();
 					MessageDialog.openInformation(parent.getShell(), "알림",
 							"테스트ID " +  tcode + "에 " + fileName + " Import 요청되었습니다." ) ;
@@ -254,16 +260,21 @@ public class AqtRegTcode {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				int i = tblList.getSelectionIndex() ;
-				Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
 				Tmaster t = new Tmaster() ;
 				t.setDesc1("new");
-				t.setCmpCode(to.getCmpCode());
-				t.setThost(to.getThost());
-				t.setLvl(to.getLvl());
 				t.setTdate(new Date());
 				t.setNew(true);
+				if (i >= 0 ) {
+					Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
+					t.setCmpCode(to.getCmpCode());
+					t.setThost(to.getThost());
+					t.setLvl(to.getLvl());
+				} else 
+					i=0;
+				
 				em.persist(t);
 				tcodeList.add(i,t) ;
+
 				tvList.refresh();
 				tvList.setChecked(t, true);
 			}
@@ -336,6 +347,23 @@ public class AqtRegTcode {
 			}
 		});
 
+	    MenuItem maptohost = new MenuItem(popupMenu, SWT.NONE);
+	    maptohost.setText("IP매핑");
+	    maptohost.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				String tcode = "";
+				int i = tblList.getSelectionIndex() ;
+				if ( i >= 0 ) {
+					tcode = ((Tmaster) tblList.getItem(i).getData()).getCode() ;
+				}
+				AqtMapToHost aqtmaptohost = new AqtMapToHost(parent.getShell(), tcode );
+				aqtmaptohost.open() ;
+
+			}
+		});
+
+
 	    MenuItem pmEndTest = new MenuItem(popupMenu, SWT.NONE);
 	    pmEndTest.setText("테스트종료처리");
 	    pmEndTest.addSelectionListener(new SelectionAdapter() {
@@ -372,12 +400,12 @@ public class AqtRegTcode {
 	    
 	    
         String[] cols1 = new String[] 
-        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","대상서버정보", "전문건수"};
+        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","서버IP", "서버 Port","전문건수"};
 
-        int[] columnWidths1 = new int[] {  150, 300, 80, 80, 150,200,200, 200,140};
+        int[] columnWidths1 = new int[] {  130, 250, 80, 80, 150,160,160, 200,100,140};
 
 	    int[] colas1 = new int[] 
-	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER };
+	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER ,SWT.CENTER };
 	    TableViewerColumn tableViewerColumn ;
 	    for (int i = 0; i < cols1.length; i++) {
 	    	tableViewerColumn =
@@ -387,48 +415,53 @@ public class AqtRegTcode {
 	    	tableColumn.setText(cols1[i]);
 	    	tableColumn.setWidth(columnWidths1[i]);
 	    	
-	    	if ( i == 5) {
-	    		
-	    		tableColumn.addListener(SWT.MouseDoubleClick, new Listener() {
-					
-					@Override
-					public void handleEvent(Event e) {
-						System.out.println(e);
-			    		Point pt = parent.getDisplay().getCursorLocation() ; 
-			        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
-			        	
-			            String s = (String)cd.open();
-			            try {
-							Date dt =  sdf.parse(s) ;
-							TableItem item = (TableItem) tblList.getSelection() [0];
-							Tmaster tmaster = (Tmaster) item.getData() ;
-							tmaster.setTdate(dt);
-						} catch (Exception e2) {
-							System.out.println(e2);
-							// TODO: handle exception
-						}
-						
-					}
-				});
-	    	}
+//	    	if ( i == 5) {
+//	    		
+//	    		tableColumn.addListener(SWT.Selection, (e) -> {
+//						System.out.println(e);
+//			    		Point pt = parent.getDisplay().getCursorLocation() ; 
+//			        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
+//			        	
+//			            String s = (String)cd.open();
+//			            try {
+//							Date dt =  sdf.parse(s) ;
+//							TableItem item = (TableItem) tblList.getSelection() [0];
+//							Tmaster tmaster = (Tmaster) item.getData() ;
+//							tmaster.setTdate(dt);
+//						} catch (Exception e2) {
+//							System.out.println(e2);
+//							// TODO: handle exception
+//						}
+//						
+//					}
+//				);
+//	    	}
+	    	
 //	    	tableColumn.setResizable(i != 0);
 
 	    }
-	    tblList.addListener(SWT.MeasureItem ,  new Listener() {
-	    	public void handleEvent(Event arg0) {
+	    tblList.addListener(SWT.MeasureItem ,  (arg0) -> {
 	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.8);
-
-	    	}
 	    });
 	    tblList.addMouseListener(new MouseAdapter() {
 			
 			@Override
 			public void mouseDoubleClick(MouseEvent e) {
-				TableItem item = (TableItem) ((Table) e.getSource()).getSelection() [0];
-				Tmaster tmaster = (Tmaster) item.getData() ;
-				AqtRegister aqtregister = new AqtRegister(container.getShell(), SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM) ;
-				aqtregister.setTmaster(tmaster);
-				aqtregister.open();
+				System.out.println(e.getSource());
+	    		Point pt = parent.getDisplay().getCursorLocation() ; 
+	        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
+	        	
+	            String s = (String)cd.open();
+	            try {
+					Date dt =  sdf.parse(s.replace('-', '/')) ;
+					TableItem item = (TableItem) tblList.getSelection() [0];
+					Tmaster tmaster = (Tmaster) item.getData() ;
+					tmaster.setTdate(dt);
+					tvList.refresh();
+				} catch (Exception e2) {
+					System.out.println(e2);
+					// TODO: handle exception
+				}
 				
 			}
 		});
@@ -447,10 +480,7 @@ public class AqtRegTcode {
 			}
 			
 		}
-		CELL_EDITORS[0].setValidator( new ICellEditorValidator() {
-			
-			@Override
-			public String isValid(Object input) {
+		CELL_EDITORS[0].setValidator( (input) -> {
 				if(input == null || input.toString().isEmpty()){
 					AqtMain.aqtmain.setStatus("코드값을 입력하세요." );
 					return "코드값을 입력하세요." ;
@@ -465,8 +495,21 @@ public class AqtRegTcode {
 	            AqtMain.aqtmain.setStatus("" );
 				return null;
 			}
-		});
+		);
 		
+
+		CELL_EDITORS[8].setValidator( (value) -> {
+				AqtMain.aqtmain.setStatus("" );
+				try {
+					Integer.parseInt((String) value);
+				} catch (NumberFormatException e) {
+					AqtMain.aqtmain.setStatus("숫자만 가능합니다.!!" );
+					return "숫자만 가능합니다.!!";
+				}
+				return null;
+			}			
+		);
+
 //		CELL_EDITORS[0] = new CheckboxCellEditor(tblList) ;
 		tvList.setCellEditors(CELL_EDITORS);
 		tvList.setCellModifier(new ICellModifier() {
@@ -502,6 +545,8 @@ public class AqtRegTcode {
 					
 				else if (property.equals(cols1[7]))
 					m.setThost(value.toString());
+				else if (property.equals(cols1[8]))
+					m.setTport(Integer.parseInt(value.toString()));
 				else
 					return ;
 
@@ -531,6 +576,8 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[7]))
 					return t.getThost() ;
 				else if (property.equals(cols1[8]))
+					return t.getTport() +"" ;
+				else if (property.equals(cols1[9]))
 					return t.getDataCnt() ;
 
 				return null;
@@ -541,7 +588,7 @@ public class AqtRegTcode {
 				// TODO Auto-generated method stub
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
-					if ( ! (property.equals(cols1[0]) || property.equals(cols1[6]) || property.equals(cols1[8]))  ) 
+					if ( ! (property.equals(cols1[0]) || property.equals(cols1[6]) || property.equals(cols1[9]))  ) 
 						return true ;
 
 					return ( t.isNew() ) ;
@@ -619,6 +666,8 @@ public class AqtRegTcode {
 					  case 7:
 						  return s.getThost();
 					  case 8:
+						  return s.getTport() +"";
+					  case 9:
 						  return String.format("%,d", s.getDataCnt());
 					  }
 				  return "";

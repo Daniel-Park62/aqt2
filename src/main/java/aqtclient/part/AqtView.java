@@ -193,6 +193,7 @@ public class AqtView {
 			textTstDt.setText( sfmt.format( cmbCode.getTmaster().getTdate() ) );
 			textHost.setText(cmbCode.getTmaster().getThost());
 			textHost.requestLayout();
+			AqtMain.aqtmain.setGtcode(tcode) ;
 		}
 		
 		/* Tservice 테이블의 전체 건수 */
@@ -246,6 +247,7 @@ public class AqtView {
 		IPlotArea plotArea = (IPlotArea)chart.getPlotArea();
 		Composite plot = (Composite)chart.getPlotArea() ;
 		IAxis yAxis = chart.getAxisSet().getYAxis(0) ;
+		
 		plot.addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent arg0) {
 
@@ -254,7 +256,7 @@ public class AqtView {
 
 				try {
 					plotArea.setToolTipText(dformat.format(dt)
-							+ "\n-전문 건수:" + String.format("%2.0f", y));
+							+ String.format("\n전문건수: %2.0f", y));
 				} catch (Exception arg1) {
 					plotArea.setToolTipText(null);
 				}

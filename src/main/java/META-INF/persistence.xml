@@ -6,6 +6,7 @@
 		<class>aqtclient.model.ChartData</class>
 		<class>aqtclient.model.Tconfig</class>
 		<class>aqtclient.model.Texecjob</class>
+		<class>aqtclient.model.Thostmap</class>
 		<class>aqtclient.model.Tmaster</class>
 		<class>aqtclient.model.Trequest</class>
 		<class>aqtclient.model.Tservice</class>

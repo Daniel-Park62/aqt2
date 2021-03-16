@@ -84,7 +84,19 @@ public class AqtMain extends ApplicationWindow {
 //		createActions();
 //		addToolBar(SWT.FLAT | SWT.COLOR_WHITE);
 //		addMenuBar();
-        String dbip = System.getProperty("AQTDB") ;  // 주소:port
+        emf = getCreateEmf();
+        em = AqtMain.emf.createEntityManager() ;
+        em.setFlushMode(FlushModeType.AUTO);
+		System.out.println("AQT2 Started !!");
+		aqtmain = this ;
+		addStatusLine();
+//		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
+		tconfig = em.find(Tconfig.class, 1) ;
+		
+	}
+
+	public static EntityManagerFactory getCreateEmf() {
+		String dbip = System.getProperty("AQTDB") ;  // 주소:port
         if (dbip == null) dbip = System.getenv("AQTDB");
         if (dbip == null) dbip = "localhost:3306" ;
         String sEtc = System.getProperty("AQTOPT") ;
@@ -94,15 +106,8 @@ public class AqtMain extends ApplicationWindow {
  
         properties.put("javax.persistence.jdbc.driver","org.mariadb.jdbc.Driver") ;
         
-        emf = Persistence.createEntityManagerFactory("aqtclient", properties) ;
-        em = AqtMain.emf.createEntityManager() ;
-        em.setFlushMode(FlushModeType.AUTO);
-		System.out.println("AQT2 Started !!");
-		aqtmain = this ;
-		addStatusLine();
-//		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
-		tconfig = em.find(Tconfig.class, 1) ;
-		
+//        emf = Persistence.createEntityManagerFactory("aqtclient", properties) ;
+        return Persistence.createEntityManagerFactory("aqtclient", properties) ;
 	}
 
 	public String getGtcode() {

@@ -81,6 +81,12 @@ public class AqtTranTable extends AqtTableView {
 					Ttcppacket tr =  (Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()  ;
 					
 					Tmaster tmst = tr.tmaster ;
+
+					if ( tmst.getEndDate() != null ) {
+						MessageDialog.openInformation(parent.getShell(), "작업불가", tmst.getCode() + " 는 종료되었습니다.") ;
+						em.close();
+						return ;
+					}
 					
 					if (tmst != null && "3".equals(tmst.getLvl() ) ) {
 						MessageDialog.openInformation(parent.getShell(), "Info", "실시간은 재전송 불가합니다.");
@@ -155,7 +161,10 @@ public class AqtTranTable extends AqtTableView {
 					String sdata = tbl.getItem(tbl.getSelectionIndex()).getText(gcol);
 					clipboard.setContents(new Object[] { sdata }, new Transfer[] { TextTransfer.getInstance() });
 					clipboard.dispose();
-
+					return ;
+				}
+				if (e.keyCode == SWT.CR) {
+					tbl.notifyListeners(SWT.MouseDoubleClick, null);
 				}
 			}
 		});
