@@ -9,12 +9,18 @@ import javax.persistence.EntityManager;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -61,7 +67,7 @@ public class AqtDetailComp extends Dialog {
 		createContents();
 
 		shell.setText(IAqtVar.titnm);
-
+//		shell.setLocation(10, 10);
 		shell.open();
 		
 		Display display = getParent().getDisplay();
@@ -84,7 +90,8 @@ public class AqtDetailComp extends Dialog {
 	private void createContents()  {
 		
 		shell = new Shell(getParent(), getStyle() | SWT.RESIZE | SWT.MAX);
-		shell.setSize(1800, 1000);
+//		shell.setSize(1800, 1000);
+		shell.setBounds(10, 10, 1800, 1000);
 		shell.setBackground(SWTResourceManager.getColor(225,230,246));
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		shell.setLayout( new FillLayout(SWT.VERTICAL) );
@@ -229,6 +236,7 @@ public class AqtDetailComp extends Dialog {
 		private Text txtRcode;
 		private Text txtCdate;
 		Composite compMessage, compDetail ;
+		protected String sv_select = "UTF-8";
 		
 		public StyledText getTxtReceiveMsg() {
 			return this.txtReceiveMsg ;
@@ -431,10 +439,30 @@ public class AqtDetailComp extends Dialog {
 			txtRhead.setText(" ");
 
 			
-			lblReceiveMsg = new Label(compMessage, SWT.NONE);
-			lblReceiveMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			lblReceiveMsg.setText("수신Data");
-			lblReceiveMsg.setFont( IAqtVar.font1) ;
+//			lblReceiveMsg = new Label(compMessage, SWT.NONE);
+//			lblReceiveMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//			lblReceiveMsg.setText("수신Data");
+//			lblReceiveMsg.setFont( IAqtVar.font1) ;
+			
+			Button button = new Button(compMessage, SWT.PUSH);
+		    button.setText("수신Data");
+		    button.setFont( IAqtVar.font1) ;
+		    button.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		        PopupList list = new PopupList(shell, 5);
+
+		        list.setItems(new String[]{"UTF-8","UTF-16","MS949","ISO-8859-1"});
+		        list.select(sv_select );
+		        Point pt = shell.getDisplay().getCursorLocation() ;
+
+		        String selected = list.open(new Rectangle(pt.x, pt.y - 40, 80, 30));
+		        if (selected == null) return ;
+		        sv_select  = selected ;
+		        txtReceiveMsg.setText(tr.getRdataENCODE(selected));
+		      }
+		    });
+		    GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT,SWT.CENTER).applyTo(button);
+
 			
 			Label lblRlen = new Label(compMessage, SWT.NONE);
 			lblRlen.setText("수신Data길이");

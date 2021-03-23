@@ -97,7 +97,7 @@ public class AqtRegTcode {
 //	    
 //	    sashForm = new SashForm(parent, SWT.VERTICAL);
 	    Composite container = new Composite(parent, SWT.NONE) ;
-	    GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(false).applyTo(container);
+	    GridLayoutFactory.fillDefaults().margins(15, 15).numColumns(1).equalWidth(false).applyTo(container);
 	    GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(container);
 	    
 //		Label ltitle = new Label(compHeader, SWT.NONE);
@@ -154,6 +154,7 @@ public class AqtRegTcode {
 		});
 		
 		AqtButton btnimp = new AqtButton(compTit, SWT.PUSH,"전문가져오기");
+		btnimp.setToolTipText("패킷덤프한 pcap 파일에서 데이터를 가져옵니다.");
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).minSize(100, -1).applyTo(btnimp);
 		btnimp.addMouseListener(new MouseAdapter() {
 			@Override
@@ -203,6 +204,7 @@ public class AqtRegTcode {
 		});
 
 		AqtButton btnCopy = new AqtButton(compTit, SWT.PUSH,"전문생성");
+		btnCopy.setToolTipText("다른 테스트 정보로 부터 데이터를 복제하여 새로운 테스트 데이터를 생성합니다.");
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).minSize(100, -1).applyTo(btnCopy);
 		btnCopy.addMouseListener(new MouseAdapter() {
 			@Override
@@ -253,9 +255,11 @@ public class AqtRegTcode {
 		});
 	    
 	    Menu popupMenu = new Menu(tblList);
-
+	    
 	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
-	    addsvc.setText("테스트코드등록");
+	    addsvc.setText("새로등록");
+	    addsvc.setToolTipText("테스트ID를 신규 입력합니다.");
+	    
 	    addsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -282,6 +286,7 @@ public class AqtRegTcode {
 
 	    MenuItem delsvc = new MenuItem(popupMenu, SWT.NONE);
 	    delsvc.setText("삭제");
+	    delsvc.setToolTipText("좌측 체크가 되어 있는 테스트ID를 삭제합니다.");
 	    delsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -311,6 +316,7 @@ public class AqtRegTcode {
 
 	    MenuItem savesvc = new MenuItem(popupMenu, SWT.NONE);
 	    savesvc.setText("저장");
+	    savesvc.setToolTipText("신규입력, 수정된 정보를 저장합니다. \n저장하지 않으면 수정한 정보를 잃게됩니다.");
 	    savesvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -330,6 +336,7 @@ public class AqtRegTcode {
 
 	    MenuItem impdat = new MenuItem(popupMenu, SWT.NONE);
 	    impdat.setText("전문가져오기");
+	    impdat.setToolTipText(btnimp.getToolTipText());
 	    impdat.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -339,6 +346,7 @@ public class AqtRegTcode {
 
 	    MenuItem copysvc = new MenuItem(popupMenu, SWT.NONE);
 	    copysvc.setText("전문생성");
+	    copysvc.setToolTipText(btnCopy.getToolTipText());
 	    copysvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -348,7 +356,8 @@ public class AqtRegTcode {
 		});
 
 	    MenuItem maptohost = new MenuItem(popupMenu, SWT.NONE);
-	    maptohost.setText("IP매핑");
+	    maptohost.setText("IP 매핑");
+	    maptohost.setToolTipText("현행 ip addr 과 port에 대응하는 신규시스템 ip 및 port를 지정합니다.");
 	    maptohost.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -363,9 +372,9 @@ public class AqtRegTcode {
 			}
 		});
 
-
 	    MenuItem pmEndTest = new MenuItem(popupMenu, SWT.NONE);
 	    pmEndTest.setText("테스트종료처리");
+	    pmEndTest.setToolTipText("테스트가 완료되어 더이상 사용하지 않게됩니다.");
 	    pmEndTest.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -386,17 +395,20 @@ public class AqtRegTcode {
 			}
 		});
 
-	    addsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-	    savesvc.setEnabled( addsvc.getEnabled() );
-	    delsvc.setEnabled( addsvc.getEnabled() );
-	    copysvc.setEnabled( addsvc.getEnabled() );
-	    impdat.setEnabled( addsvc.getEnabled() );
-	    pmEndTest.setEnabled( addsvc.getEnabled() );
+	    popupMenu.setEnabled( AqtMain.authtype == AuthType.TESTADM );
+//	    popupMenu.setVisible( popupMenu.getEnabled() );
+//	    addsvc.setEnabled( AqtMain.authtype == AuthType.TESTADM );
+//	    savesvc.setEnabled( addsvc.getEnabled() );
+//	    delsvc.setEnabled( addsvc.getEnabled() );
+//	    copysvc.setEnabled( addsvc.getEnabled() );
+//	    impdat.setEnabled( addsvc.getEnabled() );
+//	    pmEndTest.setEnabled( addsvc.getEnabled() );
+	   
 
 	    tblList.setMenu(popupMenu);
 	    
-	    btnimp.setEnabled(addsvc.getEnabled() );
-	    btnCopy.setEnabled(addsvc.getEnabled() );
+	    btnimp.setEnabled(popupMenu.getEnabled() );
+	    btnCopy.setEnabled(popupMenu.getEnabled() );
 	    
 	    
         String[] cols1 = new String[] 
@@ -414,57 +426,35 @@ public class AqtRegTcode {
 	    	TableColumn tableColumn = tableViewerColumn.getColumn();
 	    	tableColumn.setText(cols1[i]);
 	    	tableColumn.setWidth(columnWidths1[i]);
-	    	
-//	    	if ( i == 5) {
-//	    		
-//	    		tableColumn.addListener(SWT.Selection, (e) -> {
-//						System.out.println(e);
-//			    		Point pt = parent.getDisplay().getCursorLocation() ; 
-//			        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
-//			        	
-//			            String s = (String)cd.open();
-//			            try {
-//							Date dt =  sdf.parse(s) ;
-//							TableItem item = (TableItem) tblList.getSelection() [0];
-//							Tmaster tmaster = (Tmaster) item.getData() ;
-//							tmaster.setTdate(dt);
-//						} catch (Exception e2) {
-//							System.out.println(e2);
-//							// TODO: handle exception
-//						}
-//						
-//					}
-//				);
-//	    	}
-	    	
-//	    	tableColumn.setResizable(i != 0);
 
 	    }
+	    
 	    tblList.addListener(SWT.MeasureItem ,  (arg0) -> {
-	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.8);
+	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.6);
 	    });
-	    tblList.addMouseListener(new MouseAdapter() {
+	    
+	    tblList.addListener(SWT.MouseDoubleClick, (e) -> {
+			int i = tblList.getSelectionIndex() ;
 			
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				System.out.println(e.getSource());
-	    		Point pt = parent.getDisplay().getCursorLocation() ; 
-	        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 10 );
-	        	
-	            String s = (String)cd.open();
-	            try {
-					Date dt =  sdf.parse(s.replace('-', '/')) ;
-					TableItem item = (TableItem) tblList.getSelection() [0];
-					Tmaster tmaster = (Tmaster) item.getData() ;
-					tmaster.setTdate(dt);
-					tvList.refresh();
-				} catch (Exception e2) {
-					System.out.println(e2);
-					// TODO: handle exception
-				}
-				
+			if ( ! tblList.getItem(i).getTextBounds(5).contains(e.x, e.y) ) return ;
+			Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
+			
+    		Point pt = parent.getDisplay().getCursorLocation() ; 
+        	CalDialog cd = new CalDialog(tblList.getShell() , pt.x, pt.y + 10, tmaster.getTdate() );
+        	
+            String s = (String)cd.open();
+            if (s == null) return ;
+            try {
+				Date dt =  sdf.parse(s.replace('-', '/')) ;
+				tmaster.setTdate(dt);
+				tvList.refresh();
+			} catch (Exception e2) {
+				System.out.println(e2);
+				// TODO: handle exception
 			}
-		});
+	    	
+	    });
+	    
 	    tblList.setHeaderVisible(true);
 	    
 	    tvList.setColumnProperties(cols1);
@@ -480,6 +470,7 @@ public class AqtRegTcode {
 			}
 			
 		}
+		
 		CELL_EDITORS[0].setValidator( (input) -> {
 				if(input == null || input.toString().isEmpty()){
 					AqtMain.aqtmain.setStatus("코드값을 입력하세요." );
@@ -497,7 +488,6 @@ public class AqtRegTcode {
 			}
 		);
 		
-
 		CELL_EDITORS[8].setValidator( (value) -> {
 				AqtMain.aqtmain.setStatus("" );
 				try {
@@ -588,7 +578,8 @@ public class AqtRegTcode {
 				// TODO Auto-generated method stub
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
-					if ( ! (property.equals(cols1[0]) || property.equals(cols1[6]) || property.equals(cols1[9]))  ) 
+					if ( ! (property.equals(cols1[0]) || property.equals(cols1[5]) 
+							|| property.equals(cols1[6]) || property.equals(cols1[9]))  ) 
 						return true ;
 
 					return ( t.isNew() ) ;

@@ -88,7 +88,7 @@ public class AqtRegSvc {
 //	    
 //	    sashForm = new SashForm(parent, SWT.VERTICAL);
 	    Composite container = new Composite(parent, SWT.NONE) ;
-	    GridLayoutFactory.fillDefaults().margins(20, 20).numColumns(1).equalWidth(true).applyTo(container);
+	    GridLayoutFactory.fillDefaults().margins(15, 15).numColumns(1).equalWidth(true).applyTo(container);
 	    GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(container);
 	    
 //		Composite compHeader = new Composite(container, SWT.NONE);
@@ -170,6 +170,7 @@ public class AqtRegSvc {
 		});
 		
 		AqtButton btnimp = new AqtButton(compTit, SWT.PUSH,"파일에서가져오기");
+		btnimp.setToolTipText("콤마로 분리된 CSV 형식 파일로 부터 읽어 등록합니다.\n 데이터의 항목순서는 표와같습니다.");
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(false, false).minSize(100, -1).applyTo(btnimp);
 		btnimp.addMouseListener(new MouseAdapter() {
 			@Override
@@ -420,6 +421,7 @@ public class AqtRegSvc {
 
 	    MenuItem impcsv = new MenuItem(popupMenu, SWT.NONE);
 	    impcsv.setText("파일에서 가져오기");
+	    impcsv.setToolTipText("콤마로 분리된 CSV 형식 파일로 부터 읽어 등록합니다.\n 데이터의 항목순서는 표와같습니다.");
 	    impcsv.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {

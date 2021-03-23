@@ -178,16 +178,24 @@ public class Ttcppacket implements Serializable {
 	}
 
 	public String getRdata()  {
-		try {
-			return this.rdata == null ? "" : new String(this.rdata, rhead.contains("UTF-8") || rhead.contains("utf-8")  ? "utf-8" : "euc-kr") ;
-		} catch (UnsupportedEncodingException e) {
-			return "";
-		}
+//		try {
+//			return this.rdata == null ? "" : new String(this.rdata, rhead.toLowerCase().contains("utf")   ? "utf-8" : "euc-kr") ;
+			return this.rdata == null ? "" : new String(this.rdata)   ;
+//		} catch (UnsupportedEncodingException e) {
+//			return "";
+//		}
 	}
 
 	public String getRdataUTF()  {
 		try {
 			return this.rdata == null ? "" : new String(this.rdata, "utf-8") ;
+		} catch (UnsupportedEncodingException e) {
+			return "";
+		}
+	}
+	public String getRdataENCODE(String enc)  {
+		try {
+			return this.rdata == null ? "" : new String(this.rdata, enc) ;
 		} catch (UnsupportedEncodingException e) {
 			return "";
 		}

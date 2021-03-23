@@ -359,8 +359,7 @@ public class AqtStatus {
 				int i = tblTestList.getSelectionIndex() ;
 				if (  i >= 0 ) {
 					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "'" 
-					+ " order by t.uri " ) ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "'" ) ; // + " order by t.uri " ) ;
 				}
 			}
 
@@ -376,8 +375,7 @@ public class AqtStatus {
 				int i = tblTestList.getSelectionIndex() ;
 				if (  i >= 0 ) {
 					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '2' " 
-					+ " order by t.uri " ) ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '2' "); // + " order by t.uri " ) ;
 				}
 				
 			}
@@ -392,8 +390,7 @@ public class AqtStatus {
 				int i = tblTestList.getSelectionIndex() ;
 				if (  i >= 0 ) {
 					Vtrxlist vlist = (Vtrxlist) tblTestList.getItem(i).getData() ;
-					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '1' " 
-					+ " order by t.uri " ) ;
+					AqtMain.openTrList("t.tcode = '"+ vlist.getCode() + "' and t.sflag = '1' "); // + " order by t.uri " ) ;
 				}
 				
 			}

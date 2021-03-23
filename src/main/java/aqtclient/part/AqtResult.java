@@ -392,7 +392,7 @@ public class AqtResult {
 		String tcode = cmbCode.getTcode();
 		AqtMain.aqtmain.setGtcode(tcode);
 		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
-		String ssvc  = textService.getText().trim().isEmpty() ? "": "and uri like '" + textService.getText().trim() + "' ";
+		String ssvc  = textService.getText().trim().isEmpty() ? "": "and uri like '%" + textService.getText().trim() + "%' ";
 		String smsg  = txtMsgcd.getText().trim().isEmpty() ? "": "and rcode = " + txtMsgcd.getText().trim() ;
 //		String qstr = "SELECT v FROM Vtrxdetail v WHERE v.tcode = :tcode and v.svcid like :svcid and v.scrno like :scrno" ;
 		String qstr = 

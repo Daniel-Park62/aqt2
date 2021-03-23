@@ -3,6 +3,8 @@ package aqtclient.part;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,6 +16,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -33,6 +36,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -44,12 +48,19 @@ public class AqtTranTable extends AqtTableView {
 
 	private int gcol = 0;
 	private MenuItem reSendItem ;
+	private AqtTranTable aqtView = this ;
 	
 	public AqtTranTable(Composite parent, int style) {
 		super(parent, style);
 //		TableViewer tv = new TableViewer(parent, style) ;
 		Table tbl = this.getTable();
-//      Menu popupMenu = new Menu(tbl);
+		aqtView = this ;
+		this.setComparator(new ViewerComparator() {
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				return compareElements( e1, e2);
+			}
+		});
+		
 		Menu popupMenu = tbl.getMenu();
 	    MenuItem viewItem = new MenuItem(popupMenu, SWT.NONE);
 	    viewItem.setText("상세보기");
@@ -88,8 +99,8 @@ public class AqtTranTable extends AqtTableView {
 						return ;
 					}
 					
-					if (tmst != null && "3".equals(tmst.getLvl() ) ) {
-						MessageDialog.openInformation(parent.getShell(), "Info", "실시간은 재전송 불가합니다.");
+					if (tmst != null && ("3".equals(tmst.getLvl() ) || "0".equals(tmst.getLvl() ) ) ) {
+						MessageDialog.openInformation(parent.getShell(), "Info", "이 패킷은 재전송 불가합니다.(Origin or 실시간)");
 						em.close();
 						return ;
 					}
@@ -254,7 +265,7 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getRhead() ;
 			}
 		});
-		tvc = createTableViewerColumn("테스트id", 100,0);
+		tvc = createTableViewerColumn("테스트id", 100,8);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -278,13 +289,72 @@ public class AqtTranTable extends AqtTableView {
     private TableViewerColumn createTableViewerColumn(String header, int width, int idx) 
     {
         TableViewerColumn column = new TableViewerColumn(this, SWT.CENTER );
-        column.getColumn().setText(header);
-        column.getColumn().setWidth(width);
-        column.getColumn().setResizable(true);
-        column.getColumn().setMoveable(true);
-
+        TableColumn tcol = column.getColumn() ;
+        tcol.setText(header);
+        tcol.setWidth(width);
+        tcol.setResizable(true);
+        tcol.setMoveable(true);
+        if (idx < 7)
+			tcol.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					Table table = tcol.getParent() ;
+					if (tcol.equals(table.getSortColumn())) {
+						int dire = table.getSortDirection() ;
+						table.setSortDirection(dire == SWT.UP ? SWT.DOWN : dire == SWT.NONE ? SWT.UP : SWT.NONE );
+					} else {
+						table.setSortColumn(tcol);
+						table.setSortDirection(SWT.UP);
+					}
+					aqtView.refresh();
+				}
+			});
+        
         return column;
     }
+    
+    protected int compareElements(Object e1, Object e2) {
+		Table table = aqtView.getTable();
+		int index = Arrays.asList(table.getColumns()).indexOf(table.getSortColumn());
+		int result = 0;
+		Date d1, d2 ;
+		Long l1, l2 ;
+		Double db1,db2;
+		String s1,s2 ;
+		if (index != -1) {
+			switch (index) {
+			case 0:
+				l1 = ((Ttcppacket)e1).getCmpid() ;
+				l2 = ((Ttcppacket)e2).getCmpid() ;
+				result = l1.compareTo(l2);
+				break;
+			case 1:
+			case 2:
+				d1 = ((Ttcppacket)e1).getStime() ;
+				d2 = ((Ttcppacket)e2).getStime() ;
+				result = d1.compareTo(d2);
+				break;
+			case 3:
+				db1 = ((Ttcppacket)e1).getSvctime() ;
+				db2 = ((Ttcppacket)e2).getSvctime() ;
+				result = db1.compareTo(db2);
+				break;
+			case 4:
+			case 5:
+				s1 = ((Ttcppacket)e1).getMethod() ;
+				s2 = ((Ttcppacket)e2).getMethod() ;
+				result = s1.compareTo(s2);
+				break;
+			case 6:
+				l1 = (long) ((Ttcppacket)e1).getRcode() ;
+				l2 = (long) ((Ttcppacket)e2).getRcode() ;
+				result = l1.compareTo(l2);
+				break;
+			}
+		}
+		return table.getSortDirection() == SWT.UP ? result : -result;
+	}
+
+	
 	private class myColumnProvider extends ColumnLabelProvider {
 		@Override
 		public Color getForeground(Object element) {

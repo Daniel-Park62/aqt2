@@ -155,11 +155,10 @@ public class AqtCopyTdata extends Dialog {
 					.executeUpdate() ;
 			em.getTransaction().commit();
 			lmsg.setText(rval);
-			lmsg.requestLayout();
 		} catch (Exception e) {
 			lmsg.setText(e.getMessage() );
 		}
-		
+		lmsg.requestLayout();
 		em.close();
 	}
 }

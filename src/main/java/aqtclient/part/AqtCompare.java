@@ -563,10 +563,10 @@ public class AqtCompare {
 
 		tableViewer.setInput(tempTrxCompList);
 		tableViewer.getTable().setSelection(0);
-		if ( tempTrxCompList.size() > 0 )
+		if ( tempTrxCompList.size() > 0 ) {
 			AqtMain.aqtmain.setGtcode(cmbCode1.getTcode());
 			tbl2data(tempTrxCompList.get(0).getSvcid());
-		
+		}
 	}
 
 	private void tbl2data(String svcid) {

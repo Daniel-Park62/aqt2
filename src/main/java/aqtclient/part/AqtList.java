@@ -86,12 +86,12 @@ public class AqtList  {
     	txtServiceCnt.setEnabled(false);
     	txtServiceCnt.setText("대상서비스수:");
     	txtServiceCnt.setFont(IAqtVar.font13b);
-    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.TOP, true, true));
+    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, true, true));
 
-    	Composite compTestList = new Composite(compHeader, SWT.NONE);
+    	Composite compTestList = new Composite(compHeader, SWT.BORDER);
 //    	compTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	
-    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(2, 1).applyTo(compTestList);
+    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(2, 20).applyTo(compTestList);
     	
     	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(3).applyTo(compTestList);
     	
@@ -195,12 +195,12 @@ public class AqtList  {
 		});
 	    
 	    
-		tblViewerDetail = new AqtTableView(compDetail, SWT.NONE | SWT.FULL_SELECTION);
+		tblViewerDetail = new AqtTableView(compDetail, SWT.BORDER | SWT.FULL_SELECTION);
 		
 		tblDetailList = tblViewerDetail.getTable();
 		tblDetailList.setHeaderBackground(AqtMain.htcol);
 		tblDetailList.setHeaderForeground(AqtMain.forecol);
-		tblDetailList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+		tblDetailList.setForeground(SWTResourceManager.getColor(SWT.COLOR_BLACK));
 		tblDetailList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(tblDetailList);

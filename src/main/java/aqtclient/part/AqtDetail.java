@@ -6,10 +6,16 @@ import javax.persistence.EntityManager;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -42,6 +48,7 @@ public class AqtDetail extends Dialog {
 	private StyledText txtRhead;
 	private Text txtRcode;
 	private Text txtCdate;
+	protected String sv_select = "UTF-8";
 
 	/**
 	 * Create the composite.
@@ -62,7 +69,7 @@ public class AqtDetail extends Dialog {
 	 */
 	public Object open() {
 		createContents();
-//		shell.setLocation(10, 10);
+		shell.setLocation(10, 10);
 		shell.open();
 		
 		Display display = getParent().getDisplay();
@@ -247,8 +254,7 @@ public class AqtDetail extends Dialog {
 
 		Composite compMessage = new Composite(compHeader, SWT.NONE);
 		compMessage.setLayoutData(new GridData(SWT.FILL , SWT.FILL, true, true));
-		GridLayout glm = new GridLayout(3, false) ;
-		compMessage.setLayout(glm);
+		compMessage.setLayout(new GridLayout(3, false));
 //		compMessage.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
 		Label lblm = new Label(compMessage, SWT.NONE);
@@ -277,7 +283,7 @@ public class AqtDetail extends Dialog {
 		lblcomm = new Label(compMessage, SWT.NONE);
 		lblcomm.setText("수신Header");
 		lblcomm.setFont( IAqtVar.font1);
-		lblcomm.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false, false) );
+		lblcomm.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false, false,3,1) );
 
 		txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).span(3, 1).hint(-1, 180).applyTo(txtRhead);
@@ -287,12 +293,30 @@ public class AqtDetail extends Dialog {
 		txtRhead.setFont( IAqtVar.font1);
 
 		
-		Label lblReceiveMsg = new Label(compMessage, SWT.NONE);
-		lblReceiveMsg.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, SWT.CENTER, true, false));
-//		lblReceiveMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
-		lblReceiveMsg.setText("수신Data");
-		lblReceiveMsg.setFont( IAqtVar.font1) ;
-		
+//		Label lblReceiveMsg = new Label(compMessage, SWT.NONE);
+//		lblReceiveMsg.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, SWT.CENTER, true, false));
+//		lblReceiveMsg.setText("수신Data");
+//		lblReceiveMsg.setFont( IAqtVar.font1) ;
+
+		Button button = new Button(compMessage, SWT.PUSH);
+	    button.setText("수신Data");
+	    button.setFont( IAqtVar.font1) ;
+	    button.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent event) {
+	        PopupList list = new PopupList(shell, 5);
+
+	        list.setItems(new String[]{"UTF-8","UTF-16","MS949","ISO-8859-1"});
+	        list.select(sv_select );
+	        Point pt = shell.getDisplay().getCursorLocation() ;
+
+	        String selected = list.open(new Rectangle(pt.x, pt.y - 40, 80, 30));
+	        if (selected == null) return ;
+	        sv_select = selected ;
+	        txtReceiveMsg.setText(tpacket.getRdataENCODE(selected));
+	      }
+	    });
+	    GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT,SWT.CENTER).applyTo(button);
+	    
 		Label lblRlen = new Label(compMessage, SWT.NONE);
 		lblRlen.setText("수신Data길이");
 //		lblRlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
@@ -311,7 +335,7 @@ public class AqtDetail extends Dialog {
 		txtReceiveMsg.setFont( IAqtVar.font1);
 		txtReceiveMsg.setEditable(false);
 		txtReceiveMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		
+
 //		sashForm.pack();
 		compTitle.pack();
 		new Label(compTitle, SWT.NONE);
@@ -329,7 +353,7 @@ public class AqtDetail extends Dialog {
 		txtSlen.setText(Integer.toString(tpacket.getSlen()));
 		txtSendMsg.setText(tpacket.getSdata());
 		txtRlen.setText(Integer.toString(tpacket.getRlen()));
-		txtReceiveMsg.setText(tpacket.getRdata());
+		txtReceiveMsg.setText(tpacket.getRdataUTF());
 		txtCmpid.setText(tpacket.getCmpid()+"");
 		txtTestCode.setText(tpacket.getTcode());
 		txtUri.setText(tpacket.getUri());

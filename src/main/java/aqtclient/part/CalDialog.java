@@ -58,9 +58,7 @@ public class CalDialog extends Dialog implements MouseListener {
     }
 
     public CalDialog(Shell parent, int x, int y) {
-        this(parent, 0);
-        this.x = x;
-        this.y = y;
+        this(parent, x, y, new Date());
         
     }
     public CalDialog(Shell parent, int x, int y, Date now) {
@@ -106,13 +104,14 @@ public class CalDialog extends Dialog implements MouseListener {
         now.setTime(nowDate); //set current date
         now.add(type, value); //add to spec time.
         nowDate = new Date(now.getTimeInMillis()); //result
-        SimpleDateFormat formatter = new 
-SimpleDateFormat("yyyy-MM");//format date
-        nowLabel.setText(formatter.format(nowDate)); //set to label
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM");//format date
+//        nowLabel.setText(formatter.format(nowDate)); //set to label
         setDayForDisplay(now);
     }
 
     private void setDayForDisplay(Calendar now) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM");//format date
+        nowLabel.setText(formatter.format(nowDate)); //set to label
         int currentDay = now.get(Calendar.DATE);
         now.add(Calendar.DAY_OF_MONTH, -(now.get(Calendar.DATE) - 1)); //
         int startIndex = now.get(Calendar.DAY_OF_WEEK) - 1; //
@@ -314,8 +313,9 @@ days[i].setBackground(display.getSystemColor(SWT.COLOR_BLUE)); //
             days[i].setToolTipText("double click get current date.");
         }
 
-        Calendar now = Calendar.getInstance(); //
-        nowDate = new Date(now.getTimeInMillis());
+        Calendar now = Calendar.getInstance(); 
+        if (nowDate != null) now.setTime(nowDate);   
+//        nowDate = new Date(now.getTimeInMillis());
         setDayForDisplay(now);
 
         shell.open();
