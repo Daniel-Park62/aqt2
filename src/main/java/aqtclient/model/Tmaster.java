@@ -135,7 +135,7 @@ public class Tmaster implements Serializable {
 	}
 
 	public String getCmpCode() {
-		return cmpCode;
+		return cmpCode != null ? cmpCode : "";
 	}
 
 	public void setCmpCode(String cmpCode) {

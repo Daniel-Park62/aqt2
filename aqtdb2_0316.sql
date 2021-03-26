@@ -44,23 +44,20 @@ DELIMITER ;
 
 -- 프로시저 aqtdb2.sp_copytestdata 구조 내보내기
 DELIMITER //
-CREATE PROCEDURE `sp_copytestdata`(
+CREATE  PROCEDURE `sp_copytestdata`(
 	IN `src_code` VARCHAR(50),
 	IN `dst_code` VARCHAR(50),
 	IN `cond` VARCHAR(100)
 )
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT ''
 main: BEGIN
 
-/*
-	DECLARE cnt1 INT ;
-	SELECT COUNT(1) INTO cnt1 FROM ttcppacket WHERE TCODE = dst_code ;
-	
-	if cnt1 > 0 then
-		SELECT '이전 복사작업된 데이터가 있습니다.' ;
-		leave main;
-	END if ;
-*/	
 	DECLARE v_pkey INT ;
+	DECLARE v_msg_u VARCHAR(100) DEFAULT '' ;
 	DECLARE v_msg VARCHAR(100) ;
 	
    DECLARE exit handler for SQLEXCEPTION
@@ -83,24 +80,30 @@ main: BEGIN
 	 VALUES ( 3, '전문복제작업', @DST, @SRC,  1, cond, 1, NOW() ) ;
 	
 	SELECT LAST_INSERT_ID() INTO v_pkey ;
-	
+/*	
 	EXECUTE IMMEDIATE @SQLT USING @SRC, @DST  ;
 	if @NN > 0 then
 		SELECT '이전 복사작업된 데이터가 있습니다.' ;
 		UPDATE texecjob SET resultStat = 3, msg = '이전 복사작업된 데이터가 있습니다.', enddt = NOW() WHERE pkey = v_pkey ;
 		leave main;
 	END if ;
+*/
+	UPDATE ttcppacket d, ttcppacket s SET d.rcode = 0 , d.rhead = '미수행', d.rlen = 0, d.sdata = s.sdata, d.rdata = NULL , d.stime = s.stime, d.rtime = s.rtime, d.elapsed = 0
+	WHERE d.tcode = @DST AND s.tcode = @SRC AND d.cmpid = s.cmpid ;
 
-
+	IF ROW_COUNT() > 0 THEN 
+		SELECT CONCAT( ROW_COUNT(), ' 건 수정되었음', CHR(13),CHR(10)) INTO v_msg_u ;
+	END IF ;
+	
 	SET @SQLT = CONCAT ( 
 	' INSERT into ttcppacket 
 	( tcode, cmpid, o_stime, stime, rtime,  elapsed, srcip, srcport, dstip, dstport, proto, method, uri, seqno, ackno, rcode,rhead, slen, rlen, sdata )
 	SELECT ? ,cmpid, o_stime, stime, rtime,  elapsed, srcip, srcport, dstip, dstport, proto, method, uri, seqno, ackno, 0, "미수행",slen, 0, sdata
-	FROM ttcppacket WHERE TCODE = ? ' , cond ) ;
+	FROM ttcppacket t WHERE TCODE = ? and not exists (select 1 from ttcppacket where tcode = ? and cmpid = t.cmpid) ' , cond ) ;
 	
-	EXECUTE IMMEDIATE @SQLT USING @DST, @SRC  ;
+	EXECUTE IMMEDIATE @SQLT USING @DST, @SRC, @DST  ;
 
-	SELECT CONCAT( ROW_COUNT(), ' 건 복제되었음') INTO v_msg ;
+	SELECT CONCAT( v_msg_u, ROW_COUNT(), ' 건 복제되었음') INTO v_msg ;
 	
 	UPDATE texecjob SET resultStat = 2, msg = v_msg , enddt = NOW() WHERE pkey = v_pkey ;
 	
@@ -133,10 +136,10 @@ DELIMITER ;
 
 -- 프로시저 aqtdb2.sp_summary 구조 내보내기
 DELIMITER //
-CREATE PROCEDURE `sp_summary`(
+CREATE  PROCEDURE `sp_summary`(
 	IN `in_tcode` VARCHAR(50)
 )
-    COMMENT '데이터통계수집'
+COMMENT '데이터통계수집'
 BEGIN
 
 	UPDATE tmaster T, (
@@ -166,12 +169,7 @@ BEGIN
 	SET l.svc_cnt  = s.svc_cnt, l.data_cnt = s.data_cnt 
 	WHERE l.lvl = s.lvl ;
 	
-	INSERT INTO tservice (svcid, svckor, svceng, svckind, task, manager, cumcnt )
-			SELECT uri, regexp_replace(uri,'.*/','') nn,regexp_replace(uri,'.*/',''),
-			       '0', min(tcode),'', COUNT(URI)
-			 FROM ttcppacket X WHERE tcode = in_tcode
-			 AND NOT EXISTS (SELECT 1 FROM tservice WHERE SVCID = X.uri)
-			 GROUP BY URI;
+	CALL sp_insService(in_tcode) ;
  
 	UPDATE tservice l, ( 
 		SELECT uri, COUNT(1 ) cnt

@@ -8,6 +8,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -81,10 +83,11 @@ public class AqtCopyTdata extends Dialog {
 		lbl.setFont(IAqtVar.font1b);
 		srcCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(srcCode.getControl());
-		srcCode.findSelect(acode) ;
 
 		dstCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(dstCode.getControl());
+		dstCode.findSelect(acode) ;
+		srcCode.findSelect(dstCode.getCmpCode() );
 
 		Group gr1 = new Group(container, SWT.SHADOW_ETCHED_IN) ;
 		GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).margins(10, 10).applyTo(gr1);
@@ -100,7 +103,7 @@ public class AqtCopyTdata extends Dialog {
 		txtUri.setFont(IAqtVar.font1);
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtUri) ;
-		
+		txtUri.setFocus() ;
 		lbl = new Label(gr1,SWT.NONE );
 		lbl.setText("Return code :");
 		lbl.setFont(IAqtVar.font1b);
@@ -121,13 +124,23 @@ public class AqtCopyTdata extends Dialog {
 		lbl.setText("기타쿼리 :");
 		lbl.setFont(IAqtVar.font1b);
 		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.TOP).grab(false, false).applyTo(lbl) ;
-
+		
 		txtEtc  = new Text(gr1,SWT.BORDER) ;
 		txtEtc.setFont(IAqtVar.font1);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtEtc) ;
-		
-		lmsg = new Label(container, SWT.RIGHT);
-		lmsg.setFont(IAqtVar.font1b);
+		txtEtc.setToolTipText("* method: POST, GET 등 \n* rcode: 응답코드(200 등)\n* sflag: 0.미수행 1.성공 2.실패 \n* srcip,srcport: 소스ip,port\n* dstip,dstport: 목적지ip,port\n* svctime: 응답소요시간");
+		txtEtc.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if ( e.keyCode == SWT.F1) {
+					lmsg.setText(txtEtc.getToolTipText());
+					lmsg.requestLayout();
+				}
+				super.keyReleased(e);
+			}
+		});
+		lmsg = new Label(container, SWT.LEFT);
+		lmsg.setFont(IAqtVar.font1);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).span(2, 1).applyTo(lmsg);
 //		container.pack();
 		return container ;

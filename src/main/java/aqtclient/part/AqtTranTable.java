@@ -133,14 +133,15 @@ public class AqtTranTable extends AqtTableView {
 		});
 
 	    tbl.setMenu(popupMenu);
-		
+	    AqtDetail aqtDetail = new AqtDetail(parent.getShell() ,  SWT.DIALOG_TRIM | SWT.CLOSE );
 
 		tbl.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
 				if ( tbl.getSelectionIndex() >= 0) {
-					AqtDetail aqtDetail = new AqtDetail(parent.getShell() , SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE );
+//					AqtDetail aqtDetail = new AqtDetail(parent.getShell() , SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE );
+//					AqtDetail aqtDetail = new AqtDetail(parent.getShell() ,  SWT.DIALOG_TRIM | SWT.CLOSE );
 //					aqtDetail.setTrxList( (Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData() ); 
 					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() );
 					aqtDetail.open();

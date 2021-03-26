@@ -618,7 +618,7 @@ public class AqtExec  {
 		txtetc = new Text(form1, SWT.BORDER) ;
 		txtetc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,3,1));
 		txtetc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-
+		txtetc.setToolTipText("** t.칼럼명 의 형식으로 입력 **\n* method: POST, GET 등 \n* rcode: 응답코드(200 등)\n* sflag: 0.미수행 1.성공 2.실패 \n* srcip,srcport: 소스ip,port\n* dstip,dstport: 목적지ip,port\n* svctime: 응답소요시간");
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업시작 요청일 :");

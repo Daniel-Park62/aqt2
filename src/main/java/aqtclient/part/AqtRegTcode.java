@@ -403,8 +403,7 @@ public class AqtRegTcode {
 //	    copysvc.setEnabled( addsvc.getEnabled() );
 //	    impdat.setEnabled( addsvc.getEnabled() );
 //	    pmEndTest.setEnabled( addsvc.getEnabled() );
-	   
-
+	    
 	    tblList.setMenu(popupMenu);
 	    
 	    btnimp.setEnabled(popupMenu.getEnabled() );
@@ -435,7 +434,12 @@ public class AqtRegTcode {
 	    
 	    tblList.addListener(SWT.MouseDoubleClick, (e) -> {
 			int i = tblList.getSelectionIndex() ;
-			
+			if (i < 0) return ;
+			if (  tblList.getItem(i).getTextBounds(9).contains(e.x, e.y) ) {
+				Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
+				AqtMain.openTrList("t.tcode = '"+ tmaster.getCode() + "'" ) ; 
+			}
+			if ( ! tvList.getChecked(tblList.getItem(i).getData() ) ) return ;	
 			if ( ! tblList.getItem(i).getTextBounds(5).contains(e.x, e.y) ) return ;
 			Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
 			
@@ -684,7 +688,7 @@ public class AqtRegTcode {
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		StringBuilder qstr = new StringBuilder("SELECT t FROM Tmaster t") ; 
 		if (! txCodenm.getText().isEmpty()  ) {
-			qstr.append(" where t.descl like '" + txCodenm.getText().trim() + "%'");
+			qstr.append(" where t.desc1 like '" + txCodenm.getText().trim() + "%'");
 		}
         tcodeList = em.createQuery(qstr.toString(), Tmaster.class).getResultList();
         		 

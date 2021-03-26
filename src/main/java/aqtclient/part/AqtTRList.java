@@ -1,21 +1,20 @@
 package aqtclient.part;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -25,25 +24,26 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Tservice;
 import aqtclient.model.Ttcppacket;
 
 public class AqtTRList extends Dialog {
 
-	private Table tblDetailResult1;
+	private Table tblList;
 
 	private Text txtReceive1;
 	private Text txtSend1, txtcnt;
 //	private CLabel lblRhead ;
 	
 	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
-	private AqtTranTable tableViewerDR1;
+	private AqtTranTable tView;
 	private String cond_str ;
 	public AqtTRList(Shell parent, String cond_string) {
 		super(parent) ; 
@@ -112,61 +112,104 @@ public class AqtTRList extends Dialog {
 		txtFind.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtFind.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		
-		txtFind.addKeyListener(new KeyListener() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				arg0.doit = true ;
-				TableItem[] tia = tblDetailResult1.getItems() ;
-				String sval = txtFind.getText() ;
-				if (sval.isEmpty() )  return ;
-				
-				loop1 : for(int i=0; i<tia.length ; i++) {
-					for (int j=0; j < tblDetailResult1.getColumnCount(); j++)
-						if ((tia[i].getText(j)).contains(sval)) {
-							tblDetailResult1.setSelection(i);
-							break loop1;
-						}
-				}
-				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				
-			}
-		});
-		
 		txtcnt =  new Text(compCode1, SWT.BORDER) ;
 		txtcnt.setText("0 건");
 		txtcnt.setEditable(false);
 		GridDataFactory.fillDefaults().align(SWT.RIGHT,SWT.TOP) .grab(true, false).applyTo(txtcnt);
 		
-		tableViewerDR1 = new AqtTranTable(compCode1, SWT.NONE | SWT.FULL_SELECTION | SWT.VIRTUAL );
-		tblDetailResult1 = tableViewerDR1.getTable();
-//		final TableCursor cursor = new TableCursor(tblDetailResult1, SWT.NONE);
-//		cursor.setFont(IAqtVar.font1 );
-//		cursor.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
-//		cursor.addSelectionListener(new SelectionAdapter() {
-//		      public void widgetSelected(SelectionEvent e) {
-//		            Clipboard clipboard = new Clipboard(Display.getDefault());
-//		            String sdata = cursor.getRow().getText(cursor.getColumn()) ;
-//		            clipboard.setContents(new Object[] { sdata }, new Transfer[] { TextTransfer.getInstance() });
-//		            clipboard.dispose();
-//		        }
-//		});
-		
-		tblDetailResult1.addSelectionListener(new SelectionAdapter() {
+		tView = new AqtTranTable(compCode1, SWT.NONE | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
+		tblList = tView.getTable();
+		Menu pmenu = tblList.getMenu() ;
+	    MenuItem delsvc = new MenuItem(pmenu, SWT.NONE);
+	    delsvc.setText("삭제");
+	    delsvc.setToolTipText("선택된 전문을 삭제합니다.\r\n복구는 불가능하며 원본으로부터 복제생성할 수 있습니다.");
+	    delsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int i = tblDetailResult1.getSelectionIndex() ;
-				txtSend1.setText(tempTrxList1.get(i).getSdata());
-//				lblRhead.setText(tempTrxList1.get(i).getRhead());
-				txtReceive1.setText(tempTrxList1.get(i).getRdatam());
+			public void widgetSelected(SelectionEvent arg0) {
+				EntityManager em = AqtMain.emf.createEntityManager() ;
+				StringBuffer del = new StringBuffer();
+				em.getTransaction().begin();
+				for ( TableItem item : tblList.getSelection() ) {
+					Ttcppacket tr = (Ttcppacket)item.getData() ;
+					tr = em.merge(tr) ;
+					em.remove(tr);
+					del.append(tr.getCmpid() + " ") ;
+				}
+				if ( del.length() == 0 ) { 
+					em.close();
+					return ;
+				}
+				del.append("\r\n 삭제하시겠습니까?") ;
+				if ( MessageDialog.openQuestion(getParentShell(), "삭제", del.toString() ) ) {
+					em.getTransaction().commit();
+					refreshScreen(); 
+				} else {
+					em.getTransaction().rollback();
+				}
+				em.close();
+			}
+		});
+	    delsvc.setEnabled(AqtMain.authtype == AuthType.TESTADM );
+	    
+	    MenuItem msetfirst = new MenuItem(pmenu, SWT.NONE);
+	    msetfirst.setText("첫번째로 수행");
+	    msetfirst.addSelectionListener(new SelectionAdapter() {
+		    @Override
+		    public void widgetSelected(SelectionEvent e) {
+		    	int i = tblList.getSelectionIndex() ;
+		    	if (i<0) return ;
+		    	if (! MessageDialog.openQuestion(getParentShell(),"확인","이 전문을 테스트 시 첫번째로 송신합니까?\r\n" + tblList.getItem(i).getText()) ) return ;
+		    	
+		    	Ttcppacket tr = (Ttcppacket)tblList.getItem(i).getData() ;
+		    	EntityManager em = AqtMain.emf.createEntityManager() ;
+		    	em.getTransaction().begin();
+		    	Date min_dt = (Date) em.createNativeQuery("SELECT DATE_ADD( MIN(o_stime), INTERVAL -1 SECOND)  FROM ttcppacket WHERE tcode = ?" )
+		    			.setParameter(1, tr.getTcode())
+		    			.getSingleResult() ;
+		    	tr.setOStime(min_dt );
+
+		    	em.merge(tr) ;
+		    	em.getTransaction().commit();
+		    	em.close();
+		    	refreshScreen(); 
+		    }
+	    });
+	    msetfirst.setEnabled(AqtMain.authtype == AuthType.TESTADM );
+	    
+	    tblList.setMenu(pmenu);
+	    
+		txtFind.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				arg0.doit = true ;
+				String sval = txtFind.getText() ;
+				if (sval.isEmpty() )  return ;
+				TableItem[] tia = tblList.getItems() ;
+				loop1 : for(int i=0; i<tia.length ; i++) {
+					for (int j=0; j < tblList.getColumnCount(); j++)
+						if ((tia[i].getText(j)).contains(sval)) {
+							tblList.setSelection(i);
+							break loop1;
+						}
+				}
 			}
 		});
 		
-		tblDetailResult1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
-
+		
+		tblList.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int i = tblList.getSelectionIndex() ;
+				if (i<0) return ;
+				Ttcppacket tr = ((Ttcppacket) tblList.getItem(i).getData()) ;
+				txtSend1.setText(tr.getSdata());
+//				lblRhead.setText(tempTrxList1.get(i).getRhead());
+				txtReceive1.setText(tr.getRdatam());
+			}
+		});
+		
+		tblList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		
 		Label lblSend1 = new Label(compCode1, SWT.NONE);
 		lblSend1.setText("SEND");
 		lblSend1.setFont(IAqtVar.font1);
@@ -194,7 +237,7 @@ public class AqtTRList extends Dialog {
 		txtReceive1.setEditable(false);
 		txtReceive1.setFont(IAqtVar.font1);
 		refreshScreen() ;
-//		tableViewerDR1.setResendEnabled(true);
+//		tView.setResendEnabled(true);
 		return container ;
 	}
 
@@ -207,9 +250,9 @@ public class AqtTRList extends Dialog {
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		
 		TypedQuery<Ttcppacket> qTrx = em
-				.createQuery("select t from Ttcppacket t where " + cond_str,
+				.createQuery("select t from Ttcppacket t where " + cond_str + "order by t.oStime",
 						Ttcppacket.class) ;
-		
+		qTrx.setMaxResults(10000);
 //		Query query  = em.createNativeQuery(
 //				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
 //					" cast(ifnull(rdata,'') as char(150)) rdata,  t.rlen , t.rtime,  t.scrno, " +
@@ -241,12 +284,12 @@ public class AqtTRList extends Dialog {
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
 //			lblRhead.setText(tempTrxList1.get(0).getRhead());
 			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
-			tblDetailResult1.setSelection(0);
+			tblList.setSelection(0);
 
 		}
 
 		em.close();
-		tableViewerDR1.setInput(tempTrxList1);
+		tView.setInput(tempTrxList1);
 		AqtMain.container.setCursor(IAqtVar.arrow);
 
 	}
