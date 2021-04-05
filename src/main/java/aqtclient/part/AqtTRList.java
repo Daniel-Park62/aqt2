@@ -42,6 +42,7 @@ public class AqtTRList extends Dialog {
 	private Text txtSend1, txtcnt;
 //	private CLabel lblRhead ;
 	
+	private int imax = 100 , itotal = -1, ipos = 0 ;
 	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
 	private AqtTranTable tView;
 	private String cond_str ;
@@ -65,18 +66,54 @@ public class AqtTRList extends Dialog {
     
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-        createButton(parent, IDialogConstants.ABORT_ID, "새로고침", false);
-        
+        createButton(parent, IDialogConstants.ENTRY_FIELD_WIDTH, "<<첫페이지", false);
+        createButton(parent, IDialogConstants.BACK_ID, "<이전페이지", false).setToolTipText(getMaxCnt() + " per page");
+        createButton(parent, IDialogConstants.NEXT_ID, "다음페이지 >", false).setToolTipText(getMaxCnt() + " per page");
+        createButton(parent, IDialogConstants.FINISH_ID, "끝페이지 >>", false);
+        createButton(parent, IDialogConstants.SELECT_ALL_ID, "전체가져오기", false);
+        createButton(parent, IDialogConstants.RETRY_ID, "새로고침", false);
         createButton(parent, IDialogConstants.CLOSE_ID, "Close", false);
     }
     
-    @Override
+    private int getMaxCnt() {
+		return imax;
+	}
+    
+    public void setMaxCnt(int maxc) {
+    	imax = maxc ;
+    }
+	@Override
     protected void buttonPressed ( final int buttonId )
     {
-        if ( buttonId == IDialogConstants.CLOSE_ID )
-            close ();
-        else if ( buttonId == IDialogConstants.ABORT_ID )
+    	
+        if ( buttonId == IDialogConstants.SELECT_ALL_ID ) {
+        	ipos = 0 ;
+        	setMaxCnt(0);
         	refreshScreen();
+        } else if ( buttonId == IDialogConstants.ENTRY_FIELD_WIDTH ) {
+            	if (ipos <= 0 ) return;
+            	ipos = 0 ;
+            	refreshScreen();
+        } else if ( buttonId == IDialogConstants.BACK_ID ) {
+        	if (ipos <= 0 ) return;
+        	ipos -= getMaxCnt() ;
+        	refreshScreen();
+        } else if ( buttonId == IDialogConstants.NEXT_ID ) {
+        	if (ipos + getMaxCnt() > itotal) return;
+        	ipos += getMaxCnt() ;
+        	refreshScreen();
+        } else if ( buttonId == IDialogConstants.FINISH_ID ) {
+        	if (ipos + getMaxCnt() > itotal) return;
+        	ipos = (itotal / getMaxCnt()) * getMaxCnt()  ;
+        	refreshScreen();
+        } else if ( buttonId == IDialogConstants.CLOSE_ID )
+            close ();
+        else if ( buttonId == IDialogConstants.RETRY_ID ) {
+        	itotal = 0;
+        	tblList.notifyListeners(SWT.Resize, null);
+        	refreshScreen();
+        }
+        	
     }
 	@Override
 	protected Control createDialogArea(Composite parent) {
@@ -119,6 +156,17 @@ public class AqtTRList extends Dialog {
 		
 		tView = new AqtTranTable(compCode1, SWT.NONE | SWT.FULL_SELECTION | SWT.VIRTUAL | SWT.MULTI);
 		tblList = tView.getTable();
+		tblList.addListener(SWT.Resize , (e) -> {
+			AqtMain.aqtmain.setStatus(tblList.getItemHeight() + ":" + tblList.getSize().y);	
+			if ( tblList.getSize().y > 0 ) {
+				setMaxCnt( ( tblList.getSize().y - tblList.getHeaderHeight()) / tblList.getItemHeight()  );
+				this.getButton(IDialogConstants.NEXT_ID).setToolTipText(getMaxCnt() + " per Page");
+				this.getButton(IDialogConstants.BACK_ID).setToolTipText(getMaxCnt() + " per Page");
+				if ( itotal == -1 )  refreshScreen();
+			}
+		});
+
+
 		Menu pmenu = tblList.getMenu() ;
 	    MenuItem delsvc = new MenuItem(pmenu, SWT.NONE);
 	    delsvc.setText("삭제");
@@ -199,6 +247,7 @@ public class AqtTRList extends Dialog {
 		tblList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				AqtMain.aqtmain.setStatus(tblList.getSelectionCount() + "건 선택됨");
 				int i = tblList.getSelectionIndex() ;
 				if (i<0) return ;
 				Ttcppacket tr = ((Ttcppacket) tblList.getItem(i).getData()) ;
@@ -236,23 +285,32 @@ public class AqtTRList extends Dialog {
 		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
 		txtReceive1.setEditable(false);
 		txtReceive1.setFont(IAqtVar.font1);
-		refreshScreen() ;
-//		tView.setResendEnabled(true);
+		
+//		refreshScreen() ;
+
 		return container ;
 	}
 
-	private void refreshScreen() {
+	private synchronized void refreshScreen() {
 		EntityManager em = AqtMain.emf.createEntityManager();
-		em.clear();
-		em.getEntityManagerFactory().getCache().evictAll();
+//		em.clear();
+//		em.getEntityManagerFactory().getCache().evictAll();
 		
 		tempTrxList1 = new ArrayList<Ttcppacket>();
 		AqtMain.container.setCursor(IAqtVar.busyc);
-		
+		if (itotal <= 0) {
+			itotal = Math.toIntExact(  em.createQuery("select count(1) from Ttcppacket t where " + cond_str, Long.class ).getSingleResult() );
+			ipos = 0 ;
+		} 
 		TypedQuery<Ttcppacket> qTrx = em
 				.createQuery("select t from Ttcppacket t where " + cond_str + "order by t.oStime",
 						Ttcppacket.class) ;
-		qTrx.setMaxResults(10000);
+		
+//		System.out.println(ipos + ":" + getMaxCnt() );
+		if ( getMaxCnt() > 0 ) {
+			qTrx.setFirstResult(ipos);
+			qTrx.setMaxResults(getMaxCnt());
+		}
 //		Query query  = em.createNativeQuery(
 //				 "SELECT pkey , t.uuid, ifnull(t.msgcd,''),  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
 //					" cast(ifnull(rdata,'') as char(150)) rdata,  t.rlen , t.rtime,  t.scrno, " +
@@ -273,25 +331,23 @@ public class AqtTRList extends Dialog {
 
 		txtSend1.setText("");
 		txtReceive1.setText("");
-		txtcnt.setText(String.format("%,d 건", tempTrxList1.size()));
+		if ( getMaxCnt() > 0)
+			txtcnt.setText(String.format("총 %,d 건  ( %d / %d Page )", itotal, ipos / getMaxCnt() + 1, itotal / getMaxCnt() + 1));
+		else 
+			txtcnt.setText(String.format("총 %,d 건", itotal) );
 		
-		/* 상단 서비스정보 및 화면 정보의 정확한 정의가 필요함 -> 추후 수정 */
-		if (!tempTrxList1.isEmpty()) {
-
-//			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
-//			qSvc.setParameter("svcid", tempTrxList1.get(0).getSvcid());
-			
-			txtSend1.setText(tempTrxList1.get(0).getSdata());
-//			lblRhead.setText(tempTrxList1.get(0).getRhead());
-			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
-			tblList.setSelection(0);
-
-		}
-
+		txtcnt.requestLayout();
 		em.close();
 		tView.setInput(tempTrxList1);
-		AqtMain.container.setCursor(IAqtVar.arrow);
+		
+		if (!tempTrxList1.isEmpty()) {
+			txtSend1.setText(tempTrxList1.get(0).getSdata());
+			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
+			tblList.setSelection(0);
+		}
 
+		AqtMain.container.setCursor(IAqtVar.arrow);
+		
 	}
 
 

@@ -350,9 +350,9 @@ public class AqtDetail extends Dialog {
 			return;
 		SimpleDateFormat dformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S") ;
 		txtPkey.setText(tpacket.getPkey()+"");
-		txtSlen.setText(Integer.toString(tpacket.getSlen()));
+		txtSlen.setText(String.format("%,d",tpacket.getSlen()));
 		txtSendMsg.setText(tpacket.getSdata());
-		txtRlen.setText(Integer.toString(tpacket.getRlen()));
+		txtRlen.setText(String.format("%,d", tpacket.getRlen()));
 		txtReceiveMsg.setText(tpacket.getRdataUTF());
 		txtCmpid.setText(tpacket.getCmpid()+"");
 		txtTestCode.setText(tpacket.getTcode());

@@ -191,7 +191,7 @@ public class AqtTranTable extends AqtTableView {
 
 		TableViewerColumn tvc;
 
-		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
+		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH:mm:ss");
 
 		tvc = createTableViewerColumn("패킷id", 120, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
@@ -202,7 +202,7 @@ public class AqtTranTable extends AqtTableView {
 				return "" + tr.getCmpid();
 			}
 		});
-		tvc = createTableViewerColumn("송신시간", 150, 1);
+		tvc = createTableViewerColumn("송신시간", 140, 1);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -211,7 +211,7 @@ public class AqtTranTable extends AqtTableView {
 				return smdfmt.format(tr.getStime());
 			}
 		});
-		tvc = createTableViewerColumn("수신시간", 150, 2);
+		tvc = createTableViewerColumn("수신시간", 140, 2);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -220,7 +220,7 @@ public class AqtTranTable extends AqtTableView {
 				return smdfmt.format(tr.getRtime());
 			}
 		});
-		tvc = createTableViewerColumn("소요시간", 80, 3);
+		tvc = createTableViewerColumn("소요시간", 70, 3);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -229,7 +229,7 @@ public class AqtTranTable extends AqtTableView {
 				return String.format("%.3f", tr.getSvctime());
 			}
 		});
-		tvc = createTableViewerColumn("Method", 80, 4);
+		tvc = createTableViewerColumn("Method", 70, 4);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -247,7 +247,7 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getUri();
 			}
 		});
-		tvc = createTableViewerColumn("응답코드", 80, 6);
+		tvc = createTableViewerColumn("응답코드", 70, 6);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -256,7 +256,17 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getRcode() + ""  ;
 			}
 		});
-		tvc = createTableViewerColumn("응답Header", 500, 7);
+		tvc = createTableViewerColumn("수신크기", 70, 7);
+		tvc.setLabelProvider(new myColumnProvider() {
+			public String getText(Object element) {
+				if (element == null)
+					return super.getText(element);
+				Ttcppacket tr = (Ttcppacket) element;
+				return String.format("%,d", tr.getRlen() );
+			}
+		});
+
+		tvc = createTableViewerColumn("응답Header", 500, 8);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
@@ -266,7 +276,7 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getRhead() ;
 			}
 		});
-		tvc = createTableViewerColumn("테스트id", 100,8);
+		tvc = createTableViewerColumn("테스트id", 80,9);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -295,7 +305,7 @@ public class AqtTranTable extends AqtTableView {
         tcol.setWidth(width);
         tcol.setResizable(true);
         tcol.setMoveable(true);
-        if (idx < 7)
+        if (idx < 8)
 			tcol.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					Table table = tcol.getParent() ;
@@ -348,6 +358,11 @@ public class AqtTranTable extends AqtTableView {
 			case 6:
 				l1 = (long) ((Ttcppacket)e1).getRcode() ;
 				l2 = (long) ((Ttcppacket)e2).getRcode() ;
+				result = l1.compareTo(l2);
+				break;
+			case 7:
+				l1 = (long) ((Ttcppacket)e1).getRlen() ;
+				l2 = (long) ((Ttcppacket)e2).getRlen() ;
 				result = l1.compareTo(l2);
 				break;
 			}

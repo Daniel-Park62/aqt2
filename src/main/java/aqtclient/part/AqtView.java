@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -69,8 +70,8 @@ public class AqtView {
 		Composite compHeader = new Composite(mainform, SWT.NONE);
 		GridLayout headerLayout = new GridLayout(1, false);
 		headerLayout.verticalSpacing = 20;
-		headerLayout.marginTop = 20;
-		headerLayout.marginBottom = 20;
+		headerLayout.marginTop = 15;
+		headerLayout.marginBottom = 15;
 		headerLayout.marginWidth = 15;
 		compHeader.setLayout(headerLayout);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(compHeader);
@@ -80,16 +81,14 @@ public class AqtView {
 		ltitle.setImage(AqtMain.getMyimage("tit_view.png"));
 		ltitle.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
-		Composite compIn = new Composite(compHeader, SWT.BORDER);
+		Composite compIn = new Composite(mainform, SWT.BORDER);
 		GridData titleGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 
 		compIn.setLayoutData(titleGridData);
-		GridLayout glin = new GridLayout(7, false);
-		glin.horizontalSpacing = 10;
-		compIn.setLayout(glin);
-
+		GridLayoutFactory.fillDefaults().numColumns(7).equalWidth(false).margins(10, 10).applyTo(compIn);
+		
 		Label lbl = new Label(compIn, SWT.NONE);
-		lbl.setText("테스트ID:");
+		lbl.setText("•테스트ID :");
 		lbl.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 		lbl.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER, false, false));
 		lbl.setFont(IAqtVar.font1b);
@@ -105,7 +104,7 @@ public class AqtView {
 		Label lblTstDt = new Label(compIn, SWT.NONE);
 		lblTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 		lblTstDt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
-		lblTstDt.setText("테스트기준일자:");
+		lblTstDt.setText("•테스트기준일자 :");
 		lblTstDt.setFont(IAqtVar.font1b);
 
 		textTstDt = new Label(compIn, SWT.NONE);
@@ -116,7 +115,7 @@ public class AqtView {
 		
 
 		lblHost = new Label(compIn, SWT.NONE);
-		lblHost.setText("대상호스트:");
+		lblHost.setText("•대상호스트:");
 		lblHost.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 		lblHost.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
 		lblHost.setFont(IAqtVar.font1b);
@@ -141,26 +140,26 @@ public class AqtView {
 		Label lblPrgrssRt = new Label(compIn, SWT.NONE);
 		lblPrgrssRt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 
-		lblPrgrssRt.setText("전체누적진도율:");
-		lblPrgrssRt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,true, false));
+		lblPrgrssRt.setText("•전체누적진도율 :");
+		lblPrgrssRt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
 		lblPrgrssRt.setFont(IAqtVar.font1b);
 
 		textPrgrssRt = new Label(compIn, SWT.NONE);
-		textPrgrssRt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false,1,1));
-		textPrgrssRt.setFont(IAqtVar.font1);
+		textPrgrssRt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+		textPrgrssRt.setFont(IAqtVar.font1b);
 		textPrgrssRt.setText("0.0% (0 / 0)");
 		textPrgrssRt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
 		Label lblTrxOccrCnt = new Label(compIn, SWT.NONE);
 		lblTrxOccrCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		lblTrxOccrCnt.setText("트랜잭션 건수:");
+		lblTrxOccrCnt.setText("•트랜잭션 건수 :");
 		lblTrxOccrCnt.setFont(IAqtVar.font1b);
 		lblTrxOccrCnt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,true, false));
 
 		textTrxOccrCnt = new Label(compIn, SWT.NONE);
 		textTrxOccrCnt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false,4,1));
-		textTrxOccrCnt.setFont(IAqtVar.font1);
-		textTrxOccrCnt.setText("% 0건 [정상: 0  실패: 0 성공율: 0%]" ) ;
+		textTrxOccrCnt.setFont(IAqtVar.font1b);
+		textTrxOccrCnt.setText("% 0건 [정상: 0  실패: 0 성공율: 0%]       " ) ;
 		textTrxOccrCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
 		compIn.pack();
