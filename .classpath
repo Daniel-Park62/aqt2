@@ -32,5 +32,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="lib" path="D:/PROJ/swtchart/org.eclipse.swtchart_0.12.0.202003130409.jar"/>
 	<classpathentry kind="lib" path="D:/PROJ/swt-4.19/swt.jar"/>
+	<classpathentry kind="lib" path="D:/eclipsercp/eclipse/plugins/org.eclipse.nebula.widgets.cdatetime.css_1.0.0.202104062029.jar"/>
+	<classpathentry kind="lib" path="D:/eclipsercp/eclipse/plugins/org.eclipse.nebula.widgets.cdatetime_1.5.0.202104062029.jar"/>
+	<classpathentry kind="lib" path="D:/eclipsercp/eclipse/plugins/org.eclipse.nebula.cwt_1.1.0.202104062029.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

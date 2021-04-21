@@ -5,8 +5,8 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -14,17 +14,17 @@ import aqtclient.model.Tmaster;
 
 public class AqtTcodeCombo  {
 	private List<Tmaster> tlist ;
-	private Combo combo ;
+	private CCombo combo ;
 	
 	public AqtTcodeCombo(Composite parent, int style) {
-		combo = new Combo(parent, style);
+		combo = new CCombo(parent, style | SWT.BORDER);
 		
 		combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		combo.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		combo.setFont(IAqtVar.font1);
 		resetData() ;
 	}
-	public Combo getControl() {
+	public CCombo getControl() {
 		return combo ;
 	}
 	public String getTcode() {

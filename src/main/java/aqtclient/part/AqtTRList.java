@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -42,7 +43,7 @@ public class AqtTRList extends Dialog {
 	private Text txtSend1, txtcnt;
 //	private CLabel lblRhead ;
 	
-	private int imax = 100 , itotal = -1, ipos = 0 ;
+	private int imax = 100 , itotal = -1, ipos = 0, istc = -1 ;
 	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
 	private AqtTranTable tView;
 	private String cond_str ;
@@ -104,7 +105,7 @@ public class AqtTRList extends Dialog {
         	refreshScreen();
         } else if ( buttonId == IDialogConstants.FINISH_ID ) {
         	if (ipos + getMaxCnt() > itotal) return;
-        	ipos = (itotal / getMaxCnt()) * getMaxCnt()  ;
+        	ipos = getMaxCnt() == 0 ? 0 : (itotal / getMaxCnt()) * getMaxCnt()  ;
         	refreshScreen();
         } else if ( buttonId == IDialogConstants.CLOSE_ID )
             close ();
@@ -135,7 +136,7 @@ public class AqtTRList extends Dialog {
     	ltitle.setFont( IAqtVar.title_font );
 
 		Composite compCode1 = new Composite(compHeader, SWT.NONE);
-		GridLayout gl_compCode1 = new GridLayout(3,false);
+		GridLayout gl_compCode1 = new GridLayout(4,false);
 		gl_compCode1.verticalSpacing = 5;
 		gl_compCode1.marginHeight = 10;
 		gl_compCode1.marginWidth = 15;
@@ -148,6 +149,37 @@ public class AqtTRList extends Dialog {
 		Text txtFind = new Text(compCode1, SWT.BORDER) ;
 		txtFind.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtFind.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		Button btn_next = new Button(compCode1, SWT.PUSH );
+		btn_next.setText("Next");
+		btn_next.addSelectionListener( new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String sval = txtFind.getText() ;
+				if (sval.isEmpty() )  return ;
+				TableItem[] tia = tblList.getItems() ;
+
+				loop1 : for(int i=tblList.getSelectionIndex() ; i<tia.length ; i++) {
+					for (int j=istc+1; j < tblList.getColumnCount(); j++)
+						if ((tia[i].getText(j)).contains(sval)) {
+							tblList.setSelection(i);
+							istc = j ;
+							break loop1;
+						}
+					istc = -1 ;
+				}
+				super.widgetSelected(e);
+			}
+		});
+		GridDataFactory.fillDefaults().align(SWT.LEFT,SWT.CENTER) .grab(true, false).applyTo(btn_next);
+		txtFind.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				arg0.doit = true ;
+				istc = -1 ;
+				btn_next.notifyListeners(SWT.Selection, null);
+			}
+		});
+		
 		
 		txtcnt =  new Text(compCode1, SWT.BORDER) ;
 		txtcnt.setText("0 건");
@@ -226,23 +258,6 @@ public class AqtTRList extends Dialog {
 	    
 	    tblList.setMenu(pmenu);
 	    
-		txtFind.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				arg0.doit = true ;
-				String sval = txtFind.getText() ;
-				if (sval.isEmpty() )  return ;
-				TableItem[] tia = tblList.getItems() ;
-				loop1 : for(int i=0; i<tia.length ; i++) {
-					for (int j=0; j < tblList.getColumnCount(); j++)
-						if ((tia[i].getText(j)).contains(sval)) {
-							tblList.setSelection(i);
-							break loop1;
-						}
-				}
-			}
-		});
-		
 		
 		tblList.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -257,7 +272,7 @@ public class AqtTRList extends Dialog {
 			}
 		});
 		
-		tblList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+		tblList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
 		
 		Label lblSend1 = new Label(compCode1, SWT.NONE);
 		lblSend1.setText("SEND");
@@ -265,7 +280,7 @@ public class AqtTRList extends Dialog {
 //		lblSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		txtSend1 = new Text(compCode1, SWT.BORDER);
-		txtSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
+		txtSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,3,1));
 		txtSend1.setEditable(false);
 		txtSend1.setFont(IAqtVar.font1);
 
@@ -282,7 +297,7 @@ public class AqtTRList extends Dialog {
 		lblSend1.setFont(IAqtVar.font1);
 
 		txtReceive1 = new Text(compCode1, SWT.BORDER);
-		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,2,1));
+		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,3,1));
 		txtReceive1.setEditable(false);
 		txtReceive1.setFont(IAqtVar.font1);
 		

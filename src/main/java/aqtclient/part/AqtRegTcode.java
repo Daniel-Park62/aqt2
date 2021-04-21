@@ -33,6 +33,8 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.persistence.internal.sessions.DirectCollectionChangeRecord.NULL;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ControlEditor;
+import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -236,9 +238,19 @@ public class AqtRegTcode {
     	
     	tblList.setFont(IAqtVar.font1b);
 	    tvList.setUseHashlookup(true);
+	    
+	    tblList.addTraverseListener((e) -> {
+	    	if (e.detail == SWT.TRAVERSE_TAB_NEXT )
+	            e.doit = false;
+	    });
+
 	    tblList.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
+		    	if (e.keyCode == SWT.TAB) {
+		    		e.doit = false;
+		    	}
+	            
 				int i = tblList.getSelectionIndex() ;
 				if (i >= 0 && e.stateMask == SWT.CTRL && (e.keyCode == 'c' || e.keyCode == 'C')) {
 					Clipboard clipboard = new Clipboard(Display.getDefault());
@@ -286,7 +298,7 @@ public class AqtRegTcode {
 
 	    MenuItem delsvc = new MenuItem(popupMenu, SWT.NONE);
 	    delsvc.setText("삭제");
-	    delsvc.setToolTipText("좌측 체크가 되어 있는 테스트ID를 삭제합니다.");
+	    delsvc.setToolTipText("좌측 체크가 되어 있는 테스트ID를 삭제합니다.\n또한 관련 전문 모두 삭제됩니다.");
 	    delsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -296,13 +308,20 @@ public class AqtRegTcode {
 					em.getTransaction().begin();
 					for ( Object s : tvList.getCheckedElements() ) {
 						Tmaster tm = (Tmaster)s ;
-						if (  tm.getEndDate() != null || tm.getDataCnt() > 0 ) {
+//						if (  tm.getEndDate() != null || tm.getDataCnt() > 0 ) {
+						if (  tm.getEndDate() != null ) {
 							undel.append(tm.getCode() + " ") ;
 							continue ;
 						}
+						int cnt = tm.getDataCnt() ;
 						del.append(tm.getCode() + " ") ;
+						em.createQuery("DELETE FROM Ttcppacket t WHERE t.tcode = :tcode")
+							.setParameter("tcode", tm.getCode()).executeUpdate() ;
+					
+						if (cnt>0) del.append(String.format("(전문 %,d건 삭제)", cnt)) ;
 						em.remove(tm);
 						tcodeList.remove(s) ;
+						
 					}
 						
 					em.getTransaction().commit();
@@ -675,8 +694,6 @@ public class AqtRegTcode {
 				return null;
 			}
 		});
-	    
-
 	}
 	
 	private void queryScr () {

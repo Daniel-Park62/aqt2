@@ -123,7 +123,7 @@ public class AqtResult {
 		lblTestCode1.setFont(IAqtVar.font1);
 		lblTestCode1.setText("테스트ID");
 
-		cmbCode = new AqtTcodeCombo(compTitle, SWT.READ_ONLY);
+		cmbCode = new AqtTcodeCombo(compTitle, SWT.READ_ONLY | SWT.FLAT);
 		cmbCode.getControl().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

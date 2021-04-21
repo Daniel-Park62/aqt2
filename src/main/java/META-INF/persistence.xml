@@ -14,6 +14,8 @@
 		<class>aqtclient.model.Ttransaction</class>
 		<class>aqtclient.model.Vtrxdetail</class>
 		<class>aqtclient.model.Vtrxlist</class>
+		<class>aqtclient.model.Tapphost</class>
+		<class>aqtclient.model.Tapplication</class>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/aqtdb2"/>
 			<property name="javax.persistence.jdbc.user" value="aqtdb"/>

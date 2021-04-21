@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PopupList;
@@ -114,7 +115,7 @@ public class AqtDetail extends Dialog {
 		Composite compTitle = new Composite(compHeader, SWT.LINE_DASH);
 		
 		GridData gd_compTitle = new GridData(SWT.FILL , SWT.TOP, true, false);
-		gd_compTitle.horizontalSpan = 10;
+//		gd_compTitle.horizontalSpan = 6;
 		compTitle.setLayoutData(gd_compTitle);
 		compTitle.setLayout(new GridLayout(3, false));
 //		compTitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
@@ -124,7 +125,29 @@ public class AqtDetail extends Dialog {
 		
     	ltitle.setText("전문상세보기" ) ;
     	ltitle.setFont( IAqtVar.title_font );
-//    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));		
+    	GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(ltitle);
+    	
+    	Button bt_next = new Button(compTitle, SWT.PUSH);
+    	bt_next.setText("다음전문");
+    	GridDataFactory.fillDefaults().grab(false, false).align(SWT.END, SWT.BOTTOM).applyTo(bt_next);
+    	bt_next.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			getNext();
+    			super.widgetSelected(e);
+    		}
+		});
+
+    	Button bt_cmp = new Button(compTitle, SWT.PUSH);
+    	bt_cmp.setText("원본비교");
+    	GridDataFactory.fillDefaults().grab(false, false).align(SWT.END, SWT.BOTTOM).applyTo(bt_cmp);
+    	bt_cmp.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			viewCompare();
+    			super.widgetSelected(e);
+    		}
+		});
 		
 		Composite compDetail = new Composite(compHeader, SWT.BORDER);
 		compDetail.setLayoutData(new GridData(SWT.FILL , SWT.TOP, true, false));
@@ -376,6 +399,39 @@ public class AqtDetail extends Dialog {
 	public void setTrx(long ipkey) {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		this.tpacket = em.find(Ttcppacket.class, ipkey);
+		em.close();
+	}
+	
+	private void getNext() {
+		EntityManager em = AqtMain.emf.createEntityManager();
+		try {
+			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.stime > ? and pkey != ?	order by t.stime limit 1",Ttcppacket.class  )
+					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getStime()).setParameter(3, tpacket.getPkey())
+					.getSingleResult() ;
+			this.tpacket = t;
+			fillScreen();
+		} catch (Exception e) {
+			MessageDialog.openInformation(this.getParent(), "알림", "마지막 전문입니다.") ;
+		}
+		em.close();
+	}
+	private void viewCompare() {
+		EntityManager em = AqtMain.emf.createEntityManager();
+		
+		try {
+			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.tcode = :tcode and t.cmpid = :cmpid ",Long.class  )
+					.setParameter("tcode", tpacket.getTmaster().getCmpCode() ).setParameter("cmpid", tpacket.getCmpid() )
+					.getSingleResult() ;
+			
+			AqtDetailComp aqtDetail = new AqtDetailComp(this.getParent(),
+					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
+					tpacket.getPkey() , lkey
+			);
+			aqtDetail.open();
+		} catch (Exception e) {
+//			System.out.println(e.getMessage() + tpacket.getTmaster().getCmpCode() + " " + tpacket.getCmpid() );
+			MessageDialog.openInformation(this.getParent(), "알림", "원본을 찾을 수 없습니다.") ;
+		}
 		em.close();
 	}
 

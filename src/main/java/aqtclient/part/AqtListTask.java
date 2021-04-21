@@ -9,6 +9,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -29,12 +30,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Texecjob;
 import aqtclient.model.Vtrxlist;
 
 @SuppressWarnings("unchecked")
@@ -138,6 +142,30 @@ public class AqtListTask  {
 		tblLst.setLinesVisible(true);
 		
 		tblLst.setFont(IAqtVar.font1b);
+		
+	    Menu popupMenu = tblLst.getMenu();
+
+	    MenuItem pm_refresh = new MenuItem(popupMenu, SWT.NONE);
+	    pm_refresh.setText("새로고침");
+	    pm_refresh.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				AqtMain.container.setCursor(IAqtVar.busyc);
+
+				EntityManager em = AqtMain.emf.createEntityManager();
+				em.getTransaction().begin();
+				em.createNativeQuery("call sp_summtask('%')")
+						.executeUpdate() ;
+				em.getTransaction().commit();
+				
+				em.close();
+				initScreen();
+				AqtMain.container.setCursor(IAqtVar.handc);
+
+			}
+		});
+	    pm_refresh.setEnabled(AqtMain.authtype == AuthType.TESTADM);
+	    tblLst.setMenu(popupMenu);
 
 	    tblViewerList.setUseHashlookup(true);
 
@@ -336,7 +364,7 @@ public class AqtListTask  {
 		@Override
 		public Object[] getElements(Object input) {
 			//return new Object[0];
-			List<Vtrxlist> arrayList = (List<Vtrxlist>)input;
+			List<Object[]> arrayList = (List<Object[]>)input;
 			return arrayList.toArray();
 		}
 		@Override

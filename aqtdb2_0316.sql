@@ -106,6 +106,11 @@ main: BEGIN
 	SELECT CONCAT( v_msg_u, ROW_COUNT(), ' 건 복제되었음') INTO v_msg ;
 	
 	UPDATE texecjob SET resultStat = 2, msg = v_msg , enddt = NOW() WHERE pkey = v_pkey ;
+
+	INSERT INTO thostmap ( tcode, thost, tport, thost2, tport2 ) 
+	SELECT @DST, thost, tport, thost2, tport2 FROM thostmap s
+	WHERE tcode = @SRC 
+	  AND NOT EXISTS (SELECT 1 FROM thostmap WHERE tcode = @DST AND thost = s.thost AND tport = s.tport) ;
 	
 	SELECT v_msg ;
 	
@@ -317,8 +322,8 @@ CREATE TABLE IF NOT EXISTS `trequest` (
 -- 테이블 aqtdb2.tservice 구조 내보내기
 CREATE TABLE IF NOT EXISTS `tservice` (
   `svcid` varchar(256) NOT NULL COMMENT '서비스id or uri',
-  `svckor` varchar(60) DEFAULT NULL COMMENT '한글서비스명',
-  `svceng` varchar(60) DEFAULT NULL COMMENT '영문서비스명',
+  `svckor` varchar(200) DEFAULT NULL COMMENT '한글서비스명',
+  `svceng` varchar(200) DEFAULT NULL COMMENT '영문서비스명',
   `svckind` char(1) DEFAULT NULL COMMENT '서비스종류',
   `task` varchar(50) DEFAULT NULL COMMENT '업무명',
   `manager` varchar(50) DEFAULT NULL COMMENT '담당자',

@@ -766,5 +766,9 @@ public class AqtMain extends ApplicationWindow {
 		}
         
     }
+    
+    public void threadrun( Thread t ) {
+    	t.start(); 
+    }
 
 }

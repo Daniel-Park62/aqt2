@@ -17,6 +17,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.MouseEvent;
@@ -48,6 +50,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Texecjob;
+import aqtclient.model.Vtrxlist;
 
 public class AqtExec  {
 
@@ -64,11 +67,11 @@ public class AqtExec  {
 	Button chkDbSkip ;
 	Button btn1, btn2, btn3 ;
 	AqtButton btnsave ;
-	Spinner sptnum ;
+	Spinner sptnum, spinterval ;
 	Text txtetc ;
 	Text txtstart ;
 	Text txtend ;
-	
+	CDateTime cdt ;
 	Text txtreqdt ;
 	Combo cmbstatus ;
 	StyledText txtmsg ;
@@ -127,10 +130,12 @@ public class AqtExec  {
 		txtInfile.setText(tjob.getInfile());
 		chkDbSkip.setSelection("1".equals(tjob.getDbskip()));
 		sptnum.setSelection( tjob.getTnum() );
+		spinterval.setSelection( tjob.getReqnum() );
 		txtetc.setText(tjob.getEtc());
 		txtstart.setText(tjob.getStartDt() != null ? dformat.format(tjob.getStartDt()) : "");
 		txtend.setText( tjob.getEndDt() != null ? dformat.format(tjob.getEndDt() ) : "");
-		txtreqdt.setText(dformat.format(tjob.getReqstartDt()));
+//		txtreqdt.setText(dformat.format(tjob.getReqstartDt()));
+		cdt.setSelection(tjob.getReqstartDt());
 		cmbstatus.select(tjob.getResultstat());
 		btnsave.setEnabled(tjob.getResultstat() == 0 && tjob.getJobkind() == 9 && AqtMain.authtype == AuthType.TESTADM);
 		
@@ -147,8 +152,10 @@ public class AqtExec  {
 		tjob.setExectype(type0.getSelection() ? 0 : 1);
 		tjob.setDbskip(chkDbSkip.getSelection() ? "1" : "0");
 		tjob.setTnum(sptnum.getSelection());
+		tjob.setReqnum(spinterval.getSelection());
 		tjob.setEtc(txtetc.getText());
-		tjob.setReqstartDt(dformat.parse( txtreqdt.getText()) );
+//		tjob.setReqstartDt(dformat.parse( txtreqdt.getText()) );
+		tjob.setReqstartDt(cdt.getSelection());
 
 		EntityManager em = AqtMain.emf.createEntityManager();
 		EntityTransaction transaction = em.getTransaction();
@@ -238,14 +245,14 @@ public class AqtExec  {
 //		gd_comptv.minimumHeight = 300;
 //		gd_comptv.heightHint = 400;
 //		comptv.setLayoutData(gd_comptv);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, true).applyTo(comptv);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(comptv);
 		GridLayoutFactory.fillDefaults().equalWidth(true).numColumns(1).applyTo(comptv);
 
 		tv = new TableViewer(comptv, SWT.NONE | SWT.FULL_SELECTION) ;
 		
 		Table tbl = tv.getTable() ;
 
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).hint(-1, 300).applyTo(tbl);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tbl);
 	    Menu popupMenu = new Menu(tbl);
 
 	    MenuItem copymi = new MenuItem(popupMenu, SWT.NONE);
@@ -262,6 +269,7 @@ public class AqtExec  {
 						texecjob = te.copy() ;
 						texecjob.setPkey(0);
 						texecjob.setResultstat(0);
+						texecjob.setJobkind(9);
 						texecjob.setStartDt(null);
 						texecjob.setEndDt(null);
 						texecjob.setMsg(null);
@@ -279,9 +287,6 @@ public class AqtExec  {
 	    
 	    MenuItem delmi = new MenuItem(popupMenu, SWT.NONE);
 	    delmi.setText("작업삭제");
-//	    copymi.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-//	    delmi.setEnabled( AqtMain.authtype == AuthType.TESTADM );
-	    popupMenu.setEnabled(AqtMain.authtype == AuthType.TESTADM);
 	    delmi.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
@@ -309,6 +314,50 @@ public class AqtExec  {
 				
 			}
 		});
+	    MenuItem pm_reexec = new MenuItem(popupMenu, SWT.NONE);
+	    pm_reexec.setText("작업재시작");
+	    pm_reexec.setToolTipText("이 작업을 다시 요청합니다.");
+	    pm_reexec.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				int i = tbl.getSelectionIndex() ;
+				if ( i >= 0) {
+					EntityManager em = AqtMain.emf.createEntityManager();
+					TableItem item = tbl.getItem(i) ;
+					Texecjob te = ((Texecjob)item.getData())  ;
+					if ( te.getJobkind() != 9 ) {
+						MessageDialog.openInformation(parent.getShell(), "재요청불가", "전문송신만 재작업 요청할 수 있습니다.") ;
+						return ;
+					}
+					te.setResultstat(0);
+					te.setEndDt(null);
+					fillData(te);
+					btnsave.setEnabled(true);
+					MessageDialog.openInformation(parent.getShell(), "작업재시작", "데이터 수정후 저장버튼을 누르면 재시작됩니다.") ;
+				}
+				
+			}
+		});
+		MenuItem pm_list = new MenuItem(popupMenu, SWT.NONE);
+		pm_list.setText("전문목록");
+		pm_list.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				
+				int i = tbl.getSelectionIndex() ;
+				if (  i >= 0 ) {
+					Texecjob te = (Texecjob) tbl.getItem(i).getData() ;
+					AqtMain.openTrList("t.tcode = '"+ te.getTcode() + "' "); 
+				}
+				
+			}
+		});
+	    
+		delmi.setEnabled(AqtMain.authtype == AuthType.TESTADM);
+		copymi.setEnabled(AqtMain.authtype == AuthType.TESTADM);
+		pm_reexec.setEnabled(AqtMain.authtype == AuthType.TESTADM);
+		pm_list.setEnabled(true);
+
 	    tbl.setMenu(popupMenu);
 
 		tbl.setHeaderVisible(true);
@@ -462,7 +511,7 @@ public class AqtExec  {
 //		compLayout.marginBottom = 0;
 //		composite.setLayout(compLayout);
 
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		composite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 		Label lblTrans = new Label(composite, SWT.NONE);
 
 		lblTrans.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
@@ -507,9 +556,9 @@ public class AqtExec  {
 		Composite form1  = new Composite(composite, SWT.BORDER) ;
 		GridData gd_form1 = new GridData(SWT.FILL, SWT.TOP, true, false,3,1);
 //		gd_form1.minimumHeight = 200;
-		gd_form1.heightHint = 250 ;
+//		gd_form1.heightHint = 300 ;
 		form1.setLayoutData(gd_form1);
-		form1.setLayout(new GridLayout(4, false) );
+		form1.setLayout(new GridLayout(6, false) );
 		
 		Label lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("Job No :");
@@ -525,6 +574,15 @@ public class AqtExec  {
 		cmbCode = new AqtTcodeCombo(form1, SWT.READ_ONLY);
 		cmbCode.getControl().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+		lbl1 = new Label(form1,SWT.LEFT) ;
+		lbl1.setText("테스트내용 :");
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+
+		txtdesc = new Text(form1,SWT.LEFT | SWT.BORDER) ;
+		txtdesc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		txtdesc.setTextLimit(20);
+		txtdesc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업종류 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
@@ -566,15 +624,6 @@ public class AqtExec  {
 		});
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("테스트내용 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-
-		txtdesc = new Text(form1,SWT.LEFT | SWT.BORDER) ;
-		txtdesc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtdesc.setTextLimit(20);
-		txtdesc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		
-		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업방법 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
@@ -593,7 +642,7 @@ public class AqtExec  {
 		type0.setFont(IAqtVar.font1) ;
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("작업갯수(최대 400) :");
+		lbl1.setText("작업갯수 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		lbl1.pack();
 
@@ -601,6 +650,16 @@ public class AqtExec  {
 		sptnum.setMaximum(400);
 		sptnum.setSelection(1);
 		sptnum.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+
+		lbl1 = new Label(form1,SWT.LEFT) ;
+		lbl1.setText("송신간격(초) :");
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lbl1.pack();
+		spinterval  = new Spinner( form1, SWT.BORDER | SWT.CENTER) ;
+		spinterval.setMaximum(30);
+		spinterval.setSelection(1);
+		spinterval.setToolTipText("전문송신시 건당 대기 시간(초)을 선택합니다.");
+		spinterval.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("DB Update 여부 :");
@@ -623,33 +682,37 @@ public class AqtExec  {
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업시작 요청일 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-
-		txtreqdt = new Text(form1, SWT.BORDER) ;
-		txtreqdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		txtreqdt.setText(dformat.format( System.currentTimeMillis() ));
-		txtreqdt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		txtreqdt.setCursor(IAqtVar.handc);
-		txtreqdt.addMouseListener(new MouseAdapter() {
-	    	@Override
-	    	public void mouseDoubleClick(MouseEvent e) {
-	    		Point pt = AqtMain.aqtmain.getShell().getDisplay().getCursorLocation() ; 
-	    		Date dt = null;
-				try {
-					dt = dformat.parse(txtreqdt.getText());
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-	        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 20 ,  dt );
-	    		
-                String s = (String)cd.open();
-                if (s != null) {
-                	txtreqdt.setText(s.replace('-', '/') + txtreqdt.getText(10, 19) ) ;
-                }
-	    		super.mouseDoubleClick(e);
-	    	}
-
-		});
+		cdt = new CDateTime(form1, CDT.BORDER |  CDT.DROP_DOWN | CDT.DATE_LONG | CDT.TIME_MEDIUM);
+		cdt.setSelection(new Date());
+		cdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		cdt.setPattern("yyyy/MM/dd hh:mm:ss a");
+		cdt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+//		txtreqdt = new Text(form1, SWT.BORDER) ;
+//		txtreqdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//		txtreqdt.setText(dformat.format( System.currentTimeMillis() ));
+//		txtreqdt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+//		txtreqdt.setCursor(IAqtVar.handc);
+//		txtreqdt.addMouseListener(new MouseAdapter() {
+//	    	@Override
+//	    	public void mouseDoubleClick(MouseEvent e) {
+//	    		Point pt = AqtMain.aqtmain.getShell().getDisplay().getCursorLocation() ; 
+//	    		Date dt = null;
+//				try {
+//					dt = dformat.parse(txtreqdt.getText());
+//				} catch (ParseException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+//	        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 20 ,  dt );
+//	    		
+//                String s = (String)cd.open();
+//                if (s != null) {
+//                	txtreqdt.setText(s.replace('-', '/') + txtreqdt.getText(10, 19) ) ;
+//                }
+//	    		super.mouseDoubleClick(e);
+//	    	}
+//
+//		});
 
 		lbl1 = new Label(form1,SWT.LEFT ) ;
 		lbl1.setText("작업상태 :");
@@ -675,16 +738,17 @@ public class AqtExec  {
 		txtend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Composite compMessage = new Composite(compHeader, SWT.NONE);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(1, 3).hint(-1, 120).grab(true, true).applyTo(compMessage);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).span(2, 3).grab(true, false).applyTo(compMessage);
 		compMessage.setLayout(new GridLayout(1, false));
 		lbl1 = new Label(compMessage,SWT.NONE) ;
 		lbl1.setText("작업메세지");
 		
 		txtmsg = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 
-		txtmsg.setLayoutData(new GridData(SWT.FILL , SWT.FILL, true, true));
+//		txtmsg.setLayoutData(new GridData(SWT.FILL , SWT.FILL, true, true));
 		txtmsg.setEditable(false);
 		txtmsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).hint(-1, 100).grab(true, false).applyTo(txtmsg);
 		
 		IAqtVar.setAllFont(form1, IAqtVar.font1 );
 		new Label(form1, SWT.NONE);
@@ -736,9 +800,15 @@ public class AqtExec  {
 //		System.out.println(qstmt);
         execlst = em.createNativeQuery(qstmt, Texecjob.class)
         		.getResultList();
+        em.close();		
+        
         tv.setInput(execlst);
         tv.getTable().getParent().requestLayout();
-		em.close();		
+        if (execlst.size() > 0) {
+        	tv.getTable().setSelection(0);
+        	tv.getTable().notifyListeners(SWT.Selection, null);
+        }
+        
 	}
 	
 	private class ContentProvider implements IStructuredContentProvider {

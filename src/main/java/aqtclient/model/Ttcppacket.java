@@ -90,6 +90,10 @@ public class Ttcppacket implements Serializable {
 	public Ttcppacket() {
 	}
 
+	public Tmaster getTmaster() {
+		return tmaster;
+	}
+
 	public long getPkey() {
 		return this.pkey;
 	}

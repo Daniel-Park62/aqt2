@@ -12,6 +12,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -237,6 +238,7 @@ public class AqtView {
 		chart.setFocus();
 	}
 
+	double px, py;
 	// 최초 Chart 그리기
 	public Chart createChart(Composite parent) {
 		// create a chart
@@ -252,6 +254,8 @@ public class AqtView {
 
 				Date dt = new Date((long)chart.getAxisSet().getXAxis(0).getDataCoordinate(arg0.x));
 				double y = (double) yAxis.getDataCoordinate(arg0.y);
+				py = y ;
+				px = (double) chart.getAxisSet().getXAxis(0).getDataCoordinate(arg0.x) ;
 
 				try {
 					plotArea.setToolTipText(dformat.format(dt)
@@ -270,8 +274,30 @@ public class AqtView {
 				AqtMain.openTrList("t.tcode ='" + cmbCode.getTcode() + "' AND t.stime like '" + sdate + "%'") ;				
 				super.mouseDoubleClick(e);
 			}
+			
+			@Override
+			public void mouseUp(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				chart.setRedraw(false);
+				
+				if ((arg0.stateMask & SWT.SHIFT) != 0 && arg0.button == 1) { 
+					chart.getAxisSet().getXAxis(0).zoomIn(px);
+					chart.getAxisSet().getYAxis(0).zoomIn(py);
+				};
+				if ((arg0.stateMask & SWT.SHIFT) != 0 && arg0.button == 3) { 
+					chart.getAxisSet().getXAxis(0).zoomOut(px);
+					chart.getAxisSet().getYAxis(0).zoomOut(py);
+//					if (chart.getAxisSet().getXAxis(0).getRange().lower < 0) {
+//						chart.getAxisSet().getXAxis(0).scrollUp();
+//					}
+				};
+				chart.setRedraw(true);
+				chart.setFocus();
+			}
+			
 		});
-		
+
 //		Date[] xSeries = { new Date("11/27/2021 10:00"), new Date("11/27/2021 10:00") };
 		double[] ySeries = {} ;
 		SimpleDateFormat hmf = new SimpleDateFormat("HH:mm");
