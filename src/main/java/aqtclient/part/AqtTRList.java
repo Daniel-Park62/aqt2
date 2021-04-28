@@ -1,7 +1,6 @@
 package aqtclient.part;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -243,12 +242,11 @@ public class AqtTRList extends Dialog {
 		    	Ttcppacket tr = (Ttcppacket)tblList.getItem(i).getData() ;
 		    	EntityManager em = AqtMain.emf.createEntityManager() ;
 		    	em.getTransaction().begin();
-		    	Date min_dt = (Date) em.createNativeQuery("SELECT DATE_ADD( MIN(o_stime), INTERVAL -1 SECOND)  FROM ttcppacket WHERE tcode = ?" )
-		    			.setParameter(1, tr.getTcode())
-		    			.getSingleResult() ;
-		    	tr.setOStime(min_dt );
-
-		    	em.merge(tr) ;
+		    	em.createNativeQuery("update ttcppacket t, "
+		    			+ "(SELECT DATE_ADD( MIN(o_stime), INTERVAL -1 SECOND) otime FROM ttcppacket WHERE tcode = ?) x"
+		    			+ " set t.o_stime = x.otime where pkey = ?")
+		    			.setParameter(1, tr.getTcode()).setParameter(2, tr.getPkey())
+		    			.executeUpdate() ;
 		    	em.getTransaction().commit();
 		    	em.close();
 		    	refreshScreen(); 

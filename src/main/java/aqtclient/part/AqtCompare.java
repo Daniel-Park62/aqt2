@@ -2,10 +2,12 @@ package aqtclient.part;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -529,7 +531,7 @@ public class AqtCompare {
 		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
 		List<Object[]> resultList = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b"
-				+ " ON ( a.tcode = '" + cmbCode1.getTcode() + "' and b.tcode = '" + cmbCode2.getTcode() + "' AND  a.cmpid = b.cmpid )  " + 
+				+ " ON ( a.tcode = ? and b.tcode = ? AND  a.cmpid = b.cmpid )  " + 
 				"WHERE 1=1 " + sdiff + "  ) " + 
 				"select  a.uri, ifnull(svckor,'no register') ,  sum(a.tcnt1) , sum(a.avgt1) ,sum(a.scnt1) ,sum(a.fcnt1)  " + 
 				", sum(a.tcnt2), sum(a.avgt2) ,sum(a.scnt2)  ,sum(a.fcnt2)  " + 
@@ -537,21 +539,22 @@ public class AqtCompare {
 				"select t.tcode, t.uri,  count(1) tcnt1, avg(t.svctime) avgt1 " + 
 				"    , sum(case when t.rcode between 200 and 399 then 1 else 0 end) scnt1 " + 
 				"    , sum(case when t.rcode >= 400 then 1 else 0 end) fcnt1,0 tcnt2,0 avgt2,0 scnt2,0 fcnt2 " + 
-				"from   Ttcppacket t, tmpt x where t.tcode = '" + cmbCode1.getTcode() + "' AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
+				"from   Ttcppacket t, tmpt x where t.tcode = ? AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
 				"group by t.tcode, t.uri " + 
 				"UNION ALL  " + 
 				"select t.tcode, t.uri, 0,0,0,0,count(1) tcnt2, avg(t.svctime) avgt2 " + 
 				"    , sum(case when t.rcode between 200 and 399 then 1 else 0 end) scnt2 " + 
 				"    , sum(case when t.rcode >= 400 then 1 else 0 end) fcnt2 " + 
-				"from   Ttcppacket t, tmpt x where t.tcode = '" + cmbCode2.getTcode() + "' AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
+				"from   Ttcppacket t, tmpt x where t.tcode = ? AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
 				"group by t.tcode, t.uri " + 
 				") as a " + 
 				"left outer join Tservice s on a.uri = s.svcid  " + 
 				"GROUP BY a.uri "  
 				)
+				.setParameter(1, cmbCode1.getTcode()).setParameter(2, cmbCode2.getTcode())
+				.setParameter(3, cmbCode1.getTcode()).setParameter(4, cmbCode2.getTcode())
 				.getResultList();
 		
-
 		tempTrxCompList = new ArrayList<TrxCompList>();
 
 		tempTrxCompList = resultList.stream()
@@ -561,11 +564,22 @@ public class AqtCompare {
 						((BigDecimal) r[8]).longValue(), ((BigDecimal) r[9]).longValue() ) )
 				.collect(Collectors.toCollection(ArrayList::new));
 
+		tempTrxCompList.add(0, new TrxCompList("%", "총계", 
+				tempTrxCompList.stream().mapToLong(TrxCompList::getTcnt1).sum() ,
+				tempTrxCompList.stream().mapToDouble(TrxCompList::getTcnt1).average().orElse(0),
+				tempTrxCompList.stream().mapToLong(TrxCompList::getScnt1).sum() ,
+				tempTrxCompList.stream().mapToLong(TrxCompList::getFcnt1).sum() ,
+				tempTrxCompList.stream().mapToLong(TrxCompList::getTcnt2).sum() ,
+				tempTrxCompList.stream().mapToDouble(TrxCompList::getTcnt2).average().orElse(0),
+				tempTrxCompList.stream().mapToLong(TrxCompList::getScnt2).sum() ,
+				tempTrxCompList.stream().mapToLong(TrxCompList::getFcnt2).sum() )
+		);
 		tableViewer.setInput(tempTrxCompList);
-		tableViewer.getTable().setSelection(0);
-		if ( tempTrxCompList.size() > 0 ) {
+		if (tableViewer.getTable().getItemCount() > 1) tableViewer.getTable().setSelection(1);
+		if ( tempTrxCompList.size() > 1 ) {
 			AqtMain.aqtmain.setGtcode(cmbCode1.getTcode());
-			tbl2data(tempTrxCompList.get(0).getSvcid());
+			tableViewer.getTable().setSelection(1);
+			tbl2data(tempTrxCompList.get(1).getSvcid());
 		}
 	}
 
@@ -579,36 +593,16 @@ public class AqtCompare {
 		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
 		Query qTrx = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
-				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
+				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri like '"+svcid+"'  " + sdiff + "  ) " + 
 				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid order by t.cmpid " ,
 						Ttcppacket.class) ;
 
 		tempTrxList1 = qTrx.getResultList();
 
-//		Query query  = em.createNativeQuery(
-//				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
-//				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
-//				 "SELECT pkey , t.cmpid, t.rcode,  ifnull(cast(t.rcvmsg as char(100)),''), ifnull(cast(t.errinfo as char(100)),''), " +
-//					" ifnull(cast(rdata as char(150)),'') rdata,  t.rlen , t.rtime,  t.scrno, " +
-//					" cast(sdata as char(150)) sdata, t.sflag, t.slen ,t.stime," +
-//					" t.svrnm, t.svcid, t.userid,  t.svctime, t.tcode " +
-//					 "FROM 	Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.svcid = x.svcid and t.uuid = x.uuid " ) ;
-//
-//		List<Object[]> resultList = query.getResultList();
-//		tempTrxList1 = resultList.stream().map( (r) -> 
-//		    new Ttcppacket((int)(long)r[0], r[1].toString(), r[2].toString(), r[3].toString(),
-//		    		r[4].toString(), r[5].toString(), (int)(long)r[6], Timestamp.valueOf(r[7].toString()), 
-//		    		r[8].toString(), r[9].toString(), r[10].toString(), (int)(long)r[11], 
-//		    		Timestamp.valueOf(r[12].toString()), r[13].toString(), r[14].toString(), 
-//		    		r[15].toString(), (double)r[16], r[17].toString()) 
-//				)
-//				.collect(Collectors.toCollection(ArrayList::new));
-		
-
 		tcode = cmbCode2.getTcode();
 		qTrx = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
-				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri = '"+svcid+"'  " + sdiff + "  ) " + 
+				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri like '"+svcid+"'  " + sdiff + "  ) " + 
 				 "SELECT t.* FROM Ttcppacket t, tmpt x where t.tcode = '" + tcode + "' and  t.cmpid = x.cmpid order by t.cmpid " ,
 						Ttcppacket.class) ;
 
@@ -715,7 +709,7 @@ public class AqtCompare {
 		double[] ySeries = { };
 
 		if (tempTrxList.size() > 0) {
-			xSeries = tempTrxList.stream().map(a -> a.getStime()).toArray(Date[]::new);
+			xSeries = tempTrxList.stream().map(a -> Date.from(a.getStime().atZone( ZoneId.systemDefault()).toInstant() )).toArray(Date[]::new);
 			ySeries = tempTrxList.stream().mapToDouble(a -> a.getSvctime()).toArray();
 //			chart.getTitle().setText("시간대별 TR 현황 (" + tempTrxList.get(0).getSvcid() + ")" );
 		}

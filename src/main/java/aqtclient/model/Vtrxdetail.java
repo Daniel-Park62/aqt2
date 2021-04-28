@@ -39,6 +39,17 @@ public class Vtrxdetail implements Serializable {
 	public Vtrxdetail() {
 	}
 
+	public Vtrxdetail(String svcid, String svckor, long cumcnt, long tcnt, double avgt, long scnt, long fcnt) {
+		super();
+		this.svcid = svcid;
+		this.svckor = svckor;
+		this.cumcnt = cumcnt;
+		this.tcnt = tcnt;
+		this.avgt = avgt;
+		this.scnt = scnt;
+		this.fcnt = fcnt;
+	}
+
 	public long getPkey() {
 		return this.pkey;
 	}

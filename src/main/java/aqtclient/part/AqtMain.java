@@ -237,7 +237,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2");
+		newShell.setText("Application Quarity Test v2.1.0");
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
 		        event.doit = true;

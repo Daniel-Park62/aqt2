@@ -1,6 +1,7 @@
 package aqtclient.part;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 import javax.persistence.EntityManager;
 
@@ -117,10 +118,9 @@ public class AqtDetail extends Dialog {
 		GridData gd_compTitle = new GridData(SWT.FILL , SWT.TOP, true, false);
 //		gd_compTitle.horizontalSpan = 6;
 		compTitle.setLayoutData(gd_compTitle);
-		compTitle.setLayout(new GridLayout(3, false));
+		compTitle.setLayout(new GridLayout(4, false));
 //		compTitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
-
 		Label ltitle = new Label(compTitle, SWT.NONE);
 		
     	ltitle.setText("전문상세보기" ) ;
@@ -129,11 +129,23 @@ public class AqtDetail extends Dialog {
     	
     	Button bt_next = new Button(compTitle, SWT.PUSH);
     	bt_next.setText("다음전문");
+    	bt_next.setToolTipText("송신시간순 다음전문");
     	GridDataFactory.fillDefaults().grab(false, false).align(SWT.END, SWT.BOTTOM).applyTo(bt_next);
     	bt_next.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
     			getNext();
+    			super.widgetSelected(e);
+    		}
+		});
+    	bt_next = new Button(compTitle, SWT.PUSH);
+    	bt_next.setText("이전전문");
+    	bt_next.setToolTipText("송신시간순 이전전문");
+    	GridDataFactory.fillDefaults().grab(false, false).align(SWT.END, SWT.BOTTOM).applyTo(bt_next);
+    	bt_next.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			getPrev();
     			super.widgetSelected(e);
     		}
 		});
@@ -378,11 +390,11 @@ public class AqtDetail extends Dialog {
 		txtRlen.setText(String.format("%,d", tpacket.getRlen()));
 		txtReceiveMsg.setText(tpacket.getRdataUTF());
 		txtCmpid.setText(tpacket.getCmpid()+"");
-		txtTestCode.setText(tpacket.getTcode());
+		txtTestCode.setText(tpacket.getTcode()); 
 		txtUri.setText(tpacket.getUri());
-//		txtScrno.setText(tpacket.getScrno());
-		txtStime.setText(dformat.format(tpacket.getStime()));
-		txtRtime.setText(dformat.format(tpacket.getRtime()));
+//		txtScrno.setText(tpacket.getScrno()); 
+		txtStime.setText(tpacket.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+		txtRtime.setText(tpacket.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 		txtElapsed.setText(String.format("%.3f",tpacket.getElapsed()));
 		txtSvcTime.setText(String.format("%.3f",tpacket.getSvctime()));
 		txtRcode.setText( tpacket.getRcode()+"" );
@@ -402,6 +414,19 @@ public class AqtDetail extends Dialog {
 		em.close();
 	}
 	
+	private void getPrev() {
+		EntityManager em = AqtMain.emf.createEntityManager();
+		try {
+			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.stime < ? and pkey != ?	order by t.stime desc limit 1",Ttcppacket.class  )
+					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getStime()).setParameter(3, tpacket.getPkey())
+					.getSingleResult() ;
+			this.tpacket = t;
+			fillScreen();
+		} catch (Exception e) {
+			MessageDialog.openInformation(this.getParent(), "알림", "첫번째 전문입니다.") ;
+		}
+		em.close();
+	}
 	private void getNext() {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {

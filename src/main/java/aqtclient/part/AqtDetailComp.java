@@ -2,6 +2,7 @@ package aqtclient.part;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -259,8 +260,8 @@ public class AqtDetailComp extends Dialog {
 			txtCmpid.setText(tr.getCmpid()+"");
 			txtTestCode.setText(tr.getTcode());
 			txtUri.setText(tr.getUri());
-			txtStime.setText(dformat.format(tr.getStime()));
-			txtRtime.setText(dformat.format(tr.getRtime()));
+			txtStime.setText(tr.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+			txtRtime.setText(tr.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 			txtElapsed.setText(String.format("%.3f",tr.getElapsed()));
 			txtSvcTime.setText(String.format("%.3f",tr.getSvctime()));
 			txtRcode.setText( tr.getRcode()+"" );

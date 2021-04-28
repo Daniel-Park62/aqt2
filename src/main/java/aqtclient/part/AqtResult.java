@@ -1,6 +1,7 @@
 package aqtclient.part;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -396,15 +397,15 @@ public class AqtResult {
 		String smsg  = txtMsgcd.getText().trim().isEmpty() ? "": "and rcode = " + txtMsgcd.getText().trim() ;
 //		String qstr = "SELECT v FROM Vtrxdetail v WHERE v.tcode = :tcode and v.svcid like :svcid and v.scrno like :scrno" ;
 		String qstr = 
-				"select uuid_short() pkey, a.tcode, a.svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
-				" s.cumcnt\r\n" + 
+				"select uuid_short() pkey, a.tcode, ifnull(a.svcid,'총계') svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
+				" IF( ISNULL(a.svcid)  ,SUM(CUMCNT) OVER (PARTITION BY TCODE), s.cumcnt) cumcnt " + 
 				"from   (\r\n" + 
 				"select t.tcode, t.uri as svcid,  count(1) tcnt, avg(t.svctime) avgt, sum(case when rcode between 200 and 399 then 1 else 0 end) scnt\r\n" + 
 				", sum(case when rcode > 399 then 1 else 0 end) fcnt\r\n" + 
  				"from   Ttcppacket t where t.tcode = '" + tcode +"' " + sfail + ssvc + smsg +
-				" group by t.tcode, t.uri\r\n" + 
-				") as a\r\n" + 
-				"left outer join Tservice s on a.svcid = s.svcid " ;
+				" group by t.tcode, t.uri WITH ROLLUP HAVING tcode is NOT null \n" + 
+				") as a \r\n" + 
+				"left outer join Tservice s on a.svcid = s.svcid order by a.svcid" ;
 				
 		Query qTrxList = em.createNativeQuery(qstr, Vtrxdetail.class);
 		
@@ -529,7 +530,7 @@ public class AqtResult {
 		double[] ySeries = { } ;
 		chart.getTitle().setText("시간대별 TR 현황");
 		if ( tempTrxList.size() > 0 ) {
-			xSeries = tempTrxList.stream().map(a -> a.getStime()).toArray(Date[]::new);
+			xSeries = tempTrxList.stream().map(a -> Date.from(a.getStime().atZone( ZoneId.systemDefault()).toInstant() )).toArray(Date[]::new);
 			ySeries = tempTrxList.stream().mapToDouble(a -> a.getSvctime()).toArray();
 			chart.getTitle().setText("시간대별 TR 현황 (" + tempTrxList.get(0).getUri() + ")" );
 		} 

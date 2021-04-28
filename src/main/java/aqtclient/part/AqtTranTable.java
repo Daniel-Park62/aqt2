@@ -3,8 +3,9 @@ package aqtclient.part;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -208,7 +209,8 @@ public class AqtTranTable extends AqtTableView {
 				if (element == null)
 					return super.getText(element);
 				Ttcppacket tr = (Ttcppacket) element;
-				return smdfmt.format(tr.getStime());
+				return tr.getStime().format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss")) ;
+//				return smdfmt.format(tr.getStime());
 			}
 		});
 		tvc = createTableViewerColumn("수신시간", 140, 2);
@@ -217,7 +219,7 @@ public class AqtTranTable extends AqtTableView {
 				if (element == null)
 					return super.getText(element);
 				Ttcppacket tr = (Ttcppacket) element;
-				return smdfmt.format(tr.getRtime());
+				return tr.getRtime().format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss")) ;
 			}
 		});
 		tvc = createTableViewerColumn("소요시간", 70, 3);
@@ -327,7 +329,7 @@ public class AqtTranTable extends AqtTableView {
 		Table table = aqtView.getTable();
 		int index = Arrays.asList(table.getColumns()).indexOf(table.getSortColumn());
 		int result = 0;
-		Date d1, d2 ;
+		LocalDateTime d1, d2 ;
 		Long l1, l2 ;
 		Double db1,db2;
 		String s1,s2 ;
@@ -339,9 +341,13 @@ public class AqtTranTable extends AqtTableView {
 				result = l1.compareTo(l2);
 				break;
 			case 1:
-			case 2:
 				d1 = ((Ttcppacket)e1).getStime() ;
 				d2 = ((Ttcppacket)e2).getStime() ;
+				result = d1.compareTo(d2);
+				break;
+			case 2:
+				d1 = ((Ttcppacket)e1).getRtime() ;
+				d2 = ((Ttcppacket)e2).getRtime() ;
 				result = d1.compareTo(d2);
 				break;
 			case 3:
@@ -350,9 +356,13 @@ public class AqtTranTable extends AqtTableView {
 				result = db1.compareTo(db2);
 				break;
 			case 4:
-			case 5:
 				s1 = ((Ttcppacket)e1).getMethod() ;
 				s2 = ((Ttcppacket)e2).getMethod() ;
+				result = s1.compareTo(s2);
+				break;
+			case 5:
+				s1 = ((Ttcppacket)e1).getUri() ;
+				s2 = ((Ttcppacket)e2).getUri() ;
 				result = s1.compareTo(s2);
 				break;
 			case 6:

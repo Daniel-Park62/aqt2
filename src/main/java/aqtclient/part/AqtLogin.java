@@ -140,14 +140,10 @@ public class AqtLogin extends Dialog {
 			
 			@Override
 			public void run() {
-				Display.getDefault().syncExec(new Runnable() {
-					@Override
-					 public void run() {
+				Display.getDefault().syncExec(() -> {
 						lblmsg.setVisible( !lblmsg.getVisible()) ;
 					 }
-				});
-
-
+				);
 			}
 		}, 0, 1000);
 		

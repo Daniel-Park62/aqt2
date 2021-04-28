@@ -2,6 +2,7 @@ package aqtclient.model;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -42,9 +43,9 @@ public class Ttcppacket implements Serializable {
 
 	private String method;
 
-	@Temporal(TemporalType.TIMESTAMP)
+//	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="o_stime")
-	private Date oStime;
+	private LocalDateTime oStime;
 
 	private String proto;
 
@@ -59,8 +60,8 @@ public class Ttcppacket implements Serializable {
 
 	private int rlen;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date rtime;
+//	@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime rtime;
 
 	@Lob
 	private byte[] sdata;
@@ -73,8 +74,8 @@ public class Ttcppacket implements Serializable {
 
 	private int srcport;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date stime;
+//	@Temporal(TemporalType.TIMESTAMP)
+	private LocalDateTime stime;
 
 	@Column(updatable=false, insertable=false )
 	private double svctime;
@@ -157,11 +158,11 @@ public class Ttcppacket implements Serializable {
 		this.method = method;
 	}
 
-	public Date getOStime() {
+	public LocalDateTime getOStime() {
 		return this.oStime;
 	}
 
-	public void setOStime(Date oStime) {
+	public void setOStime(LocalDateTime oStime) {
 		this.oStime = oStime;
 	}
 
@@ -232,11 +233,11 @@ public class Ttcppacket implements Serializable {
 		this.rlen = rlen;
 	}
 
-	public Date getRtime() {
+	public LocalDateTime getRtime() {
 		return this.rtime;
 	}
 
-	public void setRtime(Date rtime) {
+	public void setRtime(LocalDateTime rtime) {
 		this.rtime = rtime;
 	}
 
@@ -276,11 +277,11 @@ public class Ttcppacket implements Serializable {
 		this.srcport = srcport;
 	}
 
-	public Date getStime() {
+	public LocalDateTime getStime() {
 		return this.stime;
 	}
 
-	public void setStime(Date stime) {
+	public void setStime(LocalDateTime stime) {
 		this.stime = stime;
 	}
 
