@@ -4,12 +4,6 @@
 
 package aqtclient.part;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,18 +17,13 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.ICellEditorListener;
-import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.persistence.internal.sessions.DirectCollectionChangeRecord.NULL;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ControlEditor;
-import org.eclipse.swt.custom.TableCursor;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -50,18 +39,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Texecjob;
@@ -187,13 +173,7 @@ public class AqtRegTcode {
 					texecjob.setInfile(fileName);
 					texecjob.setTdesc("Import pcap파일");
 					texecjob.setTnum(1);
-//					em.createNativeQuery("INSERT INTO texecjob (jobkind, tcode, tdesc, tnum ,`infile`) VALUES (?,?,?,?,?)")
-//						.setParameter(1, 1)
-//						.setParameter(2, tcode)
-//						.setParameter(3, "Import pcap파일")
-//						.setParameter(4, 1)
-//						.setParameter(5, fileName)
-//						.executeUpdate() ;
+
 					em.persist(texecjob);
 					em.getTransaction().commit();
 					MessageDialog.openInformation(parent.getShell(), "알림",
@@ -277,11 +257,12 @@ public class AqtRegTcode {
 			public void widgetSelected(SelectionEvent arg0) {
 				int i = tblList.getSelectionIndex() ;
 				Tmaster t = new Tmaster() ;
-				t.setDesc1("new");
+				t.setDesc1("New");
 				t.setTdate(new Date());
 				t.setNew(true);
 				if (i >= 0 ) {
 					Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
+					t.setCode(to.getCode()+"2");
 					t.setCmpCode(to.getCmpCode());
 					t.setThost(to.getThost());
 					t.setLvl(to.getLvl());
@@ -322,6 +303,10 @@ public class AqtRegTcode {
 						em.remove(tm);
 						tcodeList.remove(s) ;
 						
+					}
+					if ( del.length() > 0 && ! MessageDialog.openQuestion(parent.getShell(), "Delete", del + " 삭제 진행하시겠습니까?")) {
+						em.getTransaction().rollback() ;
+						return ;
 					}
 						
 					em.getTransaction().commit();

@@ -20,7 +20,7 @@ public class Tapphost implements Serializable {
 
 	private String thost;
 
-	private int tport;
+	private int tport = 0;
 
 	//bi-directional many-to-one association to Tapplication
 	@ManyToOne

@@ -446,7 +446,7 @@ public class AqtDetail extends Dialog {
 		try {
 			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.tcode = :tcode and t.cmpid = :cmpid ",Long.class  )
 					.setParameter("tcode", tpacket.getTmaster().getCmpCode() ).setParameter("cmpid", tpacket.getCmpid() )
-					.getSingleResult() ;
+					.getResultList().get(0) ;
 			
 			AqtDetailComp aqtDetail = new AqtDetailComp(this.getParent(),
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
@@ -455,7 +455,7 @@ public class AqtDetail extends Dialog {
 			aqtDetail.open();
 		} catch (Exception e) {
 //			System.out.println(e.getMessage() + tpacket.getTmaster().getCmpCode() + " " + tpacket.getCmpid() );
-			MessageDialog.openInformation(this.getParent(), "알림", "원본을 찾을 수 없습니다.") ;
+			MessageDialog.openInformation(this.getParent(), "알림", "원본을 찾을 수 없습니다.\n" + e.getMessage()) ;
 		}
 		em.close();
 	}

@@ -72,7 +72,9 @@ public class AqtTcodeCombo  {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		combo.removeAll();
 		tlist = em.createNamedQuery("Tmaster.findAll", Tmaster.class).getResultList();
-		combo.setItems(	tlist.stream().map((m) -> (" " + m.getCode() + " : " + m.getDesc1())).toArray(String[]::new));
+		combo.setItems(	tlist.stream()
+				.map((m) -> (" " + m.getCode() + " : " + m.getDesc1()  ))
+				.toArray(String[]::new));
 		findSelect(AqtMain.aqtmain.getGtcode());
 		em.close();
 		

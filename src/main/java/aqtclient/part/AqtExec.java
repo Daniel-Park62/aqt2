@@ -2,6 +2,7 @@ package aqtclient.part;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -17,40 +18,36 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Texecjob;
-import aqtclient.model.Vtrxlist;
 
 public class AqtExec  {
 
@@ -144,7 +141,11 @@ public class AqtExec  {
 	}
 	
 	private RTN saveData(Texecjob tjob) throws ParseException {
-
+		if ( cmbCode.getTmaster().getEndDate() != null ) {
+			MessageDialog.openInformation( AqtMain.aqtmain.getShell() , "작업불가", cmbCode.getTcode() + " 는 종료되었습니다.") ;
+			return RTN.FAIL;
+		}
+		
 		tjob.setTcode(cmbCode.getTcode() );
 		tjob.setTdesc(txtdesc.getText());
 		tjob.setJobkind(btnkind1.getSelection() ? 1 : 9);
@@ -249,6 +250,12 @@ public class AqtExec  {
 		GridLayoutFactory.fillDefaults().equalWidth(true).numColumns(1).applyTo(comptv);
 
 		tv = new TableViewer(comptv, SWT.NONE | SWT.FULL_SELECTION) ;
+		tv.setComparator(new ViewerComparator() {
+			@Override
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				return compareElements( e1, e2);
+			}
+		});
 		
 		Table tbl = tv.getTable() ;
 
@@ -322,7 +329,6 @@ public class AqtExec  {
 			public void widgetSelected(SelectionEvent arg0) {
 				int i = tbl.getSelectionIndex() ;
 				if ( i >= 0) {
-					EntityManager em = AqtMain.emf.createEntityManager();
 					TableItem item = tbl.getItem(i) ;
 					Texecjob te = ((Texecjob)item.getData())  ;
 					if ( te.getJobkind() != 9 ) {
@@ -381,7 +387,7 @@ public class AqtExec  {
 
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
 
-		tvc = createTableViewerColumn("Job No", 80, 0);
+		tvc = createTableViewerColumn("Job No", 80, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -391,7 +397,7 @@ public class AqtExec  {
 			}
 		});
 		
-		tvc = createTableViewerColumn("작업종류", 100, 0);
+		tvc = createTableViewerColumn("작업종류", 100, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -410,7 +416,7 @@ public class AqtExec  {
 				return tj.getTcode() ;
 			}
 		});
-		tvc = createTableViewerColumn("테스트내용", 250, 2);
+		tvc = createTableViewerColumn("테스트내용", 250, 1);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
@@ -420,7 +426,7 @@ public class AqtExec  {
 				return tj.getTdesc() ;
 			}
 		});
-		tvc = createTableViewerColumn("작업갯수", 100, 3);
+		tvc = createTableViewerColumn("작업갯수", 100, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -430,7 +436,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업시작요청일시", 200, 4);
+		tvc = createTableViewerColumn("작업시작요청일시", 200, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -440,7 +446,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업방법", 120, 5);
+		tvc = createTableViewerColumn("작업방법", 120, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -450,7 +456,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("상태", 80, 6);
+		tvc = createTableViewerColumn("상태", 80, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -470,7 +476,7 @@ public class AqtExec  {
 //			}
 //		});
 
-		tvc = createTableViewerColumn("작업시작시간", 180, 8);
+		tvc = createTableViewerColumn("작업시작시간", 180, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -480,7 +486,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업종료시간", 180, 9);
+		tvc = createTableViewerColumn("작업종료시간", 180, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -489,7 +495,7 @@ public class AqtExec  {
 				return tj.getEndDt() != null ? smdfmt.format(tj.getEndDt()) : "" ;
 			}
 		});
-		tvc = createTableViewerColumn("입력파일명", 180, 9);
+		tvc = createTableViewerColumn("입력파일명", 180, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -543,8 +549,7 @@ public class AqtExec  {
 						"테스트작업요청을 등록하시겠습니까?" ) ;
 				if (result) {
 					try {
-						saveData(texecjob) ;
-						refreshScreen();
+						if ( saveData(texecjob) == RTN.OK) 	refreshScreen();
 					} catch (ParseException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -652,13 +657,13 @@ public class AqtExec  {
 		sptnum.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("송신간격(초) :");
+		lbl1.setText("송신간격(밀리초) :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		lbl1.pack();
 		spinterval  = new Spinner( form1, SWT.BORDER | SWT.CENTER) ;
-		spinterval.setMaximum(30);
+		spinterval.setMaximum(30000);
 		spinterval.setSelection(1);
-		spinterval.setToolTipText("전문송신시 건당 대기 시간(초)을 선택합니다.");
+		spinterval.setToolTipText("전문송신시 건당 대기 시간(밀리초)을 선택합니다.");
 		spinterval.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
@@ -668,7 +673,6 @@ public class AqtExec  {
 		chkDbSkip = new Button(form1, SWT.CHECK) ;
 		chkDbSkip.setSelection(false);
 		chkDbSkip.setText("DB Update Skip");
-
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("기타 대상선택조건 :");
@@ -762,11 +766,27 @@ public class AqtExec  {
     private TableViewerColumn createTableViewerColumn(String header, int width, int idx) 
     {
         TableViewerColumn column = new TableViewerColumn(tv, SWT.CENTER );
-        column.getColumn().setText(header);
-        column.getColumn().setWidth(width);
-        column.getColumn().setResizable(true);
-        column.getColumn().setMoveable(true);
+        TableColumn tcol = column.getColumn() ;
+        tcol.setText(header);
+        tcol.setWidth(width);
+        tcol.setResizable(true);
+        tcol.setMoveable(true);
         
+        if (idx == 1)
+        	tcol.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					Table table = tcol.getParent() ;
+					if (tcol.equals(table.getSortColumn())) {
+						int dire = table.getSortDirection() ;
+						table.setSortDirection(dire == SWT.UP ? SWT.DOWN : dire == SWT.NONE ? SWT.UP : SWT.NONE );
+					} else {
+						table.setSortColumn(tcol);
+						table.setSortDirection(SWT.UP);
+					}
+					tv.refresh();
+				}
+			});
+
         return column;
     }
 	private class myColumnProvider extends ColumnLabelProvider {
@@ -811,6 +831,62 @@ public class AqtExec  {
         
 	}
 	
+    protected int compareElements(Object e1, Object e2) {
+		Table table = tv.getTable();
+		int index = Arrays.asList(table.getColumns()).indexOf(table.getSortColumn());
+		int result = 0;
+		Date d1, d2 ;
+		Integer l1, l2 ;
+		String s1,s2 ;
+		if (index != -1) {
+			switch (index) {
+			case 0:
+				l1 = ((Texecjob)e1).getPkey() ;
+				l2 = ((Texecjob)e2).getPkey() ;
+				result = l1.compareTo(l2);
+				break;
+			case 1:
+				l1 = ((Texecjob)e1).getJobkind() ;
+				l2 = ((Texecjob)e2).getJobkind() ;
+				result = l1.compareTo(l2);
+				break;
+			case 2:
+				s1 = ((Texecjob)e1).getTcode() ;
+				s2 = ((Texecjob)e2).getTcode() ;
+				result = s1.compareTo(s2);
+				break;
+			case 3:
+				s1 = ((Texecjob)e1).getTdesc() ;
+				s2 = ((Texecjob)e2).getTdesc() ;
+				result = s1.compareTo(s2);
+				break;
+			case 4:
+				l1 = ((Texecjob)e1).getTnum() ;
+				l2 = ((Texecjob)e2).getTnum() ;
+				result = l1.compareTo(l2);
+				break;
+			case 5:
+				d1 = ((Texecjob)e1).getReqstartDt() ;
+				d2 = ((Texecjob)e2).getReqstartDt() ;
+				result = d1.compareTo(d2);
+				break;
+			case 8:
+				d1 = ((Texecjob)e1).getStartDt() ;
+				d2 = ((Texecjob)e2).getStartDt() ;
+				result = d1.compareTo(d2);
+				break;
+			case 9:
+				d1 = ((Texecjob)e1).getEndDt() ;
+				d2 = ((Texecjob)e2).getEndDt() ;
+				result = d1.compareTo(d2);
+				break;
+			default:
+				result = 0;
+			}
+		}
+		return table.getSortDirection() == SWT.UP ? result : -result;
+	}
+
 	private class ContentProvider implements IStructuredContentProvider {
 		/**
 		 * 

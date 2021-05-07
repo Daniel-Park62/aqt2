@@ -91,7 +91,7 @@ public class AqtList  {
     	Composite compTestList = new Composite(compHeader, SWT.BORDER);
 //    	compTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
     	
-    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(2, 20).applyTo(compTestList);
+    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(2, 10).hint(-1, 250).applyTo(compTestList);
     	
     	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(3).applyTo(compTestList);
     	
