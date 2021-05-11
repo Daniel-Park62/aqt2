@@ -17,6 +17,7 @@ public class Tservice implements Serializable {
 
 	@Id
 	private String svcid = "";
+	private String appid = "";
 
 	private String svceng = "";
 
@@ -46,6 +47,14 @@ public class Tservice implements Serializable {
 
 	public void setSvcid(String svcid) {
 		this.svcid = svcid;
+	}
+
+	public String getAppid() {
+		return appid;
+	}
+
+	public void setAppid(String appid) {
+		this.appid = appid;
 	}
 
 	public String getSvceng() {

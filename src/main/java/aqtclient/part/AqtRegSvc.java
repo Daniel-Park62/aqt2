@@ -196,9 +196,8 @@ public class AqtRegSvc {
     	tblList.setHeaderForeground(AqtMain.forecol);
     	tblList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	tblList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	    tblList.setFont(IAqtVar.font1b);
     	
-//	    tblList.setFont(SWTResourceManager.getFont("맑은 고딕", 15, SWT.NORMAL));
-	    
 	    tblViewerList.setUseHashlookup(true);
 	    tblList.addKeyListener(new KeyAdapter() {
 			@Override
@@ -219,12 +218,12 @@ public class AqtRegSvc {
 		});
 	    
         String[] cols1 = new String[] 
-        		{  " 서비스", "  내용설명(한글)", "  설명(영문)", "업무명", "담당자", "서비스종류"};
+        		{  " APP ID", "서비스(URI)", "  내용설명(한글)", "  설명(영문)", "업무명", "담당자", "서비스종류"};
 
-        int[] columnWidths1 = new int[] {  200, 300, 300, 300,150, 200};
+        int[] columnWidths1 = new int[] {  150,200, 300, 300, 300,150, 200};
 
 	    int[] colas1 = new int[] 
-	    		{SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.CENTER };
+	    		{SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.CENTER };
 	    TableViewerColumn tableViewerColumn ;
 	    for (int i = 0; i < cols1.length; i++) {
 	    	tableViewerColumn =
@@ -266,16 +265,18 @@ public class AqtRegSvc {
 
 				Tservice m = (Tservice) element;
 				if (property.equals(cols1[0]))
-					m.setSvcid(value.toString());
+					m.setAppid(value.toString());
 				else if (property.equals(cols1[1]))
-					m.setSvckor(value.toString());
+					m.setSvcid(value.toString());
 				else if (property.equals(cols1[2]))
-					m.setSvceng(value.toString());
+					m.setSvckor(value.toString());
 				else if (property.equals(cols1[3]))
-					m.setTask(value.toString());
+					m.setSvceng(value.toString());
 				else if (property.equals(cols1[4]))
-					m.setManager(value.toString());
+					m.setTask(value.toString());
 				else if (property.equals(cols1[5]))
+					m.setManager(value.toString());
+				else if (property.equals(cols1[6]))
 					m.setSvckind(value.toString());
 				else
 					return ;
@@ -290,16 +291,18 @@ public class AqtRegSvc {
 				// TODO Auto-generated method stub
 				Tservice t = (Tservice)element ;
 				if (property.equals(cols1[0]))
-					return t.getSvcid();
+					return t.getAppid();
 				else if (property.equals(cols1[1]))
-					return t.getSvckor();
+					return t.getSvcid();
 				else if (property.equals(cols1[2]))
-					return t.getSvceng();
+					return t.getSvckor();
 				else if (property.equals(cols1[3]))
-					return t.getTask() ;
+					return t.getSvceng();
 				else if (property.equals(cols1[4]))
-					return t.getManager() ;
+					return t.getTask() ;
 				else if (property.equals(cols1[5]))
+					return t.getManager() ;
+				else if (property.equals(cols1[6]))
 					return t.getSvckind() ;
 			
 				return null;
@@ -310,19 +313,13 @@ public class AqtRegSvc {
 				// TODO Auto-generated method stub
 				if (tblViewerList.getChecked(element)) {
 					Tservice t = (Tservice)element ;
-					if ( ! property.equals(cols1[0]) ) return true ;
+					if ( ! ( property.equals(cols1[0]) || property.equals(cols1[1])) ) return true ;
 
 					return t.isNew() ;
 				}
 				else
 					return false ;
 				
-//				if (property.equals(cols1[1]) || property.equals(cols1[2]) || property.equals(cols1[3]) ) {
-//					return true ;
-//				}
-//				Tservice t = (Tservice)element ;
-//				if ( property.equals(cols1[0]) && t.getSvcid().isEmpty() ) return true;
-//				return false;
 			}
 		});
 	    
@@ -374,16 +371,18 @@ public class AqtRegSvc {
 				  if ( s != null )
 					  switch (columnIndex) {
 					  case 0:
-						  return s.getSvcid() ;
+						  return s.getAppid() ;
 					  case 1:
-						  return s.getSvckor();
+						  return s.getSvcid() ;
 					  case 2:
-						  return s.getSvceng();
+						  return s.getSvckor();
 					  case 3:
-						  return s.getTask();
+						  return s.getSvceng();
 					  case 4:
-						  return s.getManager();
+						  return s.getTask();
 					  case 5:
+						  return s.getManager();
+					  case 6:
 						  return s.getSvckind();
 					  }
 				  return "";
@@ -396,7 +395,6 @@ public class AqtRegSvc {
 				return null;
 			}
 		});
-	    
 
 	}
 
@@ -508,7 +506,6 @@ public class AqtRegSvc {
 
 	    AqtMain.container.setCursor(IAqtVar.arrow);
 	    
-	    tblList.setFont(IAqtVar.font1b);
 
 	}
 	

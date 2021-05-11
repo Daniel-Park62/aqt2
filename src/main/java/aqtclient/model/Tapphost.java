@@ -15,8 +15,10 @@ public class Tapphost implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int pkey;
+
+//	private String appid;
 
 	private String thost;
 
@@ -24,7 +26,7 @@ public class Tapphost implements Serializable {
 
 	//bi-directional many-to-one association to Tapplication
 	@ManyToOne
-	@JoinColumn(name="appid")
+	@JoinColumn(name="appid") // ,updatable=false, insertable=false)
 	private Tapplication tapplication;
 
 	public Tapphost() {
@@ -37,6 +39,14 @@ public class Tapphost implements Serializable {
 	public void setPkey(int pkey) {
 		this.pkey = pkey;
 	}
+
+//	public String getAppid() {
+//		return appid;
+//	}
+//
+//	public void setAppid(String appid) {
+//		this.appid = appid;
+//	}
 
 	public String getThost() {
 		return this.thost;

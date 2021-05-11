@@ -479,6 +479,20 @@ public class AqtMain extends ApplicationWindow {
 			}
 		});
 		
+		lblist = new Label(comp_1, SWT.BOLD);
+		menuLabel(lblist);
+		lblist.setText("Step0.\n App 등록");
+		lblist.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				if (container.getToolTipText() == "AqtRegApp" ) return;
+				delWidget(container);
+				new AqtRegApp(container, SWT.NONE);
+				container.layout();
+				container.setToolTipText("AqtRegApp");
+			}
+		});
+		
 
 		{
 			lbl = new Label(comp_1, SWT.NONE);
