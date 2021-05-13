@@ -16,6 +16,9 @@ public class Tservice implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int pkey;
+
 	private String svcid = "";
 	private String appid = "";
 
@@ -39,6 +42,14 @@ public class Tservice implements Serializable {
 
 	public void setNew(boolean isNew) {
 		this.newFlag = isNew;
+	}
+
+	public int getPkey() {
+		return this.pkey;
+	}
+
+	public void setPkey(int pkey) {
+		this.pkey = pkey;
 	}
 
 	public String getSvcid() {

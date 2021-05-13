@@ -339,15 +339,14 @@ public class AqtListTask  {
 //			.getResultList() ;
 		List<Object[]> tList = new ArrayList<Object[]>();
         tList = em.createNativeQuery(
-				"select a.svcid, s.svckor svckor, a.tcnt, a.avgt ,cast(a.scnt as int) ,cast(a.fcnt as int), "
+				"select a.svcid, a.svckor svckor, a.tcnt, a.avgt ,cast(a.scnt as int) ,cast(a.fcnt as int), "
 				+ "ifnull(scnt * 100 / (scnt+fcnt) ,0.0)  spct,cast( a.tcnt - (scnt+fcnt) as int), lvl " +
-				"FROM   ((" + 
-				"select  t.uri svcid, lvl,  count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
+				"FROM   (" + 
+				"select  t.uri svcid, lvl, svckor, count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
-				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid) " + 
+				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid and uf_getapp(dstip,dstport) = s.appid) " + 
 				"WHERE  " + acond +  
-				" group by t.uri, lvl) a " + 
-				"left outer join tservice s on a.svcid = s.svcid )"  )
+				" group by t.uri, lvl) a "   )
         		.getResultList() ;
 		
 		

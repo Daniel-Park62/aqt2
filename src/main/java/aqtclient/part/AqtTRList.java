@@ -207,17 +207,19 @@ public class AqtTRList extends Dialog {
 			public void widgetSelected(SelectionEvent arg0) {
 				EntityManager em = AqtMain.emf.createEntityManager() ;
 				StringBuffer del = new StringBuffer();
+				int dcnt = 0 ;
 				em.getTransaction().begin();
 				for ( TableItem item : tblList.getSelection() ) {
 					Ttcppacket tr = (Ttcppacket)item.getData() ;
 					tr = em.merge(tr) ;
 					em.remove(tr);
-					del.append(tr.getCmpid() + " ") ;
+					if ( ++dcnt < 11 ) 	del.append(tr.getCmpid() + " ") ;
 				}
 				if ( del.length() == 0 ) { 
 					em.close();
 					return ;
 				}
+				if ( dcnt > 10) del.append(String.format("외 %d건 ", dcnt - 10 )) ;
 				del.append("\r\n 삭제하시겠습니까?") ;
 				if ( MessageDialog.openQuestion(getParentShell(), "삭제", del.toString() ) ) {
 					em.getTransaction().commit();

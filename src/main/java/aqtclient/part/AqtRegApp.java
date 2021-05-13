@@ -204,7 +204,7 @@ public class AqtRegApp {
 
 				Tapplication m = (Tapplication) element;
 				if (property.equals(cols1[0]))
-					m.setAppid(value.toString());
+					m.setAppid(value.toString().trim());
 				else if (property.equals(cols1[1]))
 					m.setAppnm(value.toString());
 				else if (property.equals(cols1[2]))

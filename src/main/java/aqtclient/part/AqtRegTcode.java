@@ -112,6 +112,9 @@ public class AqtRegTcode {
 		txCode.setFont(IAqtVar.font1);
 
 		txCode.setText("");
+		txCode.addTraverseListener( (final TraverseEvent event) -> {
+		      if (event.detail == SWT.TRAVERSE_RETURN) queryScr();
+		});
 
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText("테스트명");
@@ -121,16 +124,9 @@ public class AqtRegTcode {
 		txCodenm.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txCodenm.setFont(IAqtVar.font1);
 		txCodenm.setText("");
-		txCodenm.addTraverseListener(new TraverseListener() {
-		    @Override
-		    public void keyTraversed(final TraverseEvent event)
-		    {
-		      if (event.detail == SWT.TRAVERSE_RETURN)
-		        { 
-		    	  queryScr();
-		        }
-		    }
-		  });
+		txCodenm.addTraverseListener( (final TraverseEvent event) -> {
+		      if (event.detail == SWT.TRAVERSE_RETURN) queryScr();
+		});
 		
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).minSize(100, -1).applyTo(btnSearch);
@@ -688,11 +684,15 @@ public class AqtRegTcode {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		AqtMain.container.setCursor(IAqtVar.busyc);
-		StringBuilder qstr = new StringBuilder("SELECT t FROM Tmaster t") ; 
-		if (! txCodenm.getText().isEmpty()  ) {
-			qstr.append(" where t.desc1 like '" + txCodenm.getText().trim() + "%'");
-		}
-        tcodeList = em.createQuery(qstr.toString(), Tmaster.class).getResultList();
+//		StringBuilder qstr = new StringBuilder("SELECT t FROM Tmaster t") ; 
+//		if (! txCodenm.getText().isEmpty()  ) {
+//			qstr.append(" where t.desc1 like '" + txCodenm.getText().trim() + "%'");
+//		}
+		
+        tcodeList = em.createQuery("SELECT t FROM Tmaster t WHERE t.code like :cd and t.desc1 like :nm", Tmaster.class)
+        		.setParameter("cd", txCode.getText().trim() + "%")
+        		.setParameter("nm", txCodenm.getText().trim() + "%")
+        		.getResultList();
         		 
 	    tvList.setInput(tcodeList);
 	    

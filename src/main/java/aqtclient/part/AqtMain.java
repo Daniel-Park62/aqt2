@@ -237,7 +237,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.1.0");
+		newShell.setText("Application Quarity Test v2.2.0");
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
 		        event.doit = true;
@@ -464,20 +464,6 @@ public class AqtMain extends ApplicationWindow {
 		comp_1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		comp_1.setBackground(comp_menu.getBackground());
 		// composite_8.setBackground(new Color (Display.getCurrent(), 159, 170, 222));
-
-		lblist = new Label(comp_1, SWT.BOLD);
-		menuLabel(lblist);
-		lblist.setText("Step0.\n 서비스등록");
-		lblist.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseUp(MouseEvent e) {
-				if (container.getToolTipText() == "AqtRegSvc" ) return;
-				delWidget(container);
-				new AqtRegSvc(container, SWT.NONE);
-				container.layout();
-				container.setToolTipText("AqtRegSvc");
-			}
-		});
 		
 		lblist = new Label(comp_1, SWT.BOLD);
 		menuLabel(lblist);
@@ -493,12 +479,26 @@ public class AqtMain extends ApplicationWindow {
 			}
 		});
 		
+		lblist = new Label(comp_1, SWT.BOLD);
+		menuLabel(lblist);
+		lblist.setText("Step1.\n 서비스등록");
+		lblist.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				if (container.getToolTipText() == "AqtRegSvc" ) return;
+				delWidget(container);
+				new AqtRegSvc(container, SWT.NONE);
+				container.layout();
+				container.setToolTipText("AqtRegSvc");
+			}
+		});
+		
 
 		{
 			lbl = new Label(comp_1, SWT.NONE);
 
 			menuLabel(lbl);
-			lbl.setText("Step1.\n 테스트등록/전문생성");
+			lbl.setText("Step2.\n 테스트등록/전문생성");
 			lbl.addMouseListener(new MouseAdapter() {
 
 				@Override
@@ -516,7 +516,7 @@ public class AqtMain extends ApplicationWindow {
 
 			lbl = new Label(comp_1, SWT.NONE);
 			menuLabel(lbl);
-			lbl.setText("Step2.\n 테스트실행");
+			lbl.setText("Step3.\n 테스트실행");
 			lbl.addMouseListener(new MouseAdapter() {
 
 				@Override

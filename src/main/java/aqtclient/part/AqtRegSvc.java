@@ -10,7 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
@@ -26,7 +28,8 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -36,17 +39,18 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
@@ -59,7 +63,7 @@ import aqtclient.model.Tservice;
 public class AqtRegSvc {
 	private Table tblList;
 	private CheckboxTableViewer tblViewerList;
-	
+	private CCombo combo_app ;
 	private List <Tservice> tsvcList;
 	private Text textsvc , textsvcnm, textasknm ;
 	EntityManager em = AqtMain.emf.createEntityManager();
@@ -78,7 +82,6 @@ public class AqtRegSvc {
 //				initScreen();
 //			}
 //		};
-
 	}
 	
 	private void createscr (Composite parent, int style) {
@@ -107,10 +110,37 @@ public class AqtRegSvc {
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
 
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(8).equalWidth(false).applyTo(compTit);
+		GridLayoutFactory.fillDefaults().numColumns(10).equalWidth(false).applyTo(compTit);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compTit);
 		
 		Label lblt = new Label(compTit, SWT.NONE);
+		lblt.setText("*APPID");
+		lblt.setFont(IAqtVar.font1);
+
+		combo_app = new CCombo(compTit, SWT.READ_ONLY | SWT.FLAT | SWT.BORDER);
+		
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).applyTo(combo_app);
+		combo_app.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		combo_app.setFont(IAqtVar.font1);
+		combo_app.setItems( Stream.concat(Arrays.stream(new String[] {"ALL"}), Arrays.stream(getAppList()) ).toArray(String[]::new) );
+		combo_app.setText("ALL");
+		combo_app.requestLayout();
+		combo_app.addSelectionListener( new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				queryScr();
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" *서비스");
 		lblt.setFont(IAqtVar.font1);
 
@@ -119,7 +149,6 @@ public class AqtRegSvc {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(200, -1).applyTo(textsvc);
 		textsvc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textsvc.setFont(IAqtVar.font1);
-
 		textsvc.setText("");
 
 		lblt = new Label(compTit, SWT.NONE);
@@ -130,15 +159,8 @@ public class AqtRegSvc {
 		textsvcnm.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textsvcnm.setFont(IAqtVar.font1);
 		textsvcnm.setText("");
-		textsvcnm.addTraverseListener(new TraverseListener() {
-		    @Override
-		    public void keyTraversed(final TraverseEvent event)
-		    {
-		      if (event.detail == SWT.TRAVERSE_RETURN)
-		        { 
-		    	  queryScr();
-		        }
-		    }
+		textsvcnm.addTraverseListener((final TraverseEvent event) -> {
+		      if (event.detail == SWT.TRAVERSE_RETURN)	  queryScr();
 		  });
 
 		lblt = new Label(compTit, SWT.NONE);
@@ -149,15 +171,8 @@ public class AqtRegSvc {
 		textasknm.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textasknm.setFont(IAqtVar.font1);
 		textasknm.setText("");
-		textasknm.addTraverseListener(new TraverseListener() {
-		    @Override
-		    public void keyTraversed(final TraverseEvent event)
-		    {
-		      if (event.detail == SWT.TRAVERSE_RETURN)
-		        { 
-		    	  queryScr();
-		        }
-		    }
+		textasknm.addTraverseListener((final TraverseEvent event) -> {
+		      if (event.detail == SWT.TRAVERSE_RETURN)	  queryScr();
 		  });
 
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
@@ -197,7 +212,8 @@ public class AqtRegSvc {
     	tblList.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
     	tblList.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 	    tblList.setFont(IAqtVar.font1b);
-    	
+	    tblList.setHeaderVisible(true);
+	    
 	    tblViewerList.setUseHashlookup(true);
 	    tblList.addKeyListener(new KeyAdapter() {
 			@Override
@@ -220,7 +236,7 @@ public class AqtRegSvc {
         String[] cols1 = new String[] 
         		{  " APP ID", "서비스(URI)", "  내용설명(한글)", "  설명(영문)", "업무명", "담당자", "서비스종류"};
 
-        int[] columnWidths1 = new int[] {  150,200, 300, 300, 300,150, 200};
+        int[] columnWidths1 = new int[] {  130,200, 300, 300, 200,100, 150};
 
 	    int[] colas1 = new int[] 
 	    		{SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.LEFT, SWT.CENTER };
@@ -235,13 +251,30 @@ public class AqtRegSvc {
 //	    	tableColumn.setResizable(i != 0);
 
 	    }
-	    tblList.addListener(SWT.MeasureItem ,  new Listener() {
-	    	public void handleEvent(Event arg0) {
-	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.6);
+	    tblList.addListener(SWT.MeasureItem ,  (Event arg0) -> 
+	    		arg0.height = (int)(arg0.gc.getFontMetrics().getHeight() * 1.6) 
+	    );
 
-	    	}
+	    tblList.addListener(SWT.MouseDoubleClick, (e) -> {
+			int i = tblList.getSelectionIndex() ;
+			if (i < 0) return ;
+			if ( ! tblViewerList.getChecked(tblList.getItem(i).getData() ) ) return ;	
+			if ( ! tblList.getItem(i).getTextBounds(0).contains(e.x, e.y) ) return ;
+			Tservice tsvc = (Tservice) tblList.getItem(i).getData() ;
+			
+			PopupList lst = new PopupList(parent.getShell() , 5);
+			lst.setFont(IAqtVar.font1);
+			lst.setItems(getAppList()) ;
+	        lst.select( tsvc.getAppid() );
+	        Point pt = parent.getDisplay().getCursorLocation() ;
+
+	        String selected = lst.open(new Rectangle(pt.x, pt.y - 40, 80, 30));
+	        if (selected == null) return ;
+	        tsvc.setAppid(selected);
+	        tblViewerList.refresh();
+	    	
 	    });
-	    tblList.setHeaderVisible(true);
+
 	    
 	    tblViewerList.setColumnProperties(cols1);
 		CellEditor[] CELL_EDITORS = new CellEditor[cols1.length];
@@ -311,14 +344,9 @@ public class AqtRegSvc {
 			@Override
 			public boolean canModify(Object element, String property) {
 				// TODO Auto-generated method stub
-				if (tblViewerList.getChecked(element)) {
-					Tservice t = (Tservice)element ;
-					if ( ! ( property.equals(cols1[0]) || property.equals(cols1[1])) ) return true ;
+				if (tblViewerList.getChecked(element) && !  property.equals(cols1[0]) )  return true ;
 
-					return t.isNew() ;
-				}
-				else
-					return false ;
+				return false ;
 				
 			}
 		});
@@ -396,6 +424,11 @@ public class AqtRegSvc {
 			}
 		});
 
+	}
+
+	private String[] getAppList() {
+		return em.createQuery("select a.appid from Tapplication a ", String.class)
+				.getResultList().stream().toArray(size -> new String[size]);
 	}
 
 	private void createPop(Composite parent) {
@@ -491,6 +524,8 @@ public class AqtRegSvc {
 		em.getEntityManagerFactory().getCache().evictAll();
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		StringBuilder qstr = new StringBuilder("SELECT t FROM Tservice t where 1=1 ") ; 
+		if (! combo_app.getText().equals("ALL")) 
+			qstr.append(" and t.appid = '" + combo_app.getText() + "'");
 		if (! textsvc.getText().isEmpty()  ) 
 			qstr.append(" and t.svcid like '%" + textsvc.getText().trim() + "%'");
 		if (! textsvcnm.getText().isEmpty()  ) 
@@ -534,21 +569,24 @@ public class AqtRegSvc {
     	        for (int i=0; v.length > i ; i++) {
     	        	switch (i) {
     	        	case 0:
-    	        		s.setSvcid(v[i]);
+    	        		s.setAppid(v[i]);
     	        		continue ;
     	        	case 1:
-    	        		s.setSvckor(v[i]);
+    	        		s.setSvcid(v[i]);
     	        		continue ;
     	        	case 2:
-    	        		s.setSvceng(v[i]);
+    	        		s.setSvckor(v[i]);
     	        		continue ;
     	        	case 3:
-    	        		s.setTask(v[i]);
+    	        		s.setSvceng(v[i]);
     	        		continue ;
     	        	case 4:
-    	        		s.setManager(v[i]);
+    	        		s.setTask(v[i]);
     	        		continue ;
     	        	case 5:
+    	        		s.setManager(v[i]);
+    	        		continue ;
+    	        	case 6:
     	        		s.setSvcid(v[i]);
     	        		continue ;
     	        	}
