@@ -331,8 +331,25 @@ public class AqtExec  {
 				if ( i >= 0) {
 					TableItem item = tbl.getItem(i) ;
 					Texecjob te = ((Texecjob)item.getData())  ;
+					if ( te.getJobkind() == 1 ) {
+						EntityManager em = AqtMain.emf.createEntityManager();
+						try {
+							em.getTransaction().begin();
+							te.setResultstat(0);
+							te.setReqstartDt(new Date()) ;
+							em.merge(te);
+							em.getTransaction().commit();
+							MessageDialog.openInformation(parent.getShell(), "작업재요청", "재요청 되었습니다.") ;
+						} catch (Exception e) {
+							em.getTransaction().rollback();
+							MessageDialog.openInformation(parent.getShell(), "작업재요청", e.getMessage()) ;
+						}
+						em.close();
+						return ;
+					}
+					
 					if ( te.getJobkind() != 9 ) {
-						MessageDialog.openInformation(parent.getShell(), "재요청불가", "전문송신만 재작업 요청할 수 있습니다.") ;
+						MessageDialog.openInformation(parent.getShell(), "재요청불가", "전문복제는 재작업 할 수 없습니다.") ;
 						return ;
 					}
 					te.setResultstat(0);

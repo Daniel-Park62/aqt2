@@ -124,12 +124,12 @@ public class AqtDetailComp extends Dialog {
 		sashForm.setWeights(new int[] { 5,5 });
 		sashForm.setSashWidth(0);
 		sashForm.pack();
-		try {
-			compTrMsg( tran1.getTxtSendMsg() , tran2.getTxtSendMsg() ) ;
-			compTrMsg( tran1.getTxtReceiveMsg() , tran2.getTxtReceiveMsg() ) ;
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			compTrMsg( tran1.getTxtSendMsg() , tran2.getTxtSendMsg() ) ;
+//			compTrMsg( tran1.getTxtReceiveMsg() , tran2.getTxtReceiveMsg() ) ;
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		}
 		
 	}
 
@@ -255,7 +255,7 @@ public class AqtDetailComp extends Dialog {
 			txtSendMsg.setText(tr.getSdata());
 			txtRlen.setText(String.format("%,9d",tr.getRlen()));
 
-			txtReceiveMsg.setText(tr.getRdataUTF() );
+			txtReceiveMsg.setText(tr.getRdataENCODE(sv_select) );
 			txtPkey.setText(tr.getPkey()+"");
 			txtCmpid.setText(tr.getCmpid()+"");
 			txtTestCode.setText(tr.getTcode());

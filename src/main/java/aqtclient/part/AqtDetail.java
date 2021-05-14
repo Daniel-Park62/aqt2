@@ -388,7 +388,7 @@ public class AqtDetail extends Dialog {
 		txtSlen.setText(String.format("%,d",tpacket.getSlen()));
 		txtSendMsg.setText(tpacket.getSdata());
 		txtRlen.setText(String.format("%,d", tpacket.getRlen()));
-		txtReceiveMsg.setText(tpacket.getRdataUTF());
+		txtReceiveMsg.setText(tpacket.getRdataENCODE(sv_select));
 		txtCmpid.setText(tpacket.getCmpid()+"");
 		txtTestCode.setText(tpacket.getTcode()); 
 		txtUri.setText(tpacket.getUri());
