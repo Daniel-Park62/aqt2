@@ -124,12 +124,12 @@ public class AqtDetailComp extends Dialog {
 		sashForm.setWeights(new int[] { 5,5 });
 		sashForm.setSashWidth(0);
 		sashForm.pack();
-//		try {
+		try {
 //			compTrMsg( tran1.getTxtSendMsg() , tran2.getTxtSendMsg() ) ;
-//			compTrMsg( tran1.getTxtReceiveMsg() , tran2.getTxtReceiveMsg() ) ;
-//		} catch (UnsupportedEncodingException e) {
-//			e.printStackTrace();
-//		}
+			compTrMsg( tran1.getTxtReceiveMsg() , tran2.getTxtReceiveMsg() ) ;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -254,6 +254,10 @@ public class AqtDetailComp extends Dialog {
 			txtSlen.setText(String.format("%,9d",tr.getSlen()));
 			txtSendMsg.setText(tr.getSdata());
 			txtRlen.setText(String.format("%,9d",tr.getRlen()));
+			if (! tr.getTmaster().getLvl().equals("0") && tr.getRhead().contains("EUC-KR") )  
+				sv_select = "MS949";
+			else
+				sv_select = "UTF-8";
 
 			txtReceiveMsg.setText(tr.getRdataENCODE(sv_select) );
 			txtPkey.setText(tr.getPkey()+"");
@@ -438,7 +442,6 @@ public class AqtDetailComp extends Dialog {
 			txtRhead.setEditable(false);
 			txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			txtRhead.setText(" ");
-
 			
 //			lblReceiveMsg = new Label(compMessage, SWT.NONE);
 //			lblReceiveMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -460,6 +463,13 @@ public class AqtDetailComp extends Dialog {
 		        if (selected == null) return ;
 		        sv_select  = selected ;
 		        txtReceiveMsg.setText(tr.getRdataENCODE(selected));
+				try {
+//					compTrMsg( tran1.getTxtSendMsg() , tran2.getTxtSendMsg() ) ;
+					compTrMsg( tran1.getTxtReceiveMsg() , tran2.getTxtReceiveMsg() ) ;
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+
 		      }
 		    });
 		    GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT,SWT.CENTER).applyTo(button);

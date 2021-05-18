@@ -559,8 +559,14 @@ public class AqtRegApp {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				int i = tbl2.getSelectionIndex() ;
-				if ( i < 0) i = 0 ;
 				Tapphost t = new Tapphost() ;
+				if (i >= 0) {
+					Tapphost to = (Tapphost) tbl2.getItem(i).getData() ;
+					t.setThost(to.getThost());
+					t.setTport(to.getTport());
+				} else 
+					i = 0 ;
+				
 				t.setTapplication(curr_app);
 //				t.setAppid(curr_app.getAppid());
 				t.setThost("0.0.0.0");
@@ -601,6 +607,7 @@ public class AqtRegApp {
 					em.getTransaction().commit();
 					MessageDialog.openInformation(parent.getShell(), "Save Infomation", "수정 되었습니다.") ;
 					tblView2.refresh();
+					tblView2.setAllChecked(false);
 				}
 			}
 		});

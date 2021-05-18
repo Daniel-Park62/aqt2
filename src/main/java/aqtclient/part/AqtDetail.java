@@ -388,6 +388,11 @@ public class AqtDetail extends Dialog {
 		txtSlen.setText(String.format("%,d",tpacket.getSlen()));
 		txtSendMsg.setText(tpacket.getSdata());
 		txtRlen.setText(String.format("%,d", tpacket.getRlen()));
+		if (! tpacket.getTmaster().getLvl().equals("0") && tpacket.getRhead().contains("EUC-KR") )  
+			sv_select = "MS949";
+		else
+			sv_select = "UTF-8";
+		
 		txtReceiveMsg.setText(tpacket.getRdataENCODE(sv_select));
 		txtCmpid.setText(tpacket.getCmpid()+"");
 		txtTestCode.setText(tpacket.getTcode()); 
@@ -417,26 +422,26 @@ public class AqtDetail extends Dialog {
 	private void getPrev() {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
-			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.stime < ? and pkey != ?	order by t.stime desc limit 1",Ttcppacket.class  )
+			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime < ? and pkey != ?	order by t.o_stime desc limit 1",Ttcppacket.class  )
 					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getStime()).setParameter(3, tpacket.getPkey())
 					.getSingleResult() ;
 			this.tpacket = t;
 			fillScreen();
 		} catch (Exception e) {
-			MessageDialog.openInformation(this.getParent(), "알림", "첫번째 전문입니다.") ;
+			MessageDialog.openInformation(this.getParent(), "알림", "이전전문이 없습니다.") ;
 		}
 		em.close();
 	}
 	private void getNext() {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
-			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.stime > ? and pkey != ?	order by t.stime limit 1",Ttcppacket.class  )
+			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime > ? and pkey != ?	order by t.o_stime limit 1",Ttcppacket.class  )
 					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getStime()).setParameter(3, tpacket.getPkey())
 					.getSingleResult() ;
 			this.tpacket = t;
 			fillScreen();
 		} catch (Exception e) {
-			MessageDialog.openInformation(this.getParent(), "알림", "마지막 전문입니다.") ;
+			MessageDialog.openInformation(this.getParent(), "알림", "다음전문이 없습니다.") ;
 		}
 		em.close();
 	}

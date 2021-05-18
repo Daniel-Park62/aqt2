@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -28,6 +29,7 @@ public class AqtCopyTdata extends Dialog {
 	
 	private Label lmsg ;
 	private Text txtUri, txtRcode , txtEtc ;
+	private Spinner spnum ;
 	private String acode ;
 	
 	protected AqtCopyTdata(Shell parent, String scode) {
@@ -41,7 +43,7 @@ public class AqtCopyTdata extends Dialog {
     	newShell.setBackground(SWTResourceManager.getColor(215, 228, 242));
         super.configureShell(newShell);
         
-        newShell.setText("테스트데이터 복제");
+        newShell.setText("테스트데이터 복제(전문생성)");
     }
 
     @Override
@@ -90,7 +92,7 @@ public class AqtCopyTdata extends Dialog {
 		srcCode.findSelect(dstCode.getCmpCode() );
 
 		Group gr1 = new Group(container, SWT.SHADOW_ETCHED_IN) ;
-		GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).margins(10, 10).applyTo(gr1);
+		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).margins(10, 10).applyTo(gr1);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).span(2, 1).grab(true, false).applyTo(gr1) ;
 		gr1.setText("<< 데이터 선택 >>");
 		gr1.setFont(IAqtVar.font1b);
@@ -102,8 +104,25 @@ public class AqtCopyTdata extends Dialog {
 		txtUri = new Text(gr1,SWT.BORDER) ;
 		txtUri.setFont(IAqtVar.font1);
 
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtUri) ;
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).span(2,1).applyTo(txtUri) ;
 		txtUri.setFocus() ;
+
+		lbl = new Label(gr1,SWT.NONE ) ;
+		lbl.setText("URI 별 건수 :") ;
+		lbl.setFont(IAqtVar.font1b);
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.TOP).grab(false, false).applyTo(lbl) ;
+		
+		spnum = new Spinner(gr1,SWT.BORDER ) ;
+		spnum.setFont(IAqtVar.font1);
+		spnum.setSelection(0);
+
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.TOP).grab(false, false).applyTo(spnum) ;
+		
+		lbl = new Label(gr1,SWT.NONE ) ;
+		lbl.setText("지정한 건수이내로 URI별 복제됩니다.\n 0을 선택하면 원본에 있는대로 복제함") ;
+//		lbl.setFont(IAqtVar.font1b);
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.TOP).grab(false, false).applyTo(lbl) ;
+
 		lbl = new Label(gr1,SWT.NONE );
 		lbl.setText("Return code :");
 		lbl.setFont(IAqtVar.font1b);
@@ -111,7 +130,7 @@ public class AqtCopyTdata extends Dialog {
 
 		txtRcode  = new Text(gr1,SWT.BORDER) ;
 		txtRcode.setFont(IAqtVar.font1);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtRcode) ;
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).span(2,1).applyTo(txtRcode) ;
 		txtRcode.addVerifyListener(new VerifyListener() {
 			
 			@Override
@@ -127,18 +146,27 @@ public class AqtCopyTdata extends Dialog {
 		
 		txtEtc  = new Text(gr1,SWT.BORDER) ;
 		txtEtc.setFont(IAqtVar.font1);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtEtc) ;
-		txtEtc.setToolTipText("* method: POST, GET 등 \n* rcode: 응답코드(200 등)\n* sflag: 0.미수행 1.성공 2.실패 \n* srcip,srcport: 소스ip,port\n* dstip,dstport: 목적지ip,port\n* svctime: 응답소요시간");
-		txtEtc.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				if ( e.keyCode == SWT.F1) {
-					lmsg.setText(txtEtc.getToolTipText());
-					lmsg.requestLayout();
-				}
-				super.keyReleased(e);
-			}
-		});
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).span(2,1).applyTo(txtEtc) ;
+//		txtEtc.setToolTipText("* method: POST, GET 등 \n* rcode: 응답코드(200 등)\n* sflag: 0.미수행 1.성공 2.실패 \n* srcip,srcport: 소스ip,port\n* dstip,dstport: 목적지ip,port\n* svctime: 응답소요시간");
+//		txtEtc.addKeyListener(new KeyAdapter() {
+//			@Override
+//			public void keyReleased(KeyEvent e) {
+//				if ( e.keyCode == SWT.F1) {
+//					lmsg.setText(txtEtc.getToolTipText());
+//					lmsg.requestLayout();
+//				}
+//				super.keyReleased(e);
+//			}
+//		});
+		
+		lbl = new Label(gr1,SWT.NONE );
+		lbl = new Label(gr1,SWT.NONE );
+		lbl.setText("* method: POST, GET 등 \n* rcode: 응답코드(200 등)\n* sflag: 0.미수행 1.성공 2.실패 ") ;
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.TOP).span(1, 1).grab(false, false).applyTo(lbl) ;
+		lbl = new Label(gr1,SWT.NONE );
+		lbl.setText("* srcip,srcport: 소스ip,port\n* dstip,dstport: 목적지ip,port\n* svctime: 응답소요시간");
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.TOP).span(1, 1).grab(false, false).applyTo(lbl) ;
+		
 		lmsg = new Label(container, SWT.LEFT);
 		lmsg.setFont(IAqtVar.font1);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).span(2, 1).applyTo(lmsg);
@@ -158,10 +186,11 @@ public class AqtCopyTdata extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
 			em.getTransaction().begin();
-			String rval  = em.createNativeQuery("call sp_copytestdata(?,?,?)")
+			String rval  = em.createNativeQuery("call sp_copytestdata(?,?,?,?)")
 					.setParameter(1, srcCode.getTcode())
 					.setParameter(2, dstCode.getTcode())
 					.setParameter(3, cond )
+					.setParameter(4, spnum.getSelection())
 	                .getSingleResult().toString();
 			em.createNativeQuery("call sp_summary(?)")
 					.setParameter(1, dstCode.getTcode())

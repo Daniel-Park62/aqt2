@@ -65,6 +65,7 @@ public class AqtExec  {
 	Button btn1, btn2, btn3 ;
 	AqtButton btnsave ;
 	Spinner sptnum, spinterval ;
+	Label lb_num ;
 	Text txtetc ;
 	Text txtstart ;
 	Text txtend ;
@@ -127,6 +128,8 @@ public class AqtExec  {
 		txtInfile.setText(tjob.getInfile());
 		chkDbSkip.setSelection("1".equals(tjob.getDbskip()));
 		sptnum.setSelection( tjob.getTnum() );
+		lb_num.setText(tjob.getJobkind() == 3 ? "URI별건수 :" : "송신간격(밀리초) :");
+		lb_num.requestLayout();
 		spinterval.setSelection( tjob.getReqnum() );
 		txtetc.setText(tjob.getEtc());
 		txtstart.setText(tjob.getStartDt() != null ? dformat.format(tjob.getStartDt()) : "");
@@ -673,10 +676,10 @@ public class AqtExec  {
 		sptnum.setSelection(1);
 		sptnum.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
-		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("송신간격(밀리초) :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		lbl1.pack();
+		lb_num = new Label(form1,SWT.LEFT) ;
+		lb_num.setText("송신간격(밀리초) :");
+		lb_num.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		lb_num.pack();
 		spinterval  = new Spinner( form1, SWT.BORDER | SWT.CENTER) ;
 		spinterval.setMaximum(30000);
 		spinterval.setSelection(1);
