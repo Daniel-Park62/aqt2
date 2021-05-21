@@ -194,6 +194,7 @@ public class AqtRegTcode {
 				}
 				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), tcode );
 				aqtcopy.open() ;
+				tvList.refresh();
 			}
 		});
 
@@ -438,6 +439,9 @@ public class AqtRegTcode {
 			if (  tblList.getItem(i).getTextBounds(9).contains(e.x, e.y) ) {
 				Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
 				AqtMain.openTrList("t.tcode = '"+ tmaster.getCode() + "'" ) ; 
+				queryScr();
+				tvList.refresh() ;
+
 			}
 			if ( ! tvList.getChecked(tblList.getItem(i).getData() ) ) return ;	
 			if ( ! tblList.getItem(i).getTextBounds(5).contains(e.x, e.y) ) return ;

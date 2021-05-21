@@ -271,7 +271,7 @@ public class AqtMain extends ApplicationWindow {
 		if (jobScheduler != null) jobScheduler.cancel();
 	    for (Control kid : parent.getChildren()) {
 	    	try {
-		        kid.dispose();
+		        if (!kid.isDisposed()) kid.dispose();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

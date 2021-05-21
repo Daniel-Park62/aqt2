@@ -64,7 +64,7 @@ public class AqtExec  {
 	Button chkDbSkip ;
 	Button btn1, btn2, btn3 ;
 	AqtButton btnsave ;
-	Spinner sptnum, spinterval ;
+	Spinner sptnum, spinterval, sprepnum ;
 	Label lb_num ;
 	Text txtetc ;
 	Text txtstart ;
@@ -131,9 +131,11 @@ public class AqtExec  {
 		lb_num.setText(tjob.getJobkind() == 3 ? "URI별건수 :" : "송신간격(밀리초) :");
 		lb_num.requestLayout();
 		spinterval.setSelection( tjob.getReqnum() );
+		sprepnum.setSelection( tjob.getRepnum() );
+		
 		txtetc.setText(tjob.getEtc());
-		txtstart.setText(tjob.getStartDt() != null ? dformat.format(tjob.getStartDt()) : "");
-		txtend.setText( tjob.getEndDt() != null ? dformat.format(tjob.getEndDt() ) : "");
+		txtstart.setText( (tjob.getStartDt() != null ? dformat.format(tjob.getStartDt()) : "")  + " ~ " +
+						 (tjob.getEndDt() != null ? dformat.format(tjob.getEndDt() ) : "") );
 //		txtreqdt.setText(dformat.format(tjob.getReqstartDt()));
 		cdt.setSelection(tjob.getReqstartDt());
 		cmbstatus.select(tjob.getResultstat());
@@ -157,6 +159,7 @@ public class AqtExec  {
 		tjob.setDbskip(chkDbSkip.getSelection() ? "1" : "0");
 		tjob.setTnum(sptnum.getSelection());
 		tjob.setReqnum(spinterval.getSelection());
+		tjob.setRepnum(sprepnum.getSelection());
 		tjob.setEtc(txtetc.getText());
 //		tjob.setReqstartDt(dformat.parse( txtreqdt.getText()) );
 		tjob.setReqstartDt(cdt.getSelection());
@@ -334,24 +337,24 @@ public class AqtExec  {
 				if ( i >= 0) {
 					TableItem item = tbl.getItem(i) ;
 					Texecjob te = ((Texecjob)item.getData())  ;
-					if ( te.getJobkind() == 1 ) {
-						EntityManager em = AqtMain.emf.createEntityManager();
-						try {
-							em.getTransaction().begin();
-							te.setResultstat(0);
-							te.setReqstartDt(new Date()) ;
-							em.merge(te);
-							em.getTransaction().commit();
-							MessageDialog.openInformation(parent.getShell(), "작업재요청", "재요청 되었습니다.") ;
-						} catch (Exception e) {
-							em.getTransaction().rollback();
-							MessageDialog.openInformation(parent.getShell(), "작업재요청", e.getMessage()) ;
-						}
-						em.close();
-						return ;
-					}
+//					if ( te.getJobkind() == 1 ) {
+//						EntityManager em = AqtMain.emf.createEntityManager();
+//						try {
+//							em.getTransaction().begin();
+//							te.setResultstat(0);
+//							te.setReqstartDt(new Date()) ;
+//							em.merge(te);
+//							em.getTransaction().commit();
+//							MessageDialog.openInformation(parent.getShell(), "작업재요청", "재요청 되었습니다.") ;
+//						} catch (Exception e) {
+//							em.getTransaction().rollback();
+//							MessageDialog.openInformation(parent.getShell(), "작업재요청", e.getMessage()) ;
+//						}
+//						em.close();
+//						return ;
+//					}
 					
-					if ( te.getJobkind() != 9 ) {
+					if ( te.getJobkind() == 3 ) {
 						MessageDialog.openInformation(parent.getShell(), "재요청불가", "전문복제는 재작업 할 수 없습니다.") ;
 						return ;
 					}
@@ -446,7 +449,7 @@ public class AqtExec  {
 				return tj.getTdesc() ;
 			}
 		});
-		tvc = createTableViewerColumn("작업갯수", 100, 1);
+		tvc = createTableViewerColumn("작업갯수", 80, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -456,7 +459,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업시작요청일시", 200, 1);
+		tvc = createTableViewerColumn("작업시작요청일시", 160, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -466,15 +469,15 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업방법", 120, 0);
-		tvc.setLabelProvider(new myColumnProvider() {
-			public String getText(Object element) {
-				if (element == null)
-					return super.getText(element);
-				Texecjob tj = (Texecjob) element;
-				return tj.getExectype() == 0 ? type0.getText() : type1.getText() ;
-			}
-		});
+//		tvc = createTableViewerColumn("작업방법", 120, 0);
+//		tvc.setLabelProvider(new myColumnProvider() {
+//			public String getText(Object element) {
+//				if (element == null)
+//					return super.getText(element);
+//				Texecjob tj = (Texecjob) element;
+//				return tj.getExectype() == 0 ? type0.getText() : type1.getText() ;
+//			}
+//		});
 
 		tvc = createTableViewerColumn("상태", 80, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
@@ -496,7 +499,7 @@ public class AqtExec  {
 //			}
 //		});
 
-		tvc = createTableViewerColumn("작업시작시간", 180, 1);
+		tvc = createTableViewerColumn("작업시작시간", 160, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -506,7 +509,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("작업종료시간", 180, 1);
+		tvc = createTableViewerColumn("작업종료시간", 160, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -665,6 +668,7 @@ public class AqtExec  {
 		type0.setSelection(true);
 		type1.setFont(IAqtVar.font1) ;
 		type0.setFont(IAqtVar.font1) ;
+		compo_exectype.setEnabled(false);
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업갯수 :");
@@ -687,21 +691,32 @@ public class AqtExec  {
 		spinterval.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("DB Update 여부 :");
+		lbl1.setText("작업반복회수 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
-		chkDbSkip = new Button(form1, SWT.CHECK) ;
-		chkDbSkip.setSelection(false);
-		chkDbSkip.setText("DB Update Skip");
+		sprepnum  = new Spinner( form1, SWT.BORDER | SWT.CENTER) ;
+		sprepnum.setMaximum(30000);
+		sprepnum.setSelection(1);
+		sprepnum.setToolTipText("전문송신시 작업반복횟수");
+		sprepnum.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("기타 대상선택조건 :");
+		lbl1.setText(" 기타 대상선택조건 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
 		txtetc = new Text(form1, SWT.BORDER) ;
 		txtetc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false,3,1));
 		txtetc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtetc.setToolTipText("** t.칼럼명 의 형식으로 입력 **\n* method: POST, GET 등 \n* rcode: 응답코드(200 등)\n* sflag: 0.미수행 1.성공 2.실패 \n* srcip,srcport: 소스ip,port\n* dstip,dstport: 목적지ip,port\n* svctime: 응답소요시간");
+
+		lbl1 = new Label(form1,SWT.LEFT) ;
+		lbl1.setText(" DB Update 여부 :");
+		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+
+		chkDbSkip = new Button(form1, SWT.CHECK) ;
+		chkDbSkip.setSelection(false);
+		chkDbSkip.setText("DB Update Skip");
+
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업시작 요청일 :");
@@ -711,32 +726,6 @@ public class AqtExec  {
 		cdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		cdt.setPattern("yyyy/MM/dd hh:mm:ss a");
 		cdt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-//		txtreqdt = new Text(form1, SWT.BORDER) ;
-//		txtreqdt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//		txtreqdt.setText(dformat.format( System.currentTimeMillis() ));
-//		txtreqdt.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-//		txtreqdt.setCursor(IAqtVar.handc);
-//		txtreqdt.addMouseListener(new MouseAdapter() {
-//	    	@Override
-//	    	public void mouseDoubleClick(MouseEvent e) {
-//	    		Point pt = AqtMain.aqtmain.getShell().getDisplay().getCursorLocation() ; 
-//	    		Date dt = null;
-//				try {
-//					dt = dformat.parse(txtreqdt.getText());
-//				} catch (ParseException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//	        	CalDialog cd = new CalDialog(Display.getCurrent().getActiveShell() , pt.x, pt.y + 20 ,  dt );
-//	    		
-//                String s = (String)cd.open();
-//                if (s != null) {
-//                	txtreqdt.setText(s.replace('-', '/') + txtreqdt.getText(10, 19) ) ;
-//                }
-//	    		super.mouseDoubleClick(e);
-//	    	}
-//
-//		});
 
 		lbl1 = new Label(form1,SWT.LEFT ) ;
 		lbl1.setText("작업상태 :");
@@ -748,18 +737,18 @@ public class AqtExec  {
 		cmbstatus.setEnabled(false);
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("작업시작일시 :");
+		lbl1.setText("작업기간 :");
 		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 
 		txtstart = new Text(form1, SWT.BORDER | SWT.READ_ONLY) ;
 		txtstart.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		lbl1 = new Label(form1,SWT.LEFT) ;
-		lbl1.setText("작업종료일시 :");
-		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-
-		txtend = new Text(form1, SWT.BORDER | SWT.READ_ONLY) ;
-		txtend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//		lbl1 = new Label(form1,SWT.LEFT) ;
+//		lbl1.setText("작업종료일시 :");
+//		lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+//
+//		txtend = new Text(form1, SWT.BORDER | SWT.READ_ONLY) ;
+//		txtend.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		Composite compMessage = new Composite(compHeader, SWT.NONE);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).span(2, 3).grab(true, false).applyTo(compMessage);
@@ -814,9 +803,17 @@ public class AqtExec  {
 		public Color getForeground(Object element) {
 			if (element == null)
 				return super.getForeground(element);
-			return ((Texecjob) element).getResultstat() > 1 ? SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY) :
-					((Texecjob) element).getResultstat() == 1 ? SWTResourceManager.getColor(SWT.COLOR_RED)
-							: SWTResourceManager.getColor(SWT.COLOR_BLUE);
+			
+			switch (((Texecjob) element).getResultstat()) {
+			case 0:
+				return SWTResourceManager.getColor(SWT.COLOR_BLUE);
+			case 1:
+				return SWTResourceManager.getColor(SWT.COLOR_RED);
+			case 2:
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY);
+			default:
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_RED);
+			}
 		}
 //		@Override
 //		public Font getFont(Object element) {
@@ -890,12 +887,12 @@ public class AqtExec  {
 				d2 = ((Texecjob)e2).getReqstartDt() ;
 				result = d1.compareTo(d2);
 				break;
-			case 8:
+			case 7:
 				d1 = ((Texecjob)e1).getStartDt() ;
 				d2 = ((Texecjob)e2).getStartDt() ;
 				result = d1.compareTo(d2);
 				break;
-			case 9:
+			case 8:
 				d1 = ((Texecjob)e1).getEndDt() ;
 				d2 = ((Texecjob)e2).getEndDt() ;
 				result = d1.compareTo(d2);

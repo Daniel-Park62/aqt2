@@ -45,6 +45,8 @@ public class Texecjob implements Cloneable {
 
 	private int reqnum = 0;
 
+	private int repnum = 1;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date reqstartDt = new Date();
 
@@ -167,6 +169,14 @@ public class Texecjob implements Cloneable {
 
 	public void setReqnum(int reqnum) {
 		this.reqnum = reqnum;
+	}
+
+	public int getRepnum() {
+		return this.repnum;
+	}
+
+	public void setRepnum(int repnum) {
+		this.repnum = repnum;
 	}
 
 	public Date getReqstartDt() {

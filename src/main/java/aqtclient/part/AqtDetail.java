@@ -423,7 +423,7 @@ public class AqtDetail extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
 			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime < ? and pkey != ?	order by t.o_stime desc limit 1",Ttcppacket.class  )
-					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getStime()).setParameter(3, tpacket.getPkey())
+					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getOStime()).setParameter(3, tpacket.getPkey())
 					.getSingleResult() ;
 			this.tpacket = t;
 			fillScreen();
@@ -436,7 +436,7 @@ public class AqtDetail extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
 			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime > ? and pkey != ?	order by t.o_stime limit 1",Ttcppacket.class  )
-					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getStime()).setParameter(3, tpacket.getPkey())
+					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getOStime()).setParameter(3, tpacket.getPkey())
 					.getSingleResult() ;
 			this.tpacket = t;
 			fillScreen();

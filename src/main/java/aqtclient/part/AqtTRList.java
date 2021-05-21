@@ -207,12 +207,15 @@ public class AqtTRList extends Dialog {
 			public void widgetSelected(SelectionEvent arg0) {
 				EntityManager em = AqtMain.emf.createEntityManager() ;
 				StringBuffer del = new StringBuffer();
+				StringBuffer dtcode = new StringBuffer();
 				int dcnt = 0 ;
+				
 				em.getTransaction().begin();
 				for ( TableItem item : tblList.getSelection() ) {
 					Ttcppacket tr = (Ttcppacket)item.getData() ;
 					tr = em.merge(tr) ;
 					em.remove(tr);
+					if (dtcode.length() < 1) dtcode.append(tr.getTcode()) ;
 					if ( ++dcnt < 11 ) 	del.append(tr.getCmpid() + " ") ;
 				}
 				if ( del.length() == 0 ) { 
@@ -222,6 +225,9 @@ public class AqtTRList extends Dialog {
 				if ( dcnt > 10) del.append(String.format("외 %d건 ", dcnt - 10 )) ;
 				del.append("\r\n 삭제하시겠습니까?") ;
 				if ( MessageDialog.openQuestion(getParentShell(), "삭제", del.toString() ) ) {
+					em.createNativeQuery("call sp_summary(?)")
+					.setParameter(1, dtcode.toString() )
+					.executeUpdate() ;
 					em.getTransaction().commit();
 					refreshScreen(); 
 				} else {
@@ -308,7 +314,7 @@ public class AqtTRList extends Dialog {
 
 	private synchronized void refreshScreen() {
 		EntityManager em = AqtMain.emf.createEntityManager();
-//		em.clear();
+		em.clear();
 //		em.getEntityManagerFactory().getCache().evictAll();
 		
 		tempTrxList1 = new ArrayList<Ttcppacket>();

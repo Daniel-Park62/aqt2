@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,6 +28,8 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.PopupList;
@@ -59,6 +62,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tservice;
+import aqtclient.model.Ttcppacket;
 
 public class AqtRegSvc {
 	private Table tblList;
@@ -201,7 +205,11 @@ public class AqtRegSvc {
 //		GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(true).applyTo(compDetail);
 
     	tblViewerList = CheckboxTableViewer.newCheckList(container, SWT.NONE | SWT.FULL_SELECTION );
-    	
+    	tblViewerList.setComparator(new ViewerComparator() {
+			public int compare(Viewer viewer, Object e1, Object e2) {
+				return compareElements( e1, e2);
+			}
+		});
     	tblList = tblViewerList.getTable();
 	    createPop(parent);
     	
@@ -245,9 +253,22 @@ public class AqtRegSvc {
 	    	tableViewerColumn =
 	    			new TableViewerColumn(tblViewerList, colas1[i]);
 
-	    	TableColumn tableColumn = tableViewerColumn.getColumn();
-	    	tableColumn.setText(cols1[i]);
-	    	tableColumn.setWidth(columnWidths1[i]);
+	    	TableColumn tcol = tableViewerColumn.getColumn();
+	    	tcol.setText(cols1[i]);
+	    	tcol.setWidth(columnWidths1[i]);
+	    	tcol.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					Table table = tcol.getParent() ;
+					if (tcol.equals(table.getSortColumn())) {
+						int dire = table.getSortDirection() ;
+						table.setSortDirection(dire == SWT.UP ? SWT.DOWN : dire == SWT.NONE ? SWT.UP : SWT.NONE );
+					} else {
+						table.setSortColumn(tcol);
+						table.setSortDirection(SWT.UP);
+					}
+					tblViewerList.refresh();
+				}
+			});
 //	    	tableColumn.setResizable(i != 0);
 
 	    }
@@ -603,4 +624,49 @@ public class AqtRegSvc {
 		}
 		
 	}
+    protected int compareElements(Object e1, Object e2) {
+		Table table = tblViewerList.getTable();
+		int index = Arrays.asList(table.getColumns()).indexOf(table.getSortColumn());
+		int result = 0;
+		LocalDateTime d1, d2 ;
+		Long l1, l2 ;
+		Double db1,db2;
+		String s1,s2 ;
+		if (index != -1) {
+			switch (index) {
+			case 0:
+				s1 = ((Tservice)e1).getAppid() ;
+				s2 = ((Tservice)e2).getAppid() ;
+				result = s1.compareTo(s2);
+				break;
+			case 1:
+				s1 = ((Tservice)e1).getSvcid() ;
+				s2 = ((Tservice)e2).getSvcid() ;
+				result = s1.compareTo(s2);
+				break;
+			case 2:
+				s1 = ((Tservice)e1).getSvckor() ;
+				s2 = ((Tservice)e2).getSvckor() ;
+				result = s1.compareTo(s2);
+				break;
+			case 3:
+				s1 = ((Tservice)e1).getSvceng() ;
+				s2 = ((Tservice)e2).getSvceng() ;
+				result = s1.compareTo(s2);
+				break;
+			case 4:
+				s1 = ((Tservice)e1).getTask() ;
+				s2 = ((Tservice)e2).getTask() ;
+				result = s1.compareTo(s2);
+				break;
+			case 5:
+				s1 = ((Tservice)e1).getManager() ;
+				s2 = ((Tservice)e2).getManager() ;
+				result = s1.compareTo(s2);
+				break;
+			}
+		}
+		return table.getSortDirection() == SWT.UP ? result : -result;
+	}
+
 }
