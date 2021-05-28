@@ -92,6 +92,14 @@ public class AqtMain extends ApplicationWindow {
 		addStatusLine();
 //		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
 		tconfig = em.find(Tconfig.class, 1) ;
+		if (tconfig == null) {
+			tconfig = new Tconfig() ;
+			tconfig.setId(1);
+			tconfig.setPass1("testadmin");
+			em.getTransaction().begin();
+			em.persist(tconfig);
+			em.getTransaction().commit();
+		}
 		
 	}
 
@@ -216,7 +224,8 @@ public class AqtMain extends ApplicationWindow {
 	public static void main(String args[]) {
 		try {
 			AqtMain mainwin = new AqtMain();
-			String pass = mainwin.em.createQuery("select c.pass1 from Tconfig c ", String.class).getSingleResult() ;
+			String pass = mainwin.em.createQuery("select c.pass1 from Tconfig c ", String.class)
+					.getResultStream().findFirst().orElse("testadmin") ;
 			AqtLogin aqtlogin  = new AqtLogin( mainwin.getParentShell(), pass ) ;
 			if ( aqtlogin.open() == Window.OK) {
 
@@ -237,7 +246,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.2.0");
+		newShell.setText("Application Quarity Test v2.2.0528");
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
 		        event.doit = true;
@@ -532,7 +541,7 @@ public class AqtMain extends ApplicationWindow {
 
 		Label ldawin = new Label(comp_menu, SWT.NONE);
 		ldawin.setFont(SWTResourceManager.getFont( "Calibri", 12, SWT.ITALIC));
-		ldawin.setText("CopyRight 2020 by DawinICT");
+		ldawin.setText("Copyright 2020 by DawinICT");
 		ldawin.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		ldawin.setForeground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
 

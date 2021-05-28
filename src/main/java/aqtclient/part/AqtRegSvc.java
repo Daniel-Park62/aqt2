@@ -559,7 +559,7 @@ public class AqtRegSvc {
 	    tblViewerList.setInput(tsvcList);
 	    
 	    tblList.setSelection(0);
-
+	    AqtMain.aqtmain.setStatus(String.format(">> 조회건수 %,d 건" ,tsvcList.size() ) );
 	    AqtMain.container.setCursor(IAqtVar.arrow);
 	    
 
