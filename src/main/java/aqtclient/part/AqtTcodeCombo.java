@@ -29,6 +29,7 @@ public class AqtTcodeCombo  {
 	}
 	public String getTcode() {
 		if (tlist == null)  return "";
+		if (combo.getText().indexOf("%") >= 0)  return "%" ;
 		return tlist.get(combo.getSelectionIndex()).getCode() ;
 	}
 

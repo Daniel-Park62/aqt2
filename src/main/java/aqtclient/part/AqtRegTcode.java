@@ -315,6 +315,46 @@ public class AqtRegTcode {
 			}
 		});
 
+	    MenuItem pmclear = new MenuItem(popupMenu, SWT.NONE);
+	    pmclear.setText("전문삭제");
+	    pmclear.setToolTipText("체크된 테스트ID의 모든전문을 삭제합니다.");
+	    pmclear.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if (tvList.getCheckedElements().length > 0 ) {
+					StringBuffer undel = new StringBuffer();
+					StringBuffer del = new StringBuffer();
+					em.getTransaction().begin();
+					for ( Object s : tvList.getCheckedElements() ) {
+						Tmaster tm = (Tmaster)s ;
+//						if (  tm.getEndDate() != null || tm.getDataCnt() > 0 ) {
+						if (  tm.getEndDate() != null ) {
+							undel.append(tm.getCode() + " ") ;
+							continue ;
+						}
+						int cnt = tm.getDataCnt() ;
+						del.append(tm.getCode() + " ") ;
+						cnt = em.createQuery("DELETE FROM Ttcppacket t WHERE t.tcode = :tcode")
+							.setParameter("tcode", tm.getCode()).executeUpdate() ;
+						if (cnt>0) del.append(String.format("(전문 %,d건 삭제)", cnt)) ;
+						em.createNativeQuery("call sp_summary(?)")
+								.setParameter(1, tm.getCode()).executeUpdate() ;
+						
+					}
+					if ( del.length() > 0 && ! MessageDialog.openQuestion(parent.getShell(), "전문삭제", del + " 삭제 진행하시겠습니까?")) {
+						em.getTransaction().rollback() ;
+						return ;
+					}
+						
+					em.getTransaction().commit();
+					queryScr();
+					MessageDialog.openInformation(parent.getShell(), "전문삭제", 
+							(del.length() > 0 ? del + "삭제 되었습니다.\r\n\r\n" : "")  + 
+							(undel.length() > 0 ? undel + "삭제 할 수 없습니다.":"")) ;
+				}
+			}
+		});
+
 	    MenuItem savesvc = new MenuItem(popupMenu, SWT.NONE);
 	    savesvc.setText("저장");
 	    savesvc.setToolTipText("신규입력, 수정된 정보를 저장합니다. \n저장하지 않으면 수정한 정보를 잃게됩니다.");

@@ -1,6 +1,7 @@
 package aqtclient.part;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.IntStream;
@@ -464,8 +465,9 @@ public class AqtStatus {
 	    
 	    tblTestList.setFont(IAqtVar.font1b);
 	    long icnt ;
-	    if ( tempVtrxList.stream().filter( a -> "1".equals(a.getLvl() ) ).findAny().isPresent())
-	    	icnt = tempVtrxList.stream().filter( a -> "1".equals(a.getLvl() ) ).findAny().get().getTotSvcCnt() ;
+	    Optional<Vtrxlist> result = tempVtrxList.stream().filter( a -> "1".equals(a.getLvl() ) ).findAny() ;
+	    if ( result.isPresent())
+	    	icnt = result.get().getTotSvcCnt() ;
 	    else
 	    	icnt = 0;
 	    

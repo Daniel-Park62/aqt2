@@ -63,7 +63,7 @@ public class AqtExec  {
 	
 	Button chkDbSkip ;
 	Button btn1, btn2, btn3 ;
-	AqtButton btnsave ;
+	AqtButton btnsave , btnNew;
 	Spinner sptnum, spinterval, sprepnum ;
 	Label lb_num ;
 	Text txtetc ;
@@ -140,7 +140,7 @@ public class AqtExec  {
 		cdt.setSelection(tjob.getReqstartDt());
 		cmbstatus.select(tjob.getResultstat());
 		btnsave.setEnabled(tjob.getResultstat() == 0 && tjob.getJobkind() == 9 && AqtMain.authtype == AuthType.TESTADM);
-		
+		btnNew.setEnabled( AqtMain.authtype == AuthType.TESTADM) ;
 		txtmsg.setText(tjob.getMsg());
 		
 	}
@@ -308,7 +308,7 @@ public class AqtExec  {
 					EntityManager em = AqtMain.emf.createEntityManager();
 					TableItem item = tbl.getItem(i) ;
 					Texecjob te = ((Texecjob)item.getData())  ;
-					if ( te.getResultstat() > 0 ) {
+					if ( te.getResultstat() == 1 ) {
 						MessageDialog.openInformation(parent.getShell(), "삭제불가", "이 작업은 삭제 할 수 없습니다.") ;
 						return ;
 					}
@@ -362,6 +362,7 @@ public class AqtExec  {
 					te.setEndDt(null);
 					fillData(te);
 					btnsave.setEnabled(true);
+					btnNew.setEnabled(false);
 					MessageDialog.openInformation(parent.getShell(), "작업재시작", "데이터 수정후 저장버튼을 누르면 재시작됩니다.") ;
 				}
 				
@@ -548,7 +549,7 @@ public class AqtExec  {
 		lblTrans.setText("테스트 상세내역 ▽");
 		lblTrans.setFont( IAqtVar.font13b) ;
 
-		AqtButton btnNew = new AqtButton(composite, SWT.PUSH, "신규작업입력") ;
+		btnNew = new AqtButton(composite, SWT.PUSH, "신규작업입력") ;
 //		btnNew.setText("신규작업입력");
 		btnNew.setLayoutData(new GridData(SWT.END, SWT.TOP, false, false));
 //		btnNew.setFont( IAqtVar.font1) ;
@@ -556,10 +557,12 @@ public class AqtExec  {
 		btnNew.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				
 				texecjob = new Texecjob() ;
-				texecjob.setTcode(AqtMain.aqtmain.getGtcode());
+				texecjob.setTcode(cmbCode.getTcode());
 				fillData(texecjob);
 				cmbCode.getControl().setFocus() ;
+				btnNew.setEnabled(false) ;
 			}
 		});
 		btnsave = new AqtButton(composite, SWT.PUSH, " 저장 ") ;
@@ -833,7 +836,7 @@ public class AqtExec  {
 		String cond = btn1.getSelection() ? "< 2" : btn2.getSelection() ? "> 0" : ">= 0" ;
 		
 		String qstmt = "select e.* from Texecjob e where e.resultstat " + cond 
-    			+ " order by e.resultstat,e.pkey desc" ;
+    			+ " order by e.resultstat,e.startdt desc, e.pkey desc" ;
 //		System.out.println(qstmt);
         execlst = em.createNativeQuery(qstmt, Texecjob.class)
         		.getResultList();

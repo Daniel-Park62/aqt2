@@ -105,7 +105,7 @@ public class AqtMain extends ApplicationWindow {
 
 	public static EntityManagerFactory getCreateEmf() {
 		String dbip = System.getProperty("AQTDB") ;  // 주소:port
-        if (dbip == null) dbip = System.getenv("AQTDB");
+        if (dbip == null) dbip = System.getenv("AQTDB") ;
         if (dbip == null) dbip = "localhost:3306" ;
         String sEtc = System.getProperty("AQTOPT") ;
         Map<String, String> properties = new HashMap<String, String>();
@@ -246,7 +246,8 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.2.0528");
+		newShell.setText("Application Quarity Test v2.3.0624");
+//		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
 		        event.doit = true;
@@ -439,6 +440,27 @@ public class AqtMain extends ApplicationWindow {
 				}
 				container.layout();
 				container.setToolTipText("AqtView");
+
+			}
+		});
+
+		lblist = new Label(comp_1, SWT.NONE);
+		menuLabel(lblist);
+		lblist.setText("전문검색");
+		
+		lblist.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				delWidget(container);
+				container.setLayout(new FillLayout());
+				new AqtSearch(container, SWT.NONE);
+				try {
+					cback.setTcode(tconfig.getTcode());
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+				container.layout();
+				container.setToolTipText("AqtSearch");
 
 			}
 		});

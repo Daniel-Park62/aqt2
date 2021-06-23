@@ -54,7 +54,7 @@ public class AqtLogin extends Dialog {
     protected Point getInitialSize() {
         return new Point(1560, 1000);
     }
-	
+
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		
@@ -168,7 +168,7 @@ public class AqtLogin extends Dialog {
 		lbl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-		        timer.cancel();
+//		        timer.cancel();
 				cancelPressed();
 			}
 			
@@ -197,8 +197,13 @@ public class AqtLogin extends Dialog {
     	else
     		AqtMain.authtype = AuthType.USER ;
     	
-        timer.cancel();
+//        timer.cancel();
         super.okPressed();
+    }
+    @Override
+    public boolean close() {
+    	timer.cancel();
+    	return super.close();
     }
     @Override
     protected void configureShell(Shell shell) {
