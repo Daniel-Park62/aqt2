@@ -70,7 +70,7 @@ public class AqtMain extends ApplicationWindow {
 	final public static Color htcol = SWTResourceManager.getColor(77,123,230);
 	final public static Color forecol = SWTResourceManager.getColor(SWT.COLOR_WHITE);
 //	private Tmaster tmaster = new Tmaster();
-	private Tconfig tconfig ;
+	public static Tconfig tconfig ;
 	public static EntityManagerFactory emf ;
 	public static Timer jobScheduler ;
 	public static AqtMain aqtmain ;
@@ -246,7 +246,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.3.0624");
+		newShell.setText("Application Quarity Test v2.3.0825");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {

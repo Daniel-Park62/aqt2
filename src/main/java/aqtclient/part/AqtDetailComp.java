@@ -268,8 +268,8 @@ public class AqtDetailComp extends Dialog {
 			txtRtime.setText(tr.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 			txtElapsed.setText(String.format("%.3f",tr.getElapsed()));
 			txtSvcTime.setText(String.format("%.3f",tr.getSvctime()));
-			txtRcode.setText( tr.getRcode()+"" );
-			txtRhead.setText(tr.getRhead());
+			txtRcode.setText( tr.getSrcip()+" ->"+tr.getDstip()+":"+tr.getDstport()  );
+			if (! tr.getProto().equals("0")) txtRhead.setText(tr.getRhead());
 			txtCdate.setText(dformat.format(tr.getCdate()));
 			compDetail.pack();
 			compMessage.pack();
@@ -374,7 +374,7 @@ public class AqtDetailComp extends Dialog {
 			txtSvcTime.setFont( IAqtVar.font1);
 			
 			lblcomm = new Label(compDetail, SWT.NONE);
-			lblcomm.setText("수신코드");
+			lblcomm.setText("송수신Host");
 			lblcomm.setFont( IAqtVar.font1);
 			lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
 
@@ -385,7 +385,7 @@ public class AqtDetailComp extends Dialog {
 			txtRcode.setFont( IAqtVar.font1);
 
 			lblcomm = new Label(compDetail, SWT.NONE);
-			lblcomm.setText("URI");
+			lblcomm.setText("서비스(URI)");
 			lblcomm.setFont( IAqtVar.font1);
 			lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
 
@@ -432,17 +432,18 @@ public class AqtDetailComp extends Dialog {
 			txtSendMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			txtSendMsg.setText(" ");
 
-			Label lblReceiveMsg = new Label(compMessage, SWT.NONE);
-			lblReceiveMsg.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
-			lblReceiveMsg.setText("수신Header");
-			lblReceiveMsg.setFont( IAqtVar.font1) ;
-			txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP| SWT.V_SCROLL);
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(3, 1).hint(-1, 180).applyTo(txtRhead);
-			txtRhead.setFont( IAqtVar.font1);
-			txtRhead.setEditable(false);
-			txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-			txtRhead.setText(" ");
-			
+			if (! tr.getProto().equals("0")) {
+				Label lblReceiveMsg = new Label(compMessage, SWT.NONE);
+				lblReceiveMsg.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+				lblReceiveMsg.setText("수신Header");
+				lblReceiveMsg.setFont( IAqtVar.font1) ;
+				txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP| SWT.V_SCROLL);
+				GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(3, 1).hint(-1, 180).applyTo(txtRhead);
+				txtRhead.setFont( IAqtVar.font1);
+				txtRhead.setEditable(false);
+				txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+				txtRhead.setText(" ");
+			}
 //			lblReceiveMsg = new Label(compMessage, SWT.NONE);
 //			lblReceiveMsg.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 //			lblReceiveMsg.setText("수신Data");

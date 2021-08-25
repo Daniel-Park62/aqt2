@@ -44,7 +44,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -62,7 +61,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tservice;
-import aqtclient.model.Ttcppacket;
 
 public class AqtRegSvc {
 	private Table tblList;
@@ -544,17 +542,17 @@ public class AqtRegSvc {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		AqtMain.container.setCursor(IAqtVar.busyc);
-		StringBuilder qstr = new StringBuilder("SELECT t FROM Tservice t where 1=1 ") ; 
+		StringBuilder qstr = new StringBuilder("SELECT t.* FROM Tservice t where 1=1 ") ; 
 		if (! combo_app.getText().equals("ALL")) 
-			qstr.append(" and t.appid = '" + combo_app.getText() + "'");
+			qstr.append(" and t.appid = '" + combo_app.getText().trim() + "'");
 		if (! textsvc.getText().isEmpty()  ) 
-			qstr.append(" and t.svcid like '%" + textsvc.getText().trim() + "%'");
+			qstr.append(" and t.svcid rlike '" + textsvc.getText().trim() + "'");
 		if (! textsvcnm.getText().isEmpty()  ) 
-			qstr.append("  and t.svckor like '%" + textsvcnm.getText().trim() + "%'");
+			qstr.append("  and t.svckor rlike '" + textsvcnm.getText().trim() + "'");
 		if (! textasknm.getText().isEmpty()  ) 
-			qstr.append("  and t.task like '%" + textasknm.getText().trim() + "%'");
+			qstr.append("  and t.task rlike '" + textasknm.getText().trim() + "'");
 		
-        tsvcList = em.createQuery(qstr.toString(), Tservice.class).getResultList();
+        tsvcList = em.createNativeQuery(qstr.toString(), Tservice.class).getResultList();
         		 
 	    tblViewerList.setInput(tsvcList);
 	    

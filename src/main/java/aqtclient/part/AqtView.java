@@ -230,7 +230,7 @@ public class AqtView {
 //				+ String.format("%.2f",
 //						trxCnt.getTrxCnt() == 0 ? 0.0 : trxCnt.getValidCnt() * 100.0 / trxCnt.getTrxCnt())
 //				+ "%   실패 : " + NumberFormat.getInstance().format(trxCnt.getInvalidCnt()) + " 건 ) ";
-		strRslt = String.format("%,d건 [정상: %,d  실패: %,d 성공율: %.2f%%]", tcnt, scnt, fcnt , scnt != 0 ? scnt*100.0 / scnt+fcnt : 0 );
+		strRslt = String.format("%,d건 [정상: %,d  실패: %,d 성공율: %.2f%%]", tcnt, scnt, fcnt , scnt != 0 ? scnt*100.0 / (scnt+fcnt) : 0 );
 		textTrxOccrCnt.setText(strRslt);
 		textTrxOccrCnt.requestLayout();
 

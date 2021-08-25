@@ -19,6 +19,7 @@ public class Tconfig implements Serializable {
 
 	private String pass1;
 	private String tcode;
+	private char	proto ;
 
 	public Tconfig() {
 	}
@@ -45,6 +46,14 @@ public class Tconfig implements Serializable {
 
 	public void setTcode(String tcode) {
 		this.tcode = tcode;
+	}
+
+	public char getProto() {
+		return proto;
+	}
+
+	public void setProto(char proto) {
+		this.proto = proto;
 	}
 
 }

@@ -231,16 +231,18 @@ public class AqtTranTable extends AqtTableView {
 				return String.format("%.3f", tr.getSvctime());
 			}
 		});
-		tvc = createTableViewerColumn("Method", 70, 4);
-		tvc.setLabelProvider(new ColumnLabelProvider() {
-			public String getText(Object element) {
-				if (element == null)
-					return super.getText(element);
-				Ttcppacket tr = (Ttcppacket) element;
-				return tr.getMethod();
-			}
-		});
-		tvc = createTableViewerColumn("URI", 200, 5);
+		if (AqtMain.tconfig.getProto() != '0') {
+			tvc = createTableViewerColumn("Method", 70, 4);
+			tvc.setLabelProvider(new ColumnLabelProvider() {
+				public String getText(Object element) {
+					if (element == null)
+						return super.getText(element);
+					Ttcppacket tr = (Ttcppacket) element;
+					return tr.getMethod();
+				}
+			});
+		}
+		tvc = createTableViewerColumn("서비스(URI)", 200, 5);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -268,14 +270,14 @@ public class AqtTranTable extends AqtTableView {
 			}
 		});
 
-		tvc = createTableViewerColumn("응답Header", 500, 8);
+		tvc = createTableViewerColumn("수신데이터", 500, 8);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
 				Ttcppacket tr = (Ttcppacket) element;
-				return tr.getRhead() ;
+				return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdatam();
 			}
 		});
 		tvc = createTableViewerColumn("테스트id", 80,9);

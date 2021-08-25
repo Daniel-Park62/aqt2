@@ -338,7 +338,7 @@ public class AqtSearch {
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		StringBuilder qstr = new StringBuilder("where t.tcode like ? ") ; 
 		if (! textsvc.getText().isEmpty()  ) 
-			qstr.append(" and t.uri like '%" + textsvc.getText().trim() + "%'");
+			qstr.append(" and t.uri rlike '" + textsvc.getText().trim() + "'");
 		if (! textRcode.getText().isEmpty()  ) 
 			qstr.append(" and t.rcode = " + textRcode.getText().trim() );
 		if (! textCmpid.getText().isEmpty()  ) 

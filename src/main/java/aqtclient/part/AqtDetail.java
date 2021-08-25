@@ -263,7 +263,7 @@ public class AqtDetail extends Dialog {
 		txtSvcTime.setFont( IAqtVar.font1);
 
 		lblcomm = new Label(compDetail, SWT.NONE);
-		lblcomm.setText("수신코드");
+		lblcomm.setText("송수신Host");
 //		lblcomm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblcomm.setFont( IAqtVar.font1);
 		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.TOP,false, false) );
@@ -275,7 +275,7 @@ public class AqtDetail extends Dialog {
 		txtRcode.setFont( IAqtVar.font1);
 
 		lblcomm = new Label(compDetail, SWT.NONE);
-		lblcomm.setText("URI");
+		lblcomm.setText("서비스(URI)");
 //		lblcomm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblcomm.setFont( IAqtVar.font1);
 		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
@@ -315,17 +315,19 @@ public class AqtDetail extends Dialog {
 		txtSendMsg.setEditable(false);
 		txtSendMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
-		lblcomm = new Label(compMessage, SWT.NONE);
-		lblcomm.setText("수신Header");
-		lblcomm.setFont( IAqtVar.font1);
-		lblcomm.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false, false,3,1) );
 
-		txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).span(3, 1).hint(-1, 180).applyTo(txtRhead);
-//		txtRhead.setLayoutData(new GridData(SWT.FILL, SWT.TOP,true,false,3,1) );
-		txtRhead.setEditable(false);
-		txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		txtRhead.setFont( IAqtVar.font1);
+		if (! tpacket.getProto().equals("0")) {
+			lblcomm = new Label(compMessage, SWT.NONE);
+			lblcomm.setText("수신Header");
+			lblcomm.setFont( IAqtVar.font1);
+			lblcomm.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false, false,3,1) );
+			txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).span(3, 1).hint(-1, 180).applyTo(txtRhead);
+//			txtRhead.setLayoutData(new GridData(SWT.FILL, SWT.TOP,true,false,3,1) );
+			txtRhead.setEditable(false);
+			txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			txtRhead.setFont( IAqtVar.font1);
+		}
 
 		
 //		Label lblReceiveMsg = new Label(compMessage, SWT.NONE);
@@ -402,8 +404,10 @@ public class AqtDetail extends Dialog {
 		txtRtime.setText(tpacket.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 		txtElapsed.setText(String.format("%.3f",tpacket.getElapsed()));
 		txtSvcTime.setText(String.format("%.3f",tpacket.getSvctime()));
-		txtRcode.setText( tpacket.getRcode()+"" );
-		txtRhead.setText(tpacket.getRhead());
+		txtRcode.setText( tpacket.getSrcip()+" ->"+tpacket.getDstip()+":"+tpacket.getDstport() );
+		if (txtRhead != null) {
+			txtRhead.setText(tpacket.getRhead());
+		}
 		txtCdate.setText(dformat.format(tpacket.getCdate()));
 		txtRlen.requestLayout();
 		txtSlen.requestLayout();

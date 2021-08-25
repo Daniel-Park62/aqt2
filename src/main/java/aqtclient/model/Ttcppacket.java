@@ -179,7 +179,7 @@ public class Ttcppacket implements Serializable {
 	}
 
 	public String getRhead() {
-		return rhead;
+		return this.rhead == null ? "" : this.rhead ;
 	}
 
 	public String getRdata()  {
