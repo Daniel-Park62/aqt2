@@ -109,7 +109,7 @@ public class AqtMain extends ApplicationWindow {
         if (dbip == null) dbip = "localhost:3306" ;
         String sEtc = System.getProperty("AQTOPT") ;
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip + (sEtc != null ? "/" + sEtc  :"/aqtdb2") );
+        properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip + (sEtc != null ? "/" + sEtc  :"/aqtdb2?autoReconnect=true") );
  
         properties.put("javax.persistence.jdbc.driver","org.mariadb.jdbc.Driver") ;
         

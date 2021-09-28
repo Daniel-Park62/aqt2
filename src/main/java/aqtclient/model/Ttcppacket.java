@@ -55,6 +55,8 @@ public class Ttcppacket implements Serializable {
 	
 	private String rhead;
 
+	private String errinfo;
+
 	@Lob
 	private byte[] rdata;
 
@@ -182,6 +184,14 @@ public class Ttcppacket implements Serializable {
 		return this.rhead == null ? "" : this.rhead ;
 	}
 
+	public String getErrinfo() {
+		return errinfo == null ? "" : errinfo ;
+	}
+
+	public void setErrinfo(String errinfo) {
+		this.errinfo = errinfo;
+	}
+
 	public String getRdata()  {
 //		try {
 //			return this.rdata == null ? "" : new String(this.rdata, rhead.toLowerCase().contains("utf")   ? "utf-8" : "euc-kr") ;
@@ -198,6 +208,7 @@ public class Ttcppacket implements Serializable {
 			return "";
 		}
 	}
+
 	public String getRdataENCODE(String enc)  {
 		try {
 			return this.rdata == null ? "" : new String(this.rdata, enc) ;
@@ -205,7 +216,20 @@ public class Ttcppacket implements Serializable {
 			return "";
 		}
 	}
-	
+
+	public String getRdataENCODE(String enc, int ln)  {
+		if ( rdata == null ) return "";
+		try {
+			byte[] rdatam = new byte[ ln  ] ;
+			for (int i = 0; i < rdatam.length && i < rdata.length ; i++) {
+				rdatam[i] = rdata[i] ;
+			}
+			return new String(rdatam, enc) ;
+		} catch (UnsupportedEncodingException e) {
+			return "";
+		}
+	}
+
 	public String getRdatam()  {
 		if ( rdata == null ) return "";
 		

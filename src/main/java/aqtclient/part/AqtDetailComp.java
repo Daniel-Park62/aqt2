@@ -254,7 +254,9 @@ public class AqtDetailComp extends Dialog {
 			txtSlen.setText(String.format("%,9d",tr.getSlen()));
 			txtSendMsg.setText(tr.getSdata());
 			txtRlen.setText(String.format("%,9d",tr.getRlen()));
-			if (! tr.getTmaster().getLvl().equals("0") && tr.getRhead().contains("EUC-KR") )  
+			if (AqtMain.tconfig.getEncval() != null )
+				sv_select = AqtMain.tconfig.getEncval() ;
+			else if (! tr.getTmaster().getLvl().equals("0") && tr.getRhead().contains("EUC-KR") )  
 				sv_select = "MS949";
 			else
 				sv_select = "UTF-8";

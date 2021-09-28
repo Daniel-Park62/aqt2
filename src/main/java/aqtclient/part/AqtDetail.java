@@ -390,7 +390,9 @@ public class AqtDetail extends Dialog {
 		txtSlen.setText(String.format("%,d",tpacket.getSlen()));
 		txtSendMsg.setText(tpacket.getSdata());
 		txtRlen.setText(String.format("%,d", tpacket.getRlen()));
-		if (! tpacket.getTmaster().getLvl().equals("0") && tpacket.getRhead().contains("EUC-KR") )  
+		if (AqtMain.tconfig.getEncval() != null )
+			sv_select = AqtMain.tconfig.getEncval() ;
+		else if (! tpacket.getTmaster().getLvl().equals("0") && tpacket.getRhead().contains("EUC-KR") )  
 			sv_select = "MS949";
 		else
 			sv_select = "UTF-8";
@@ -411,6 +413,7 @@ public class AqtDetail extends Dialog {
 		txtCdate.setText(dformat.format(tpacket.getCdate()));
 		txtRlen.requestLayout();
 		txtSlen.requestLayout();
+		txtSlen.setRedraw(true);
 	}
 	
 	public void setTrxList(Ttcppacket tpacket) {

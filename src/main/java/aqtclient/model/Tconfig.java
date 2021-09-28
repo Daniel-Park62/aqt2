@@ -19,6 +19,7 @@ public class Tconfig implements Serializable {
 
 	private String pass1;
 	private String tcode;
+	private String encval;
 	private char	proto ;
 
 	public Tconfig() {
@@ -54,6 +55,14 @@ public class Tconfig implements Serializable {
 
 	public void setProto(char proto) {
 		this.proto = proto;
+	}
+
+	public String getEncval() {
+		return encval == null || encval.length() < 1 ? "UTF-8" : encval;
+	}
+
+	public void setEncval(String encval) {
+		this.encval = encval;
 	}
 
 }

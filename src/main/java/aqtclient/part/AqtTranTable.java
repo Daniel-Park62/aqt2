@@ -270,16 +270,20 @@ public class AqtTranTable extends AqtTableView {
 			}
 		});
 
-		tvc = createTableViewerColumn("수신데이터", 500, 8);
+		tvc = createTableViewerColumn(" 수신데이터", 500, 8);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
 					return super.getText(element);
 				Ttcppacket tr = (Ttcppacket) element;
-				return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdatam();
+				if (tr.getErrinfo().length() > 0 ) 
+					return tr.getErrinfo() ;
+				else
+					return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdataENCODE(AqtMain.tconfig.getEncval(),200);
 			}
 		});
+
 		tvc = createTableViewerColumn("테스트id", 80,9);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {

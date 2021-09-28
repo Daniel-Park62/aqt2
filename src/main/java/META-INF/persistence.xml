@@ -17,7 +17,7 @@
 		<class>aqtclient.model.Tapphost</class>
 		<class>aqtclient.model.Tapplication</class>
 		<properties>
-			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/aqtdb2"/>
+			<property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:3306/aqtdb2?autoReconnect=true"/>
 			<property name="javax.persistence.jdbc.user" value="aqtdb"/>
 			<property name="javax.persistence.jdbc.password" value="Dawinit1!"/>
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>

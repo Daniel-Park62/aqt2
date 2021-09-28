@@ -115,8 +115,9 @@ public class AqtCopyTdata extends Dialog {
 		spnum = new Spinner(gr1,SWT.BORDER ) ;
 		spnum.setFont(IAqtVar.font1);
 		spnum.setSelection(0);
+		spnum.setMaximum(999999);
 
-		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.TOP).grab(false, false).applyTo(spnum) ;
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.TOP).minSize(150, -1).grab(true, false).applyTo(spnum) ;
 		
 		lbl = new Label(gr1,SWT.NONE ) ;
 		lbl.setText("지정한 건수이내로 URI별 복제됩니다.\n 0을 선택하면 원본에 있는대로 복제함") ;
