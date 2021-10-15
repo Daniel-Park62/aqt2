@@ -4,6 +4,8 @@
 
 package aqtclient.part;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +20,12 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
@@ -29,6 +33,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Tmaster;
+import aqtclient.model.Trequest;
 import aqtclient.model.Ttcppacket;
 
 public class AqtSearch {
@@ -99,6 +105,9 @@ public class AqtSearch {
 		textsvc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textsvc.setFont(IAqtVar.font1);
 		textsvc.setText("");
+		textsvc.addTraverseListener((final TraverseEvent event) -> {
+		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
+		  });
 
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" 응답코드");
@@ -109,7 +118,7 @@ public class AqtSearch {
 		textRcode.setFont(IAqtVar.font1);
 		textRcode.setText("");
 		textRcode.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	  queryScr();
+		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
 
 		lblt = new Label(compTit, SWT.NONE);
@@ -121,7 +130,7 @@ public class AqtSearch {
 		textCmpid.setFont(IAqtVar.font1);
 		textCmpid.setText("");
 		textCmpid.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	  queryScr();
+		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
 
 		lblt = new Label(compTit, SWT.NONE);
@@ -133,7 +142,7 @@ public class AqtSearch {
 		textSdata.setFont(IAqtVar.font1);
 		textSdata.setText("");
 		textSdata.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	  queryScr();
+		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
 		
 		lblt = new Label(compTit, SWT.NONE);
@@ -145,7 +154,7 @@ public class AqtSearch {
 		textEtc.setFont(IAqtVar.font1);
 		textEtc.setText("");
 		textEtc.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	  queryScr();
+		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
 		
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
@@ -326,7 +335,55 @@ public class AqtSearch {
 		txtcnt.setFont(IAqtVar.font1) ;
 		txtcnt.setForeground(btn.getForeground()) ;
 		GridDataFactory.fillDefaults().align(SWT.END,SWT.CENTER) .grab(true, false).applyTo(txtcnt);
+		
+		tView.reSendItem.removeListener(SWT.Selection, tView.reSendItem.getListeners(SWT.Selection)[0]) ;
+	    tView.reSendItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if ( tblList.getSelectionIndex() >= 0) {
+					boolean result = MessageDialog.openConfirm(parent.getShell(), "재전송",
+							" 재전송 요청등록하시겠습니까?" ) ;
+					if (  ! result ) return ;
 
+					EntityManager em = AqtMain.emf.createEntityManager();
+					em.clear();
+					em.getEntityManagerFactory().getCache().evictAll();
+					InetAddress local;
+					String ip = "";
+					try {
+						local = InetAddress.getLocalHost();
+						ip = local.getHostAddress();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					em.getTransaction().begin();
+					int cnt = 0;
+					for ( TableItem item : tblList.getSelection() ) {
+						Ttcppacket tr = (Ttcppacket)item.getData() ;
+						Tmaster tmst = tr.tmaster ;
+	
+						if ( tmst.getEndDate() != null ) {
+							continue ;
+						}
+						if (tmst != null && ("3".equals(tmst.getLvl() ) || "0".equals(tmst.getLvl() ) ) ) {
+							continue ;
+						}
+						Trequest treq = em.find(Trequest.class, tr.getPkey()) ;
+						if (treq != null) {
+							continue ;
+						}
+						cnt++ ;
+						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getCmpid(), ip ) );
+					}
+					em.getTransaction().commit();
+					em.close();
+					MessageDialog.openInformation(parent.getShell(), "Info", cnt + "건 재전송 요청되었습니다.");
+				}
+			}
+		});
+
+		
 	}
 	
 	private void queryScr () {

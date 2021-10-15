@@ -48,7 +48,7 @@ import aqtclient.model.Ttcppacket;
 public class AqtTranTable extends AqtTableView {
 
 	private int gcol = 0;
-	private MenuItem reSendItem ;
+	protected MenuItem reSendItem ;
 	private AqtTranTable aqtView = this ;
 	
 	public AqtTranTable(Composite parent, int style) {

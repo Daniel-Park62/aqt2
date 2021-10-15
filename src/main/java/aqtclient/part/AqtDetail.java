@@ -43,6 +43,7 @@ public class AqtDetail extends Dialog {
 	private Text txtCmpid;
 	private Text txtTestCode;
 	private Text txtUri;
+	private Text txtOStime;
 	private Text txtStime;
 	private Text txtRtime;
 	private Text txtElapsed;
@@ -263,6 +264,18 @@ public class AqtDetail extends Dialog {
 		txtSvcTime.setFont( IAqtVar.font1);
 
 		lblcomm = new Label(compDetail, SWT.NONE);
+		lblcomm.setText("송신시간(원)");
+//		lblcomm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+		lblcomm.setFont( IAqtVar.font1);
+		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
+
+		txtOStime = new Text(compDetail, SWT.BORDER);
+		txtOStime.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		txtOStime.setEditable(false);
+		txtOStime.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		txtOStime.setFont( IAqtVar.font1);
+
+		lblcomm = new Label(compDetail, SWT.NONE);
 		lblcomm.setText("송수신Host");
 //		lblcomm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblcomm.setFont( IAqtVar.font1);
@@ -281,7 +294,7 @@ public class AqtDetail extends Dialog {
 		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
 
 		txtUri = new Text(compDetail, SWT.BORDER);
-		txtUri.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,5,1));
+		txtUri.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,3,1));
 		txtUri.setEditable(false);
 		txtUri.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtUri.setFont( IAqtVar.font1);
@@ -402,6 +415,7 @@ public class AqtDetail extends Dialog {
 		txtTestCode.setText(tpacket.getTcode()); 
 		txtUri.setText(tpacket.getUri());
 //		txtScrno.setText(tpacket.getScrno()); 
+		txtOStime.setText(tpacket.getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 		txtStime.setText(tpacket.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 		txtRtime.setText(tpacket.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 		txtElapsed.setText(String.format("%.3f",tpacket.getElapsed()));

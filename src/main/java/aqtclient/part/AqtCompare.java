@@ -537,14 +537,14 @@ public class AqtCompare {
 				", sum(a.tcnt2), sum(a.avgt2) ,sum(a.scnt2)  ,sum(a.fcnt2)  " + 
 				"from   ( " + 
 				"select t.tcode, t.uri,dstip,dstport,  count(1) tcnt1, avg(t.svctime) avgt1 " + 
-				"    , sum(case when t.rcode between 200 and 399 then 1 else 0 end) scnt1 " + 
-				"    , sum(case when t.rcode >= 400 then 1 else 0 end) fcnt1,0 tcnt2,0 avgt2,0 scnt2,0 fcnt2 " + 
+				"    , sum(case when t.sflag = '1' then 1 else 0 end) scnt1 " + 
+				"    , sum(case when t.sflag = '2' then 1 else 0 end) fcnt1,0 tcnt2,0 avgt2,0 scnt2,0 fcnt2 " + 
 				"from   Ttcppacket t, tmpt x where t.tcode = ? AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
 				"group by t.tcode, t.uri " + 
 				"UNION ALL  " + 
 				"select t.tcode, t.uri,dstip,dstport, 0,0,0,0,count(1) tcnt2, avg(t.svctime) avgt2 " + 
-				"    , sum(case when t.rcode between 200 and 399 then 1 else 0 end) scnt2 " + 
-				"    , sum(case when t.rcode >= 400 then 1 else 0 end) fcnt2 " + 
+				"    , sum(case when t.sflag = '1' then 1 else 0 end) scnt2 " + 
+				"    , sum(case when t.sflag = '2' then 1 else 0 end) fcnt2 " + 
 				"from   Ttcppacket t, tmpt x where t.tcode = ? AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
 				"group by t.tcode, t.uri " + 
 				") as a " + 
@@ -590,7 +590,7 @@ public class AqtCompare {
 		tempTrxList1 = new ArrayList<Ttcppacket>();
 		tempTrxList2 = new ArrayList<Ttcppacket>();
 		String tcode = cmbCode1.getTcode();
-		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
+		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.sflag = '2' or b.sflag = '2') ": "");
 		Query qTrx = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
 				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri like '"+svcid+"'  " + sdiff + "  ) " + 

@@ -177,7 +177,7 @@ public class AqtCopyTdata extends Dialog {
 	
 	private void execCopy() {
 		String cond = (txtUri.getText().toString().isEmpty() ? "" 
-				      : String.format("and uri like '%s' " , txtUri.getText().toString()) ) + 
+				      : String.format("and uri rlike '%s' " , txtUri.getText().toString()) ) + 
 				      (txtRcode.getText().toString().isEmpty() ? "" 
 			          : String.format(" and rcode = %s " , txtRcode.getText().toString()) ) +
 				      (txtEtc.getText().toString().trim().isEmpty() ? "" 

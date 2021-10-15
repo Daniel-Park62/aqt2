@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.FlushModeType;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -306,6 +307,7 @@ public class AqtExec  {
 				int i = tbl.getSelectionIndex() ;
 				if ( i >= 0) {
 					EntityManager em = AqtMain.emf.createEntityManager();
+					em.setFlushMode(FlushModeType.AUTO);
 					TableItem item = tbl.getItem(i) ;
 					Texecjob te = ((Texecjob)item.getData())  ;
 					if ( te.getResultstat() == 1 ) {

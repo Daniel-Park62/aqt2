@@ -392,7 +392,7 @@ public class AqtResult {
 		
 		String tcode = cmbCode.getTcode();
 		AqtMain.aqtmain.setGtcode(tcode);
-		String sfail = btnfail.getSelection() ? "and RCODE > 399 " : "";
+		String sfail = btnfail.getSelection() ? "and sflag = '2' " : "";
 		String ssvc  = textService.getText().trim().isEmpty() ? "": "and uri like '%" + textService.getText().trim() + "%' ";
 		String smsg  = txtMsgcd.getText().trim().isEmpty() ? "": "and rcode = " + txtMsgcd.getText().trim() ;
 //		String qstr = "SELECT v FROM Vtrxdetail v WHERE v.tcode = :tcode and v.svcid like :svcid and v.scrno like :scrno" ;
@@ -400,8 +400,8 @@ public class AqtResult {
 				"select uuid_short() pkey, a.tcode, ifnull(a.svcid,'총계') svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
 				" IF( ISNULL(a.svcid)  ,SUM(CUMCNT) OVER (PARTITION BY TCODE), s.cumcnt) cumcnt " + 
 				"from   (\r\n" + 
-				"select t.tcode, t.uri as svcid, dstip,dstport, count(1) tcnt, avg(t.svctime) avgt, sum(case when rcode between 200 and 399 then 1 else 0 end) scnt\r\n" + 
-				", sum(case when rcode > 399 then 1 else 0 end) fcnt\r\n" + 
+				"select t.tcode, t.uri as svcid, dstip,dstport, count(1) tcnt, avg(t.svctime) avgt, sum(case when sflag = '1' then 1 else 0 end) scnt\r\n" + 
+				", sum(case when sflag = '2' then 1 else 0 end) fcnt\r\n" + 
  				"from   Ttcppacket t where t.tcode = '" + tcode +"' " + sfail + ssvc + smsg +
 				" group by t.tcode, t.uri WITH ROLLUP HAVING tcode is NOT null \n" + 
 				") as a \r\n" + 
