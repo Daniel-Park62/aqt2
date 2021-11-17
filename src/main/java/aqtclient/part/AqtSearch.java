@@ -389,7 +389,7 @@ public class AqtSearch {
 	private void queryScr () {
 
 		em.clear();
-//		em.getEntityManagerFactory().getCache().evictAll();
+		em.getEntityManagerFactory().getCache().evictAll();
 		
 		trList = new ArrayList<Ttcppacket>();
 		AqtMain.container.setCursor(IAqtVar.busyc);

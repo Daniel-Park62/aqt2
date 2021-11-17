@@ -673,7 +673,7 @@ public class AqtExec  {
 		type0.setSelection(true);
 		type1.setFont(IAqtVar.font1) ;
 		type0.setFont(IAqtVar.font1) ;
-		compo_exectype.setEnabled(false);
+//		compo_exectype.setEnabled(false);
 
 		lbl1 = new Label(form1,SWT.LEFT) ;
 		lbl1.setText("작업갯수 :");
