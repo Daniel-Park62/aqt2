@@ -160,7 +160,7 @@ public class AqtMain extends ApplicationWindow {
 			
 			@Override
 			public void handleEvent(Event arg0) {
-				int w = 35000 / parent.getSize().x ; 
+				int w = 30000 / parent.getSize().x ; 
 
 				sashForm.setWeights(new int[] {w ,100 - w});
 				aqtmain.setStatus(parent.getClientArea().toString());

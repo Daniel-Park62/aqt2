@@ -93,7 +93,7 @@ public class AqtSearch {
 		});
 		
 		cmbCode.getControl().add(" % : ALL");
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).applyTo(cmbCode.getControl());
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(160, -1).applyTo(cmbCode.getControl());
 		
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" *서비스");
@@ -101,7 +101,7 @@ public class AqtSearch {
 
 		textsvc = new Text(compTit, SWT.BORDER);
 		
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).hint(300, -1).applyTo(textsvc);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(100, -1).applyTo(textsvc);
 		textsvc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textsvc.setFont(IAqtVar.font1);
 		textsvc.setText("");
@@ -113,7 +113,7 @@ public class AqtSearch {
 		lblt.setText(" 응답코드");
 		lblt.setFont(IAqtVar.font1);
 		textRcode = new Text(compTit, SWT.BORDER);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(100, -1).applyTo(textRcode);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(80, -1).applyTo(textRcode);
 		textRcode.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textRcode.setFont(IAqtVar.font1);
 		textRcode.setText("");
@@ -125,7 +125,7 @@ public class AqtSearch {
 		lblt.setText(" 패킷ID");
 		lblt.setFont(IAqtVar.font1);
 		textCmpid = new Text(compTit, SWT.BORDER);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(200, -1).applyTo(textCmpid);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(120, -1).applyTo(textCmpid);
 		textCmpid.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textCmpid.setFont(IAqtVar.font1);
 		textCmpid.setText("");
