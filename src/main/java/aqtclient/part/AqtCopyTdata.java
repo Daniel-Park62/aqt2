@@ -84,6 +84,8 @@ public class AqtCopyTdata extends Dialog {
 		lbl.setText(" 테스트ID(To)") ;
 		lbl.setFont(IAqtVar.font1b);
 		srcCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;
+//		srcCode.getControl().add(" % : ALL");
+
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(srcCode.getControl());
 
 		dstCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;

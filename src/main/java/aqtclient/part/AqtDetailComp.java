@@ -502,3 +502,4 @@ public class AqtDetailComp extends Dialog {
 		}
 	}
 }
+

@@ -28,7 +28,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -65,15 +64,15 @@ public class AqtList  {
 	
 	private void create (Composite parent, int style) {
 	    
-//		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
-		Composite sashForm = new Composite(parent, SWT.NONE );
+		SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
+//		Composite sashForm = new Composite(parent, SWT.NONE );
 //		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(sashForm);
-		GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(false).applyTo(sashForm);
+//		GridLayoutFactory.fillDefaults().numColumns(1).equalWidth(false).applyTo(sashForm);
 	    
-		Composite compHeader = new Composite(sashForm, SWT.NONE);
+		Composite compHeader = new Composite(sashForm, SWT.BORDER);
 		
 		GridLayoutFactory.fillDefaults().margins(15, 10).numColumns(2).equalWidth(false).applyTo(compHeader);
-		
+    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, true).hint(-1, 300).applyTo(compHeader);
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
@@ -86,19 +85,19 @@ public class AqtList  {
     	txtServiceCnt.setEnabled(false);
     	txtServiceCnt.setText("대상서비스수:");
     	txtServiceCnt.setFont(IAqtVar.font13b);
-    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, true, true));
+    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.TOP, true, false));
 
-    	Composite compTestList = new Composite(compHeader, SWT.BORDER);
-//    	compTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//    	Composite compTestList = new Composite(compHeader, SWT.BORDER);
+//    	
+//    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(compTestList);
+//    	
+//    	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(3).applyTo(compTestList);
     	
-    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).span(2, 10).hint(-1, 250).applyTo(compTestList);
-    	
-    	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(3).applyTo(compTestList);
-    	
-    	tblViewerList = new AqtTableView(compTestList, SWT.NONE | SWT.FULL_SELECTION);
+    	tblViewerList = new AqtTableView(compHeader, SWT.NONE | SWT.FULL_SELECTION);
     	
     	tblTestList = tblViewerList.getTable();
-    	
+	    GridDataFactory.fillDefaults().span(2, 1).grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(tblTestList);
+
     	tblTestList.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
@@ -132,7 +131,6 @@ public class AqtList  {
 			tableColumn.setResizable(i != 0);
 
 		}
-	    GridDataFactory.fillDefaults().span(2, 1).grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(tblTestList);
 	    
 		tblTestList.setHeaderVisible(true);
 		tblTestList.setLinesVisible(true);
@@ -194,7 +192,6 @@ public class AqtList  {
 			}
 		});
 	    
-	    
 		tblViewerDetail = new AqtTableView(compDetail, SWT.BORDER | SWT.FULL_SELECTION);
 		
 		tblDetailList = tblViewerDetail.getTable();
@@ -205,8 +202,10 @@ public class AqtList  {
 		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(tblDetailList);
 
-//		sashForm.setWeights(new int[] {4,6});
-		
+		sashForm.setWeights(new int[] {3,6});
+		sashForm.setSashWidth(5);
+		sashForm.requestLayout();
+	
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {
@@ -255,7 +254,7 @@ public class AqtList  {
 //		compTitle.pack();
 //		ltitle.pack();
 //		compDetail.pack();
-//		parent.setRedraw(true);
+		parent.requestLayout();
 	}
 	
 	private void initScreen () {

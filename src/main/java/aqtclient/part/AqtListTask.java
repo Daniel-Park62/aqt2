@@ -9,7 +9,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -20,6 +19,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -27,6 +28,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -37,9 +39,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
-
-import aqtclient.model.Texecjob;
-import aqtclient.model.Vtrxlist;
 
 @SuppressWarnings("unchecked")
 public class AqtListTask  {
@@ -71,12 +70,11 @@ public class AqtListTask  {
 	    
 //	    sashForm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 	    
-		Composite compHeader = new Composite(sashForm, SWT.NONE);
-//    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compHeader);
+		Composite compHeader = new Composite(sashForm, SWT.BORDER);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compHeader);
 		
 		GridLayoutFactory.fillDefaults().margins(15, 15).numColumns(2).equalWidth(false).applyTo(compHeader);
-		
-//		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+
 		Label ltitle = new Label(compHeader, SWT.NONE);
 		
 //    	ltitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
@@ -88,19 +86,19 @@ public class AqtListTask  {
     	txtServiceCnt.setEnabled(false);
     	txtServiceCnt.setText("대상서비스수:");
     	txtServiceCnt.setFont(IAqtVar.font13b);
-    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.CENTER, true, true));
+    	txtServiceCnt.setLayoutData(new GridData( SWT.RIGHT, SWT.TOP, true, false));
 
-    	Composite compTestList = new Composite(compHeader, SWT.BORDER);
-//    	compTestList.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//    	Composite compTestList = new Composite(compHeader, SWT.BORDER);
+//    	
+//    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 50).applyTo(compTestList);
+//    	
+//    	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(1).applyTo(compTestList);
     	
-    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 50).applyTo(compTestList);
-    	
-    	GridLayoutFactory.fillDefaults().equalWidth(false).numColumns(1).applyTo(compTestList);
-    	
-    	tblViewerList = new AqtTableView(compTestList, SWT.NONE  | SWT.FULL_SELECTION);
+    	tblViewerList = new AqtTableView(compHeader, SWT.BORDER  | SWT.FULL_SELECTION);
     	
     	tblLst = tblViewerList.getTable();
-    	GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tblLst);
+    	
+    	GridDataFactory.fillDefaults().span(2,1).align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tblLst);
     	tblLst.addSelectionListener(new SelectionAdapter() {
     		@Override
     		public void widgetSelected(SelectionEvent e) {
@@ -135,9 +133,7 @@ public class AqtListTask  {
 			tableColumn.setWidth(columnWidths1[i]);
 			tableColumn.setResizable(i != 8);
 		}
-		
-	    GridDataFactory.fillDefaults().span(2, 1).grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(tblLst);
-	    
+    
 		tblLst.setHeaderVisible(true);
 		tblLst.setLinesVisible(true);
 		
@@ -227,9 +223,10 @@ public class AqtListTask  {
 		
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).span(2, 1).applyTo(tblDetail);
 
-		sashForm.setWeights(new int[] {4,6});
+		sashForm.setWeights(new int[] {4,7});
 		sashForm.setSashWidth(5);
 		sashForm.requestLayout();
+		
 		width = 1500 / 8;
 		
         String[] columnNames2 = new String[] {

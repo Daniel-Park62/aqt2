@@ -16,11 +16,13 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swtchart.Chart;
 import org.eclipse.swtchart.IAxis;
 import org.eclipse.swtchart.IAxisTick;
@@ -35,11 +37,11 @@ import aqtclient.model.ChartData;
 
 public class AqtView {
 
-	private Label textTstDt; // 테스트기준일자
+	private Text textEtc; // 검색조건
 	private Label textPrgrssRt; // 진척율
 	private Label textTrxOccrCnt; // 트랜젝션발생건수
-	private Label lblHost; // 대상호스트
-	private Label textHost; // 대상호스트
+//	private Label lblHost; // 대상호스트
+//	private Label textHost; // 대상호스트
 
 	private AqtTcodeCombo cmbCode; // 코드리스트
 
@@ -86,7 +88,7 @@ public class AqtView {
 		GridData titleGridData = new GridData(SWT.FILL, SWT.TOP, true, false);
 
 		compIn.setLayoutData(titleGridData);
-		GridLayoutFactory.fillDefaults().numColumns(7).equalWidth(false).margins(10, 10).applyTo(compIn);
+		GridLayoutFactory.fillDefaults().numColumns(5).equalWidth(false).margins(10, 10).applyTo(compIn);
 		
 		Label lbl = new Label(compIn, SWT.NONE);
 		lbl.setText("•테스트ID :");
@@ -95,6 +97,7 @@ public class AqtView {
 		lbl.setFont(IAqtVar.font1b);
 
 		cmbCode = new AqtTcodeCombo(compIn,  SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(170, -1).applyTo(cmbCode.getControl());
 		cmbCode.getControl().addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -102,34 +105,43 @@ public class AqtView {
 			}
 		});
 
-		Label lblTstDt = new Label(compIn, SWT.NONE);
+		Label lblTstDt = new Label(compIn, SWT.RIGHT);
 		lblTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		lblTstDt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
-		lblTstDt.setText("•테스트기준일자 :");
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).grab(false, false).hint(120, -1).applyTo(lblTstDt);
+		lblTstDt.setText("•김색조건 :");
 		lblTstDt.setFont(IAqtVar.font1b);
 
-		textTstDt = new Label(compIn, SWT.NONE);
-		textTstDt.setFont(IAqtVar.font1b);
-		textTstDt.setText("YYYY-MM-DD  ");
-		textTstDt.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,false, false));
-		textTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
-		
+		textEtc = new Text(compIn, SWT.BORDER);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(textEtc);
+		textEtc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		textEtc.setFont(IAqtVar.font1);
+		textEtc.setText("");
+		textEtc.addTraverseListener((final TraverseEvent event) -> {
+		      if (event.detail == SWT.TRAVERSE_RETURN)	{  refreshScreen(); }
+		  });
 
-		lblHost = new Label(compIn, SWT.NONE);
-		lblHost.setText("•대상호스트:");
-		lblHost.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
-		lblHost.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
-		lblHost.setFont(IAqtVar.font1b);
-		
-		textHost = new Label(compIn, SWT.NONE);
-		textHost.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
-		textHost.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,true, false));
-		textHost.setFont(IAqtVar.font1b);
+//		textTstDt = new Label(compIn, SWT.NONE);
+//		textTstDt.setFont(IAqtVar.font1b);
+//		textTstDt.setText("YYYY-MM-DD  ");
+//		textTstDt.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,false, false));
+//		textTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+//		
+
+//		lblHost = new Label(compIn, SWT.NONE);
+//		lblHost.setText("•대상호스트:");
+//		lblHost.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+//		lblHost.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false));
+//		lblHost.setFont(IAqtVar.font1b);
+//		
+//		textHost = new Label(compIn, SWT.NONE);
+//		textHost.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
+//		textHost.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,true, false));
+//		textHost.setFont(IAqtVar.font1b);
 
 		lbl = new Label(compIn, SWT.NONE);
 		lbl.setImage(AqtMain.getMyimage("refresh.png"));
 		lbl.setCursor(IAqtVar.handc);
-		lbl.setLayoutData(new GridData(SWT.END,SWT.CENTER,true, false));
+		lbl.setLayoutData(new GridData(SWT.END,SWT.CENTER,false, false));
 		lbl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -146,19 +158,19 @@ public class AqtView {
 		lblPrgrssRt.setFont(IAqtVar.font1b);
 
 		textPrgrssRt = new Label(compIn, SWT.NONE);
-		textPrgrssRt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(170, -1).applyTo(textPrgrssRt);
 		textPrgrssRt.setFont(IAqtVar.font1b);
 		textPrgrssRt.setText("0.0% (0 / 0)");
 		textPrgrssRt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
 
-		Label lblTrxOccrCnt = new Label(compIn, SWT.NONE);
+		Label lblTrxOccrCnt = new Label(compIn, SWT.RIGHT);
 		lblTrxOccrCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
 		lblTrxOccrCnt.setText("•트랜잭션 건수 :");
 		lblTrxOccrCnt.setFont(IAqtVar.font1b);
-		lblTrxOccrCnt.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,true, false));
+		GridDataFactory.fillDefaults().align(SWT.RIGHT, SWT.CENTER).grab(false, false).hint(120, -1).applyTo(lblTrxOccrCnt);
 
 		textTrxOccrCnt = new Label(compIn, SWT.NONE);
-		textTrxOccrCnt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false,4,1));
+		textTrxOccrCnt.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 		textTrxOccrCnt.setFont(IAqtVar.font1b);
 		textTrxOccrCnt.setText("% 0건 [정상: 0  실패: 0 성공율: 0%]       " ) ;
 		textTrxOccrCnt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_BLUE));
@@ -190,9 +202,9 @@ public class AqtView {
 		String tcode = "" ;
 		if (cmbCode.getItemCount() > 0) {
 			tcode = cmbCode.getTcode() ;
-			textTstDt.setText( sfmt.format( cmbCode.getTmaster().getTdate() ) );
-			textHost.setText(cmbCode.getTmaster().getThost());
-			textHost.requestLayout();
+//			textTstDt.setText( sfmt.format( cmbCode.getTmaster().getTdate() ) );
+//			textHost.setText(cmbCode.getTmaster().getThost());
+//			textHost.requestLayout();
 			AqtMain.aqtmain.setGtcode(tcode) ;
 		}
 		
@@ -358,22 +370,30 @@ public class AqtView {
 
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-		
-		List<ChartData> chartData = em.createNativeQuery(
-        		"SELECT DATE_ADD( MIN(t.stime),interval -1 MINute) dtime  , 0 trxCnt, 0 fCnt from Ttcppacket t  where t.tcode = ?1 " + 
+		String sEtc = "";
+		if (! textEtc.getText().isEmpty()  )  sEtc = " and (" + textEtc.getText().trim() + ")  " ;
+		List<ChartData> chartData = null ; // = new ArrayList<ChartData>() ;
+		try {
+			
+			chartData = em.createNativeQuery(
+        		"SELECT DATE_ADD( MIN(t.stime),interval -1 MINute) dtime  , 0 trxCnt, 0 fCnt from Ttcppacket t  where t.tcode = ?1 " + sEtc +
         		" union " + 
         		"select cast( date_format(t.stime, '%Y-%m-%d %H:%i:00') as datetime) dtime,"
         		+ " count(t.pkey) trxCnt , sum(case when sflag = '2' then 1 else 0 end) fCnt from Ttcppacket t "
-        		+ " where t.tcode = ?2 group by date_format(t.stime, '%Y-%m-%d %H:%i:00') "
+        		+ " where t.tcode = ?2 " + sEtc + "group by date_format(t.stime, '%Y-%m-%d %H:%i:00') "
         		+ " UNION " + 
-        		"SELECT DATE_ADD( Max(t.stime),interval 1 MINute)  , 0 ,0 from Ttcppacket t  where t.tcode = ?3 "  
+        		"SELECT DATE_ADD( Max(t.stime),interval 1 MINute)  , 0 ,0 from Ttcppacket t  where t.tcode = ?3 " + sEtc 
         	, ChartData.class)
         		.setParameter(1, cmbCode.getTcode())
         		.setParameter(2, cmbCode.getTcode())
         		.setParameter(3, cmbCode.getTcode())
         		.getResultList() ;
+		} catch (Exception e) {
+			chartData = em.createNativeQuery("select now() dtime, 0 trxCnt,0 fCnt",  ChartData.class) .getResultList() ;
+//			return ;
+		}
+		
 //		Query query = em.createNamedQuery("Ttcppacket.chartData", Ttcppacket.class);
-
 //		query.setParameter(1, cmbCode.getTcode());
 //
 //		List<Object[]> resultList = query.getResultList();

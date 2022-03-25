@@ -152,7 +152,6 @@ public class AqtMain extends ApplicationWindow {
 		
 		new AqtStatus(container, SWT.NONE);
 		container.layout();
-		container.setToolTipText("AqtStatus");
 		
 //		sashForm.setWeights(new int[] {18,82});
 		
@@ -295,7 +294,7 @@ public class AqtMain extends ApplicationWindow {
 		trlist.open() ;
 		
 //		container.layout();
-//		container.setToolTipText("AqtTRList");
+//		comp_menu.setToolTipText("AqtTRList");
 	}
 	
 	private List<Tmaster> getTmaster() {
@@ -308,7 +307,7 @@ public class AqtMain extends ApplicationWindow {
 		Image img_result = AqtMain.getMyimage("result.png");
 		Image img_oper = AqtMain.getMyimage("operating.png");
 
-		Composite comp_menu = new Composite(parent, SWT.NONE);
+		final Composite comp_menu = new Composite(parent, SWT.NONE);
 		
 		GridLayout glayout = new GridLayout(1, false);
 		glayout.marginLeft = 20;
@@ -354,7 +353,8 @@ public class AqtMain extends ApplicationWindow {
 				delWidget(container);
 				new AqtStatus(container, SWT.NONE);
 				container.layout();
-				container.setToolTipText("AqtStatus");
+				comp_menu.setToolTipText("AqtStatus");
+
 			}
 		});
 
@@ -364,11 +364,12 @@ public class AqtMain extends ApplicationWindow {
 		lblist.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				if (container.getToolTipText() == "AqtList" ) return;
+				if (comp_menu.getToolTipText() == "AqtList" ) return;
 				delWidget(container);
 				new AqtList(container, SWT.NONE);
 				container.layout();
-				container.setToolTipText("AqtList");
+				comp_menu.setToolTipText("AqtList");
+				comp_menu.setToolTipText("AqtList");
 			}
 		});
 
@@ -378,11 +379,11 @@ public class AqtMain extends ApplicationWindow {
 		lblist.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				if (container.getToolTipText() == "AqtListTask" ) return;
+				if (comp_menu.getToolTipText() == "AqtListTask" ) return;
 				delWidget(container);
 				new AqtListTask(container, SWT.NONE);
 				container.layout();
-				container.setToolTipText("AqtListTask");
+				comp_menu.setToolTipText("AqtListTask");
 			}
 		});
 		
@@ -400,7 +401,7 @@ public class AqtMain extends ApplicationWindow {
 					// TODO: handle exception
 				}
 				container.layout();
-				container.setToolTipText("AqtResult");
+				comp_menu.setToolTipText("AqtResult");
 			}
 		});
 
@@ -418,7 +419,8 @@ public class AqtMain extends ApplicationWindow {
 					// TODO: handle exception
 				}
 				container.layout();
-				container.setToolTipText("AqtCompare");
+				comp_menu.setToolTipText("AqtCompare");
+				setStatus(comp_menu.getToolTipText());
 
 			}
 		});
@@ -439,7 +441,8 @@ public class AqtMain extends ApplicationWindow {
 					// TODO: handle exception
 				}
 				container.layout();
-				container.setToolTipText("AqtView");
+				comp_menu.setToolTipText("AqtView");
+				setStatus(comp_menu.getToolTipText());
 
 			}
 		});
@@ -460,7 +463,8 @@ public class AqtMain extends ApplicationWindow {
 					// TODO: handle exception
 				}
 				container.layout();
-				container.setToolTipText("AqtSearch");
+				comp_menu.setToolTipText("AqtSearch");
+				setStatus(comp_menu.getToolTipText());
 
 			}
 		});
@@ -502,11 +506,11 @@ public class AqtMain extends ApplicationWindow {
 		lblist.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				if (container.getToolTipText() == "AqtRegApp" ) return;
+				if (comp_menu.getToolTipText() == "AqtRegApp" ) return;
 				delWidget(container);
 				new AqtRegApp(container, SWT.NONE);
 				container.layout();
-				container.setToolTipText("AqtRegApp");
+				comp_menu.setToolTipText("AqtRegApp");
 			}
 		});
 		
@@ -516,11 +520,12 @@ public class AqtMain extends ApplicationWindow {
 		lblist.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				if (container.getToolTipText() == "AqtRegSvc" ) return;
+				if (comp_menu.getToolTipText() == "AqtRegSvc" ) return;
 				delWidget(container);
 				new AqtRegSvc(container, SWT.NONE);
 				container.layout();
-				container.setToolTipText("AqtRegSvc");
+				comp_menu.setToolTipText("AqtRegSvc");
+
 			}
 		});
 		
@@ -537,11 +542,11 @@ public class AqtMain extends ApplicationWindow {
 //					AqtRegister aqtregister = new AqtRegister(container.getShell(),
 //							SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM) ; aqtregister.setTmaster(new
 //									Tmaster()); aqtregister.setTdate(); aqtregister.open();
-					if (container.getToolTipText() == "AqtRegTcode" ) return;
+					if (comp_menu.getToolTipText() == "AqtRegTcode" ) return;
 					delWidget(container);
 					new AqtRegTcode(container, SWT.NONE);
 					container.layout();
-					container.setToolTipText("AqtRegTcode");
+					comp_menu.setToolTipText("AqtRegTcode");
 				}
 			});
 
@@ -555,7 +560,7 @@ public class AqtMain extends ApplicationWindow {
 					delWidget(container);
 					new AqtExec(container, SWT.NONE);
 					container.layout();
-					container.setToolTipText("AqtRegister");
+					comp_menu.setToolTipText("AqtRegister");
 				}
 			});
 			

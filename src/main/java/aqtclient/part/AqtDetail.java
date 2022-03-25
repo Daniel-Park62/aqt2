@@ -7,8 +7,10 @@ import javax.persistence.EntityManager;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PopupList;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -94,7 +96,7 @@ public class AqtDetail extends Dialog {
 	private void createContents() {
 		
 		shell = new Shell(getParent(), getStyle() | SWT.RESIZE | SWT.MAX);
-		shell.setSize(1800, 1000);
+		shell.setSize(1700, 1000);
 		shell.setText(getText());
 		shell.setBackground(SWTResourceManager.getColor(225,230,246));
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -111,7 +113,7 @@ public class AqtDetail extends Dialog {
 		gl_compHeader.marginBottom = 5;
 		gl_compHeader.numColumns = 1;
 		compHeader.setLayout(gl_compHeader);
-
+		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL, SWT.FILL).applyTo(compHeader);
 //		compHeader.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
 		Composite compTitle = new Composite(compHeader, SWT.LINE_DASH);
@@ -298,45 +300,62 @@ public class AqtDetail extends Dialog {
 		txtUri.setEditable(false);
 		txtUri.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtUri.setFont( IAqtVar.font1);
+//		Composite compMessage = new Composite(compHeader, SWT.NONE);
 		
+		SashForm sash1 = new SashForm(compHeader, SWT.VERTICAL) ;
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(sash1);
+		Composite compM1 = new Composite(sash1, SWT.NONE);
+		Composite compM2 = new Composite(sash1, SWT.NONE);
+		Composite compM3 = new Composite(sash1, SWT.NONE);
+		sash1.setSashWidth(5);
+		if (! tpacket.getProto().equals("0")) {
+			GridLayoutFactory.fillDefaults().equalWidth(false).applyTo(compM2);
+			sash1.setWeights(new int[] {3,3,4});
+		} else {
+			compM2.dispose();
+			sash1.setWeights(new int[] {4,6});
+		}
 
-		Composite compMessage = new Composite(compHeader, SWT.NONE);
-		compMessage.setLayoutData(new GridData(SWT.FILL , SWT.FILL, true, true));
-		compMessage.setLayout(new GridLayout(3, false));
-//		compMessage.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
+//		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compM1);
+		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).applyTo(compM1);
 		
-		Label lblm = new Label(compMessage, SWT.NONE);
+//		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compM3);
+		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).applyTo(compM3);
+//		compMessage.setLayoutData(new GridData(SWT.FILL , SWT.FILL, true, true));
+//		compMessage.setLayout(new GridLayout(3, false));
+		
+		Label lblm = new Label(compM1, SWT.NONE);
 		lblm.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, SWT.CENTER, true, false));
 //		lblm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblm.setText("송신Data");
 		lblm.setFont( IAqtVar.font1) ;
 		
-		lblm = new Label(compMessage, SWT.NONE);
+		lblm = new Label(compM1, SWT.NONE);
 		lblm.setText("송신Data길이");
 //		lblm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblm.setFont( IAqtVar.font1);
 		
-		txtSlen = new Text(compMessage, SWT.BORDER | SWT.RIGHT);
+		txtSlen = new Text(compM1, SWT.BORDER | SWT.RIGHT);
 		txtSlen.setEditable(false);
 		txtSlen.setFont( IAqtVar.font1);
 		txtSlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		
-		
-		txtSendMsg = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).hint(-1, 200).span(3, 1).applyTo(txtSendMsg);
+		txtSendMsg = new StyledText(compM1, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).hint(-1, 180).span(3, 1).applyTo(txtSendMsg);
 		txtSendMsg.setFont( IAqtVar.font1);
 		txtSendMsg.setEditable(false);
 		txtSendMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 
 
 		if (! tpacket.getProto().equals("0")) {
-			lblcomm = new Label(compMessage, SWT.NONE);
+//			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compM2);
+
+			lblcomm = new Label(compM2, SWT.NONE);
 			lblcomm.setText("수신Header");
 			lblcomm.setFont( IAqtVar.font1);
-			lblcomm.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false, false,3,1) );
-			txtRhead = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).span(3, 1).hint(-1, 180).applyTo(txtRhead);
-//			txtRhead.setLayoutData(new GridData(SWT.FILL, SWT.TOP,true,false,3,1) );
+			lblcomm.setLayoutData(new GridData(SWT.LEFT,SWT.TOP,false, false) );
+			txtRhead = new StyledText(compM2, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(txtRhead);
 			txtRhead.setEditable(false);
 			txtRhead.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			txtRhead.setFont( IAqtVar.font1);
@@ -348,7 +367,7 @@ public class AqtDetail extends Dialog {
 //		lblReceiveMsg.setText("수신Data");
 //		lblReceiveMsg.setFont( IAqtVar.font1) ;
 
-		Button button = new Button(compMessage, SWT.PUSH);
+		Button button = new Button(compM3, SWT.PUSH);
 	    button.setText("수신Data");
 	    button.setFont( IAqtVar.font1) ;
 	    button.addSelectionListener(new SelectionAdapter() {
@@ -367,21 +386,22 @@ public class AqtDetail extends Dialog {
 	    });
 	    GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT,SWT.CENTER).applyTo(button);
 	    
-		Label lblRlen = new Label(compMessage, SWT.NONE);
+		Label lblRlen = new Label(compM3, SWT.NONE);
 		lblRlen.setText("수신Data길이");
 //		lblRlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblRlen.setFont( IAqtVar.font1);
 		
-		txtRlen = new Text(compMessage, SWT.BORDER | SWT.RIGHT);
+		txtRlen = new Text(compM3, SWT.BORDER | SWT.RIGHT);
 		txtRlen.setEditable(false);
 		txtRlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtRlen.setFont( IAqtVar.font1);
 		
-		txtReceiveMsg = new StyledText(compMessage, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
-		GridData gd_txtReceiveMsg = new GridData(GridData.FILL_BOTH);
-		gd_txtReceiveMsg.horizontalSpan = 3;
-		gd_txtReceiveMsg.verticalSpan = 40;
-		txtReceiveMsg.setLayoutData(gd_txtReceiveMsg);
+		txtReceiveMsg = new StyledText(compM3, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
+//		GridData gd_txtReceiveMsg = new GridData(GridData.FILL_BOTH);
+//		gd_txtReceiveMsg.horizontalSpan = 3;
+//		gd_txtReceiveMsg.verticalSpan = 40;
+//		txtReceiveMsg.setLayoutData(gd_txtReceiveMsg);
+		GridDataFactory.fillDefaults().grab(true, true).align(SWT.FILL,SWT.FILL).span(3, 1).hint(-1, 220).applyTo(txtReceiveMsg);
 		txtReceiveMsg.setFont( IAqtVar.font1);
 		txtReceiveMsg.setEditable(false);
 		txtReceiveMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
@@ -390,7 +410,8 @@ public class AqtDetail extends Dialog {
 		compTitle.pack();
 		new Label(compTitle, SWT.NONE);
 		new Label(compTitle, SWT.NONE);
-		compMessage.pack();
+//		sash1.setWeights(new int[] {4,6});
+		sash1.requestLayout();
 		compDetail.pack();
 		compHeader.requestLayout();
 	}
@@ -470,10 +491,14 @@ public class AqtDetail extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		
 		try {
-			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.tcode = :tcode and t.cmpid = :cmpid ",Long.class  )
-					.setParameter("tcode", tpacket.getTmaster().getCmpCode() ).setParameter("cmpid", tpacket.getCmpid() )
+//			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.tcode = :tcode and t.cmpid = :cmpid ",Long.class  )
+//					.setParameter("tcode", tpacket.getTmaster().getCmpCode() ).setParameter("cmpid", tpacket.getCmpid() )
+//					.getResultList().get(0) ;
+
+			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.cmpid = :cmpid and t.oStime = :ostime and t.tmaster.lvl = '0'",Long.class  )
+					.setParameter("ostime", tpacket.getOStime() ).setParameter("cmpid", tpacket.getCmpid() )
 					.getResultList().get(0) ;
-			
+
 			AqtDetailComp aqtDetail = new AqtDetailComp(this.getParent(),
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
 					tpacket.getPkey() , lkey

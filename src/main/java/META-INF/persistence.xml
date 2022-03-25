@@ -23,6 +23,9 @@
 			<property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
 			<property name="eclipselink.target-database" value="MySQL"/>
 			<property name="eclipselink.jdbc.read-connections.max" value="5"/>
+			<property name="eclipselink.logging.file" value=".\aqtlog.log"/>
+			<property name="eclipselink.logging.level.dms" value="WARNING"/>
+			<property name="eclipselink.logging.level.jpa" value="WARNING"/>
 		</properties>
 	</persistence-unit>
 </persistence>
