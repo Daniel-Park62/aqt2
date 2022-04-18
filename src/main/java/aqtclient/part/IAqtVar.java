@@ -26,14 +26,14 @@ public interface IAqtVar {
     final public static Cursor arrow = SWTResourceManager.getCursor( SWT.CURSOR_ARROW);
     final String titnm = "Application Quarity Test";
     final String[] typeArr = new String[] {"","배치","실시간"};
-    final String[] lvlArr = new String[] {"Origin","단위","통합"};
+    final String[] lvlArr = new String[] {"Origin","단위","통합","정합성"};
     
     final public static Map<String, String> lvlnm = Collections.unmodifiableMap(new HashMap<String, String>() {
 		{
 			put("0", "Origin");
 			put("1", "단위");
 			put("2", "통합");
-			put("3", "실시간");
+			put("3", "정합성");
 		}
 	});
     

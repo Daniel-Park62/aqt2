@@ -324,7 +324,7 @@ public class AqtResult {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
-				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdatam());
+				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 			}
 		});
 		tblDetailResult1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -463,7 +463,7 @@ public class AqtResult {
 
 			qSvc.getResultList();
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
+			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 			tblDetailResult1.setSelection(0);
 
 		}

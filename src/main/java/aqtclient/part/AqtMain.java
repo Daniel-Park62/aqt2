@@ -245,11 +245,11 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.3.0825");
+		newShell.setText("Application Quarity Test v2.4.0412");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
-		        event.doit = true;
+		        event.doit = true ;
 		        if (jobScheduler != null) jobScheduler.cancel();
 		      }
 		    });

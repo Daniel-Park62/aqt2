@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -54,6 +55,7 @@ public class AqtDetail extends Dialog {
 	private Text txtRcode;
 	private Text txtCdate;
 	protected String sv_select = "UTF-8";
+	private Table tbl ;
 
 	/**
 	 * Create the composite.
@@ -96,7 +98,7 @@ public class AqtDetail extends Dialog {
 	private void createContents() {
 		
 		shell = new Shell(getParent(), getStyle() | SWT.RESIZE | SWT.MAX);
-		shell.setSize(1700, 1000);
+		shell.setSize(1600, 1000);
 		shell.setText(getText());
 		shell.setBackground(SWTResourceManager.getColor(225,230,246));
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
@@ -121,7 +123,7 @@ public class AqtDetail extends Dialog {
 		GridData gd_compTitle = new GridData(SWT.FILL , SWT.TOP, true, false);
 //		gd_compTitle.horizontalSpan = 6;
 		compTitle.setLayoutData(gd_compTitle);
-		compTitle.setLayout(new GridLayout(4, false));
+		compTitle.setLayout(new GridLayout(5, false));
 //		compTitle.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		
 		Label ltitle = new Label(compTitle, SWT.NONE);
@@ -163,7 +165,21 @@ public class AqtDetail extends Dialog {
     			super.widgetSelected(e);
     		}
 		});
-		
+
+    	bt_cmp = new Button(compTitle, SWT.PUSH);
+    	bt_cmp.setText("새로고침");
+    	GridDataFactory.fillDefaults().grab(false, false).align(SWT.END, SWT.BOTTOM).applyTo(bt_cmp);
+    	bt_cmp.addSelectionListener(new SelectionAdapter() {
+    		@Override
+    		public void widgetSelected(SelectionEvent e) {
+    			EntityManager em = AqtMain.emf.createEntityManager();
+    			tpacket = em.find(tpacket.getClass(), tpacket.getPkey());
+    			fillScreen();
+    			super.widgetSelected(e);
+    			em.close();
+    		}
+		});
+
 		Composite compDetail = new Composite(compHeader, SWT.BORDER);
 		compDetail.setLayoutData(new GridData(SWT.FILL , SWT.TOP, true, false));
 		compDetail.setLayout(new GridLayout(8, false));
@@ -455,7 +471,8 @@ public class AqtDetail extends Dialog {
 		this.tpacket = tpacket;
 	}
 
-	public void setTrx(long ipkey) {
+	public void setTrx(long ipkey, Table tbl) {
+		this.tbl = tbl ;
 		EntityManager em = AqtMain.emf.createEntityManager();
 		this.tpacket = em.find(Ttcppacket.class, ipkey);
 		em.close();
@@ -464,9 +481,12 @@ public class AqtDetail extends Dialog {
 	private void getPrev() {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
-			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime < ? and pkey != ?	order by t.o_stime desc limit 1",Ttcppacket.class  )
-					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getOStime()).setParameter(3, tpacket.getPkey())
-					.getSingleResult() ;
+			int ix = tbl.getSelectionIndex() - 1 ;
+			tbl.setSelection( ix );
+			Ttcppacket t = (Ttcppacket)(tbl.getItem(ix ).getData()) ;
+//			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime < ? and pkey != ?	order by t.o_stime desc limit 1",Ttcppacket.class  )
+//					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getOStime()).setParameter(3, tpacket.getPkey())
+//					.getSingleResult() ;
 			this.tpacket = t;
 			fillScreen();
 		} catch (Exception e) {
@@ -476,10 +496,14 @@ public class AqtDetail extends Dialog {
 	}
 	private void getNext() {
 		EntityManager em = AqtMain.emf.createEntityManager();
+		
 		try {
-			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime > ? and pkey != ?	order by t.o_stime limit 1",Ttcppacket.class  )
-					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getOStime()).setParameter(3, tpacket.getPkey())
-					.getSingleResult() ;
+			int ix = tbl.getSelectionIndex() + 1 ;
+			tbl.setSelection( ix );
+			Ttcppacket t = (Ttcppacket)(tbl.getItem(ix ).getData()) ;
+//			Ttcppacket t = (Ttcppacket) em.createNativeQuery("select t.* from Ttcppacket t where t.tcode = ? and t.o_stime > ? and pkey != ?	order by t.o_stime limit 1",Ttcppacket.class  )
+//					.setParameter(1, tpacket.getTcode()).setParameter(2, tpacket.getOStime()).setParameter(3, tpacket.getPkey())
+//					.getSingleResult() ;
 			this.tpacket = t;
 			fillScreen();
 		} catch (Exception e) {

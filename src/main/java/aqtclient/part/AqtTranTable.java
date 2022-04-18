@@ -71,7 +71,7 @@ public class AqtTranTable extends AqtTableView {
 				
 				if ( tbl.getSelectionIndex() >= 0) {
 					AqtDetail aqtDetail = new AqtDetail(parent.getShell() , SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE );
-					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() ); 
+					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey(), tbl ); 
 					aqtDetail.open();
 				}
 				
@@ -144,7 +144,7 @@ public class AqtTranTable extends AqtTableView {
 //					AqtDetail aqtDetail = new AqtDetail(parent.getShell() , SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE );
 //					AqtDetail aqtDetail = new AqtDetail(parent.getShell() ,  SWT.DIALOG_TRIM | SWT.CLOSE );
 //					aqtDetail.setTrxList( (Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData() ); 
-					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() );
+					aqtDetail.setTrx( ((Ttcppacket) tbl.getItem(tbl.getSelectionIndex() ).getData()).getPkey() , tbl);
 					aqtDetail.open();
 				}
 

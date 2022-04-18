@@ -274,7 +274,7 @@ public class AqtTRList extends Dialog {
 				Ttcppacket tr = ((Ttcppacket) tblList.getItem(i).getData()) ;
 				txtSend1.setText(tr.getSdata());
 //				lblRhead.setText(tempTrxList1.get(i).getRhead());
-				txtReceive1.setText(tr.getRdatam());
+				txtReceive1.setText(tr.getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 			}
 		});
 		
@@ -363,7 +363,7 @@ public class AqtTRList extends Dialog {
 		
 		if (!tempTrxList1.isEmpty()) {
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
+			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 			tblList.setSelection(0);
 		}
 

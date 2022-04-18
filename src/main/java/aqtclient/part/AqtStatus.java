@@ -82,7 +82,12 @@ public class AqtStatus {
 
 	    // run is a abstract method that defines task performed at scheduled time.
 	    public void run() {
-			Display.getCurrent().syncExec(() ->    	initScreen() ) ;
+	    	try {
+	    		Display.getCurrent().syncExec(() ->    	initScreen() ) ;
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
 	    }
 	}
 

@@ -368,11 +368,11 @@ public class AqtCompare {
 				int ix = tblDetailResult1.getSelectionIndex() ;
 				if (ix >= 0) {
 					txtSend1.setText(tempTrxList1.get(ix).getSdata());
-					txtReceive1.setText(tempTrxList1.get(ix).getRdatam());
+					txtReceive1.setText(tempTrxList1.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 					String suid = tblDetailResult1.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult2, suid)) >= 0) {
 						txtSend2.setText(tempTrxList2.get(ix).getSdata());
-						txtReceive2.setText(tempTrxList2.get(ix).getRdatam());
+						txtReceive2.setText(tempTrxList2.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 					}
 				}
 			}
@@ -424,11 +424,11 @@ public class AqtCompare {
 				int ix = tblDetailResult2.getSelectionIndex() ;
 				if (ix >=0) {
 					txtSend2.setText(tempTrxList2.get(ix).getSdata());
-					txtReceive2.setText(tempTrxList2.get(ix).getRdatam());
+					txtReceive2.setText(tempTrxList2.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 					String suid = tblDetailResult2.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult1, suid)) >= 0) {
 						txtSend1.setText(tempTrxList1.get(ix).getSdata());
-						txtReceive1.setText(tempTrxList1.get(ix).getRdatam());
+						txtReceive1.setText(tempTrxList1.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 					}
 
 				}
@@ -633,12 +633,12 @@ public class AqtCompare {
 		if (!tempTrxList1.isEmpty()) {
 
 			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdatam());
+			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 		}
 
 		if (!tempTrxList2.isEmpty()) {
 			txtSend2.setText(tempTrxList2.get(0).getSdata());
-			txtReceive2.setText(tempTrxList2.get(0).getRdatam());
+			txtReceive2.setText(tempTrxList2.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 		}
 		tableViewerDR1.setInput(tempTrxList1);
 		tableViewerDR2.setInput(tempTrxList2);

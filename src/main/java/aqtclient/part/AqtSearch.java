@@ -253,7 +253,7 @@ public class AqtSearch {
 				Ttcppacket tr = ((Ttcppacket) tblList.getItem(i).getData()) ;
 				txtSend1.setText(tr.getSdata());
 //				lblRhead.setText(tempTrxList1.get(i).getRhead());
-				txtReceive1.setText(tr.getRdatam());
+				txtReceive1.setText(tr.getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 			}
 		});
 		
@@ -412,7 +412,7 @@ public class AqtSearch {
 			ipos = 0 ;
 		} 
 		Query qTrx = em
-				.createNativeQuery("select t.* from Ttcppacket t " + qstr.toString() + " order by t.o_Stime",
+				.createNativeQuery("select t.* from Ttcppacket t " + qstr.toString() + " order by t.o_Stime, t.tcode",
 						Ttcppacket.class).setParameter(1, cmbCode.getTcode()) ;
 		
 //		System.out.println(ipos + ":" + getMaxCnt() );
@@ -435,7 +435,7 @@ public class AqtSearch {
 		
 		if (!trList.isEmpty()) {
 			txtSend1.setText(trList.get(0).getSdata()) ;
-			txtReceive1.setText(trList.get(0).getRdatam());
+			txtReceive1.setText(trList.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
 			txtSend1.requestLayout();
 			txtReceive1.requestLayout();
 			tblList.setSelection(0);
