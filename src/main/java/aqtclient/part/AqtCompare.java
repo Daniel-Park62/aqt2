@@ -111,7 +111,7 @@ public class AqtCompare {
 		sashForm = new SashForm(parent, SWT.VERTICAL);
 //		sashForm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 
-		Composite compHeader = new Composite(sashForm, SWT.NONE);
+		Composite compHeader = new Composite(sashForm, SWT.BORDER);
 		GridLayout headerLayout = new GridLayout(1, false);
 		headerLayout.verticalSpacing = 5;
 		headerLayout.marginTop = 20;
@@ -368,11 +368,11 @@ public class AqtCompare {
 				int ix = tblDetailResult1.getSelectionIndex() ;
 				if (ix >= 0) {
 					txtSend1.setText(tempTrxList1.get(ix).getSdata());
-					txtReceive1.setText(tempTrxList1.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+					txtReceive1.setText(tblDetailResult1.getItem(ix).getText(7));
 					String suid = tblDetailResult1.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult2, suid)) >= 0) {
 						txtSend2.setText(tempTrxList2.get(ix).getSdata());
-						txtReceive2.setText(tempTrxList2.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+						txtReceive2.setText(tblDetailResult2.getItem(ix).getText(7));
 					}
 				}
 			}
@@ -528,7 +528,9 @@ public class AqtCompare {
 		topTable.getColumn(2).setText(cmbCode1.getText());
 		topTable.getColumn(3).setText(cmbCode2.getText());
 		
-		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
+//		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.rcode > 399 or b.rcode > 399) ": "");
+		String sdiff = (btndiff.getSelection() ? AqtMain.tconfig.getDiffc() : "");
+//		System.out.println(sdiff + " ::" + AqtMain.tconfig.getDiffc());
 		List<Object[]> resultList = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b"
 				+ " ON ( a.tcode = ? and b.tcode = ? AND  a.cmpid = b.cmpid )  " + 
@@ -566,11 +568,11 @@ public class AqtCompare {
 
 		tempTrxCompList.add(0, new TrxCompList("%", "총계", 
 				tempTrxCompList.stream().mapToLong(TrxCompList::getTcnt1).sum() ,
-				tempTrxCompList.stream().mapToDouble(TrxCompList::getTcnt1).average().orElse(0),
+				tempTrxCompList.stream().mapToDouble(TrxCompList::getAvgt1).average().orElse(0),
 				tempTrxCompList.stream().mapToLong(TrxCompList::getScnt1).sum() ,
 				tempTrxCompList.stream().mapToLong(TrxCompList::getFcnt1).sum() ,
 				tempTrxCompList.stream().mapToLong(TrxCompList::getTcnt2).sum() ,
-				tempTrxCompList.stream().mapToDouble(TrxCompList::getTcnt2).average().orElse(0),
+				tempTrxCompList.stream().mapToDouble(TrxCompList::getAvgt2).average().orElse(0),
 				tempTrxCompList.stream().mapToLong(TrxCompList::getScnt2).sum() ,
 				tempTrxCompList.stream().mapToLong(TrxCompList::getFcnt2).sum() )
 		);
@@ -590,7 +592,7 @@ public class AqtCompare {
 		tempTrxList1 = new ArrayList<Ttcppacket>();
 		tempTrxList2 = new ArrayList<Ttcppacket>();
 		String tcode = cmbCode1.getTcode();
-		String sdiff = (btndiff.getSelection() ? "AND (a.rcode <> b.rcode or a.sflag = '2' or b.sflag = '2') ": "");
+		String sdiff = (btndiff.getSelection() ? AqtMain.tconfig.getDiffc() : "");
 		Query qTrx = em.createNativeQuery(
 				"WITH tmpt AS (SELECT a.uri, a.cmpid FROM Ttcppacket a JOIN Ttcppacket b ON ( a.uri = b.uri AND a.cmpid = b.cmpid)  " + 
 				"WHERE a.tcode = '" + cmbCode1.getTcode() + "' AND b.tcode = '" + cmbCode2.getTcode() + "' " +" and a.uri like '"+svcid+"'  " + sdiff + "  ) " + 
@@ -630,25 +632,28 @@ public class AqtCompare {
 		txtSend2.setText("");
 		txtReceive2.setText("");
 
-		if (!tempTrxList1.isEmpty()) {
-
-			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
-		}
-
-		if (!tempTrxList2.isEmpty()) {
-			txtSend2.setText(tempTrxList2.get(0).getSdata());
-			txtReceive2.setText(tempTrxList2.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
-		}
 		tableViewerDR1.setInput(tempTrxList1);
 		tableViewerDR2.setInput(tempTrxList2);
 		tableViewerDR1.getTable().setSelection(0);
 		tableViewerDR2.getTable().setSelection(0);
+
+		if (!tempTrxList1.isEmpty()) {
+//			tblDetailResult1.setSelection(0);
+//			txtSend1.setText(tempTrxList1.get(0).getSdata());
+//			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+		}
+
+		if (!tempTrxList2.isEmpty()) {
+//			tblDetailResult2.setSelection(0);
+//			txtSend2.setText(tempTrxList2.get(0).getSdata());
+//			txtReceive2.setText(tempTrxList2.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+		}
 		
 		tableViewerDR1.setResendEnabled (cmbCode1.getTmaster() != null && !cmbCode1.getTmaster().getThost().isEmpty() );
 		tableViewerDR2.setResendEnabled (cmbCode2.getTmaster() != null && !cmbCode2.getTmaster().getThost().isEmpty() );
 
 		tblDetailResult1.notifyListeners(SWT.Selection, null);
+		tblDetailResult2.notifyListeners(SWT.Selection, null);
 		redrawChart(tempTrxList1, chart1);
 		redrawChart(tempTrxList2, chart2);
 

@@ -245,7 +245,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.4.0412");
+		newShell.setText("Application Quarity Test v2.4.0419");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {

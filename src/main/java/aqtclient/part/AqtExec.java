@@ -850,7 +850,7 @@ public class AqtExec  {
         	tv.getTable().setSelection(0);
         	tv.getTable().notifyListeners(SWT.Selection, null);
         }
-        
+        AqtMain.aqtmain.setStatus(String.format(">> 조회건수 %,d 건" ,execlst.size() ) );        
 	}
 	
     protected int compareElements(Object e1, Object e2) {

@@ -743,7 +743,7 @@ public class AqtRegTcode {
 	    tblList.setSelection(0);
 
 	    AqtMain.container.setCursor(IAqtVar.arrow);
-	    
+	    AqtMain.aqtmain.setStatus(String.format(">> 조회건수 %,d 건" ,tcodeList.size() ) );	    
 //	    tblList.setFont(IAqtVar.font1b);
 
 	}

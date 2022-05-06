@@ -99,7 +99,7 @@ public class AqtResult {
 
 		sashForm = new SashForm(parent, SWT.VERTICAL);
 
-		Composite compHeader = new Composite(sashForm, SWT.NONE);
+		Composite compHeader = new Composite(sashForm, SWT.BORDER);
 		GridLayout headerLayout = new GridLayout(1, false);
 		headerLayout.verticalSpacing = 5;
 		headerLayout.marginTop = 20;
@@ -323,8 +323,11 @@ public class AqtResult {
 		tblDetailResult1.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
-				txtReceive1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+				int ix = tblDetailResult1.getSelectionIndex() ;
+				if (ix >= 0) {
+					txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
+					txtReceive1.setText(tblDetailResult1.getItem(tblDetailResult1.getSelectionIndex()).getText(7) );
+				}
 			}
 		});
 		tblDetailResult1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -381,8 +384,8 @@ public class AqtResult {
 		compChart1.setLayout(fl_compChart1);
 
 		chart1 = createChart(compChart1);
-		sashForm.setWeights(new int[] { 30, 30, 30 });
-		sashForm.setSashWidth(3);
+		sashForm.setWeights(new int[] { 30, 30, 25 });
+		sashForm.setSashWidth(8);
 
 	}
 
@@ -415,7 +418,7 @@ public class AqtResult {
 					   && ! "3".equals(cmbCode.getTmaster().getLvl() )
 				       && !cmbCode.getTmaster().getThost().isEmpty() );
 		tableViewer.setInput(tempTrxCompList);
-		tableViewer.getTable().select(0) ;
+		tableViewer.getTable().setSelection(0) ;
 		
 		if (tempTrxCompList.size() > 0)
 			tbl2data(tcode ,tempTrxCompList.get(0).getSvcid());
@@ -458,17 +461,18 @@ public class AqtResult {
 		/* 상단 서비스정보 및 화면 정보의 정확한 정의가 필요함 -> 추후 수정 */
 		if (!tempTrxList1.isEmpty()) {
 
-			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
-			qSvc.setParameter("svcid", tempTrxList1.get(0).getUri());
+//			TypedQuery<Tservice> qSvc = em.createNamedQuery("Tservice.findById", Tservice.class);
+//			qSvc.setParameter("svcid", tempTrxList1.get(0).getUri());
+//			qSvc.getResultList();
 
-			qSvc.getResultList();
-			txtSend1.setText(tempTrxList1.get(0).getSdata());
-			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
-			tblDetailResult1.setSelection(0);
+//			txtSend1.setText(tempTrxList1.get(0).getSdata());
+//			txtReceive1.setText(tempTrxList1.get(0).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+//			tblDetailResult1.setSelection(0);
 
 		}
-
 		tableViewerDR1.setInput(tempTrxList1);
+		tblDetailResult1.setSelection(0);
+		tblDetailResult1.notifyListeners(SWT.Selection, null);
 		redrawChart(tempTrxList1, chart1);
 
 	}

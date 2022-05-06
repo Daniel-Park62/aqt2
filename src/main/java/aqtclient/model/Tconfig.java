@@ -21,6 +21,7 @@ public class Tconfig implements Serializable {
 	private String tcode;
 	private String encval;
 	private char	proto ;
+	private String diffc;
 
 	public Tconfig() {
 	}
@@ -63,6 +64,14 @@ public class Tconfig implements Serializable {
 
 	public void setEncval(String encval) {
 		this.encval = encval;
+	}
+
+	public String getDiffc() {
+		return diffc;
+	}
+
+	public void setDiffc(String diffc) {
+		this.diffc = diffc;
 	}
 
 }

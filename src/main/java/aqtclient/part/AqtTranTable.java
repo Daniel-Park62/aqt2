@@ -81,8 +81,52 @@ public class AqtTranTable extends AqtTableView {
 	    reSendItem = new MenuItem(popupMenu, SWT.NONE);
 	    reSendItem.setText("재전송");
 	    reSendItem.setEnabled(AuthType.TESTADM == AqtMain.authtype);
-
 	    reSendItem.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if ( tbl.getSelectionIndex() >= 0) {
+					boolean result = MessageDialog.openConfirm(parent.getShell(), "재전송",
+							" 재전송 요청등록하시겠습니까?" ) ;
+					if (  ! result ) return ;
+
+					EntityManager em = AqtMain.emf.createEntityManager();
+					em.clear();
+					em.getEntityManagerFactory().getCache().evictAll();
+					InetAddress local;
+					String ip = "";
+					try {
+						local = InetAddress.getLocalHost();
+						ip = local.getHostAddress();
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					em.getTransaction().begin();
+					int cnt = 0;
+					for ( TableItem item : tbl.getSelection() ) {
+						Ttcppacket tr = (Ttcppacket)item.getData() ;
+						Tmaster tmst = tr.tmaster ;
+	
+						if ( tmst.getEndDate() != null ) {
+							continue ;
+						}
+						if (tmst != null && ("3".equals(tmst.getLvl() ) || "0".equals(tmst.getLvl() ) ) ) {
+							continue ;
+						}
+						Trequest treq = em.find(Trequest.class, tr.getPkey()) ;
+						if (treq != null) {
+							continue ;
+						}
+						cnt++ ;
+						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getCmpid(), ip ) );
+					}
+					em.getTransaction().commit();
+					em.close();
+					MessageDialog.openInformation(parent.getShell(), "Info", cnt + "건 재전송 요청되었습니다.");
+				}
+			}
+		});
+	    /*
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				if ( tbl.getSelectionIndex() >= 0) {
@@ -132,7 +176,7 @@ public class AqtTranTable extends AqtTableView {
 				}
 			}
 		});
-
+*/
 	    tbl.setMenu(popupMenu);
 	    AqtDetail aqtDetail = new AqtDetail(parent.getShell() ,  SWT.DIALOG_TRIM | SWT.CLOSE );
 
@@ -231,17 +275,6 @@ public class AqtTranTable extends AqtTableView {
 				return String.format("%.3f", tr.getSvctime());
 			}
 		});
-		if (AqtMain.tconfig.getProto() != '0') {
-			tvc = createTableViewerColumn("Method", 70, 4);
-			tvc.setLabelProvider(new ColumnLabelProvider() {
-				public String getText(Object element) {
-					if (element == null)
-						return super.getText(element);
-					Ttcppacket tr = (Ttcppacket) element;
-					return tr.getMethod();
-				}
-			});
-		}
 		tvc = createTableViewerColumn("서비스(URI)", 200, 5);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
@@ -270,7 +303,7 @@ public class AqtTranTable extends AqtTableView {
 			}
 		});
 
-		tvc = createTableViewerColumn(" 수신데이터", 500, 8);
+		tvc = createTableViewerColumn(" 수신데이터", 500, 7);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
@@ -283,6 +316,17 @@ public class AqtTranTable extends AqtTableView {
 					return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdataENCODE(AqtMain.tconfig.getEncval(),200);
 			}
 		});
+		if (AqtMain.tconfig.getProto() != '0') {
+			tvc = createTableViewerColumn("Method", 70, 8);
+			tvc.setLabelProvider(new ColumnLabelProvider() {
+				public String getText(Object element) {
+					if (element == null)
+						return super.getText(element);
+					Ttcppacket tr = (Ttcppacket) element;
+					return tr.getMethod();
+				}
+			});
+		}
 
 		tvc = createTableViewerColumn("테스트id", 80,9);
 		tvc.setLabelProvider(new myColumnProvider() {
@@ -307,7 +351,7 @@ public class AqtTranTable extends AqtTableView {
 
     private TableViewerColumn createTableViewerColumn(String header, int width, int idx) 
     {
-        TableViewerColumn column = new TableViewerColumn(this, SWT.CENTER );
+        TableViewerColumn column = new TableViewerColumn (this, SWT.CENTER );
         TableColumn tcol = column.getColumn() ;
         tcol.setText(header);
         tcol.setWidth(width);

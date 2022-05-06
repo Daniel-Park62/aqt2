@@ -89,12 +89,20 @@ public class Ttcppacket implements Serializable {
 	@ManyToOne(targetEntity = Tmaster.class)
 	@JoinColumn(name = "tcode", referencedColumnName = "code" ,updatable=false, insertable=false ) 
 	public Tmaster tmaster ;
-	
+
+	@ManyToOne(targetEntity = Tservice.class)
+	@JoinColumn(name = "uri", referencedColumnName = "svcid" ,updatable=false, insertable=false ) 
+	public Tservice tservice ;
+
 	public Ttcppacket() {
 	}
 
 	public Tmaster getTmaster() {
 		return tmaster;
+	}
+
+	public Tservice getTservice() {
+		return tservice;
 	}
 
 	public long getPkey() {

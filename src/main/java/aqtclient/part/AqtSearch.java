@@ -253,7 +253,8 @@ public class AqtSearch {
 				Ttcppacket tr = ((Ttcppacket) tblList.getItem(i).getData()) ;
 				txtSend1.setText(tr.getSdata());
 //				lblRhead.setText(tempTrxList1.get(i).getRhead());
-				txtReceive1.setText(tr.getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+//				txtReceive1.setText(tr.getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+				txtReceive1.setText( tblList.getItem(i).getText(7) );
 			}
 		});
 		
@@ -335,7 +336,7 @@ public class AqtSearch {
 		txtcnt.setFont(IAqtVar.font1) ;
 		txtcnt.setForeground(btn.getForeground()) ;
 		GridDataFactory.fillDefaults().align(SWT.END,SWT.CENTER) .grab(true, false).applyTo(txtcnt);
-		
+/*		
 		tView.reSendItem.removeListener(SWT.Selection, tView.reSendItem.getListeners(SWT.Selection)[0]) ;
 	    tView.reSendItem.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -382,7 +383,7 @@ public class AqtSearch {
 				}
 			}
 		});
-
+*/
 		
 	}
 	

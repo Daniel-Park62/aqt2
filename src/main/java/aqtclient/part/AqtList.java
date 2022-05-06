@@ -323,6 +323,7 @@ public class AqtList  {
 		
 		tblViewerDetail.setInput(listtrx);
 		AqtMain.container.setCursor(IAqtVar.arrow);
+//		AqtMain.aqtmain.setStatus(String.format(">> 조회건수 %,d 건" ,listtrx.size() ) );
 	}
 	
 	private static class ContentProvider implements IStructuredContentProvider {

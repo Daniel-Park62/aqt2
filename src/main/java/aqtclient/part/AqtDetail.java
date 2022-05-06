@@ -450,7 +450,7 @@ public class AqtDetail extends Dialog {
 		txtReceiveMsg.setText(tpacket.getRdataENCODE(sv_select));
 		txtCmpid.setText(tpacket.getCmpid()+"");
 		txtTestCode.setText(tpacket.getTcode()); 
-		txtUri.setText(tpacket.getUri());
+		txtUri.setText(tpacket.getUri() + " [" + tpacket.getTservice().getSvckor() + "]" );
 //		txtScrno.setText(tpacket.getScrno()); 
 		txtOStime.setText(tpacket.getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
 		txtStime.setText(tpacket.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
