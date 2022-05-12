@@ -12,6 +12,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -356,12 +361,43 @@ public class AqtDetail extends Dialog {
 		txtSlen.setFont( IAqtVar.font1);
 		txtSlen.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		
+		
 		txtSendMsg = new StyledText(compM1, SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).hint(-1, 180).span(3, 1).applyTo(txtSendMsg);
 		txtSendMsg.setFont( IAqtVar.font1);
 		txtSendMsg.setEditable(false);
 		txtSendMsg.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-
+		if (AuthType.TESTADM == AqtMain.authtype)
+			txtSendMsg.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if (e.stateMask == SWT.CTRL && (e.keyCode == 'e' || e.keyCode == 'E')) {
+						txtSendMsg.setEditable( ! txtSendMsg.getEditable() );
+					}
+					if (e.stateMask == SWT.CTRL && (e.keyCode == 's' || e.keyCode == 'S')) {
+					    EntityManager em = AqtMain.emf.createEntityManager();
+					    try{
+	//				    	System.out.println("update sdata "+ tpacket.getPkey());
+					        em.getTransaction().begin();
+					        tpacket = em.find(Ttcppacket.class, tpacket.getPkey());
+					        tpacket.setSdata(txtSendMsg.getText());
+					        em.getTransaction().commit();
+					        MessageDialog.openInformation(shell , "Info", "저장되었습니다.");
+					    }finally{
+					        em.close();
+					    }					
+					}
+					if (e.keyCode == SWT.F5 ) {
+					    EntityManager em = AqtMain.emf.createEntityManager();
+					    try{
+					        tpacket = em.find(Ttcppacket.class, tpacket.getPkey());
+					        fillScreen() ;
+					    }finally{
+					        em.close();
+					    }					
+					}
+				}
+			});
 
 		if (! tpacket.getProto().equals("0")) {
 //			GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compM2);
@@ -491,8 +527,9 @@ public class AqtDetail extends Dialog {
 			fillScreen();
 		} catch (Exception e) {
 			MessageDialog.openInformation(this.getParent(), "알림", "이전전문이 없습니다.") ;
-		}
-		em.close();
+		}finally{
+	        em.close();
+	    }				
 	}
 	private void getNext() {
 		EntityManager em = AqtMain.emf.createEntityManager();
@@ -508,8 +545,9 @@ public class AqtDetail extends Dialog {
 			fillScreen();
 		} catch (Exception e) {
 			MessageDialog.openInformation(this.getParent(), "알림", "다음전문이 없습니다.") ;
-		}
-		em.close();
+		}finally{
+	        em.close();
+	    }				
 	}
 	private void viewCompare() {
 		EntityManager em = AqtMain.emf.createEntityManager();
@@ -531,8 +569,10 @@ public class AqtDetail extends Dialog {
 		} catch (Exception e) {
 //			System.out.println(e.getMessage() + tpacket.getTmaster().getCmpCode() + " " + tpacket.getCmpid() );
 			MessageDialog.openInformation(this.getParent(), "알림", "원본을 찾을 수 없습니다.\n" + e.getMessage()) ;
-		}
-		em.close();
+		}finally{
+	        em.close();
+	    }				
+
 	}
 
 }

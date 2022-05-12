@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import javax.persistence.EntityManager;
 
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -93,17 +94,14 @@ public class AqtStatus {
 
 
 	private Composite create_pan(Composite parent) {
-     	final Image img_pan = AqtMain.getMyimage("status_panel.png");
+//     	final Image img_pan = AqtMain.getMyimage("status_panel.png");
 		// 전체 누적진척률
-     	compS = new Composite(parent, SWT.NONE);
-//     	compS.setBackground(parent.getBackground());
-     	GridLayout glo = new GridLayout(2,true);
-     	glo.marginWidth = 25;
-     	glo.marginHeight = 20;
-     	compS.setLayout(glo);
-     	compS.setBackgroundImage(img_pan);
-     	compS.setLayoutData(new GridData(265,185));
-
+     	compS = new Composite(parent, SWT.BORDER);
+     	compS.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
+     	GridLayoutFactory.fillDefaults().equalWidth(true).numColumns(2).margins(25,20).applyTo(compS);
+//     	compS.setBackgroundImage(img_pan);
+//     	compS.setBackgroundMode(SWT.INHERIT_NONE);
+     	GridDataFactory.swtDefaults().hint(265,	185).applyTo(compS);
      	return compS ;
 	}
 

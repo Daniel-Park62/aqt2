@@ -276,7 +276,10 @@ public class Ttcppacket implements Serializable {
 	public String getSdata() {
 		return this.sdata == null ? "" : new String(this.sdata) ;
 	}
-
+	
+	public void setSdata(String sdata) {
+		this.sdata = sdata.getBytes() ;
+	}
 	public long getSeqno() {
 		return this.seqno;
 	}

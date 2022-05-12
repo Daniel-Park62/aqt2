@@ -85,6 +85,7 @@ public class AqtMain extends ApplicationWindow {
 //		addToolBar(SWT.FLAT | SWT.COLOR_WHITE);
 //		addMenuBar();
         emf = getCreateEmf();
+
         em = AqtMain.emf.createEntityManager() ;
         em.setFlushMode(FlushModeType.AUTO);
 		System.out.println("AQT2 Started !!");
@@ -245,7 +246,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.4.0419");
+		newShell.setText("Application Quarity Test v2.4.0511");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
@@ -817,8 +818,8 @@ public class AqtMain extends ApplicationWindow {
         
     }
     
-    public void threadrun( Thread t ) {
-    	t.start(); 
-    }
+//    public void threadrun( Thread t ) {
+//    	t.start(); 
+//    }
 
 }
