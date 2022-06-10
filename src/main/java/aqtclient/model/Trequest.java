@@ -31,11 +31,12 @@ public class Trequest implements Serializable {
 	}
 	
 
-	public Trequest(long pkey2, String tcode2, long cmpid2, String reqUser) {
+	public Trequest(long pkey2, String tcode2, long cmpid2, String reqUser, String uuid) {
 		pkey = pkey2;
 		tcode = tcode2;
 		cmpid = cmpid2 ;
 		this.reqUser = reqUser ;
+		this.uuid = uuid;
 //		reqDt = new Timestamp(System.currentTimeMillis()) ;
 	}
 

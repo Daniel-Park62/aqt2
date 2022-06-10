@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +76,10 @@ public class AqtMain extends ApplicationWindow {
 	public static EntityManagerFactory emf ;
 	public static Timer jobScheduler ;
 	public static AqtMain aqtmain ;
+	// 입력조건 저장
+	public static HashMap<String,String> gsvl = new HashMap<String,String>();
+	public String gip ;
+	
 	TableViewer tv ;
 	/**
 	 * Create the application window.
@@ -102,8 +108,22 @@ public class AqtMain extends ApplicationWindow {
 			em.getTransaction().commit();
 		}
 		
+		try {
+			gip = InetAddress.getLocalHost().getHostAddress();
+//			System.out.println(gip);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
-
+	public void setCond(String cond) {
+		gsvl.put(this.gip,cond) ;
+	}
+	public String getCond() {
+		String val = gsvl.get(this.gip) ;
+		return val == null ? "" : val ;
+	}
 	public static EntityManagerFactory getCreateEmf() {
 		String dbip = System.getProperty("AQTDB") ;  // 주소:port
         if (dbip == null) dbip = System.getenv("AQTDB") ;
@@ -246,7 +266,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.4.0511");
+		newShell.setText("Application Quarity Test v2.5.2206");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {

@@ -152,10 +152,11 @@ public class AqtSearch {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(7, 1).applyTo(textEtc);
 		textEtc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textEtc.setFont(IAqtVar.font1);
-		textEtc.setText("");
+		textEtc.setText(AqtMain.aqtmain.getCond() );
 		textEtc.addTraverseListener((final TraverseEvent event) -> {
 		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
+
 		
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
 		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).span(2, 1).minSize(100, -1).applyTo(btnSearch);
@@ -401,10 +402,12 @@ public class AqtSearch {
 			qstr.append(" and t.rcode = " + textRcode.getText().trim() );
 		if (! textCmpid.getText().isEmpty()  ) 
 			qstr.append(" and t.cmpid = " + textCmpid.getText().trim() );
-		if (! textSdata.getText().isEmpty()  ) 
-			qstr.append(" and instr(t.sdata, '" + textSdata.getText().trim() + "') > 0 " );
-		if (! textEtc.getText().isEmpty()  ) 
+		if (! textSdata.getText().isBlank() ) 
+			qstr.append(" and t.sdata rlike '" + textSdata.getText().trim() + "'" );
+		if (! textEtc.getText().isEmpty()  ) {
 			qstr.append(" and (" + textEtc.getText().trim() + ")  " );
+			AqtMain.aqtmain.setCond(textEtc.getText());
+		}
 
 		if (itotal <= 0) {
 			itotal = Math.toIntExact(  (long) em.createNativeQuery("select count(1) from Ttcppacket t " + qstr.toString()  )

@@ -92,7 +92,8 @@ public class AqtDetailComp extends Dialog {
 		
 		shell = new Shell(getParent(), getStyle() | SWT.RESIZE | SWT.MAX);
 //		shell.setSize(1800, 1000);
-		shell.setBounds(10, 10, 1800, 1000);
+//		shell.setBounds(10, 10, 1800, 1000);
+		shell.setMaximized(true);
 		shell.setBackground(SWTResourceManager.getColor(225,230,246));
 		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
 		shell.setLayout( new FillLayout(SWT.VERTICAL) );

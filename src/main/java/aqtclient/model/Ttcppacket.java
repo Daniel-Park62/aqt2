@@ -102,7 +102,7 @@ public class Ttcppacket implements Serializable {
 	}
 
 	public Tservice getTservice() {
-		return tservice;
+		return (tservice == null ? new Tservice() : tservice );
 	}
 
 	public long getPkey() {

@@ -1,7 +1,5 @@
 package aqtclient.part;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -92,15 +90,15 @@ public class AqtTranTable extends AqtTableView {
 					EntityManager em = AqtMain.emf.createEntityManager();
 					em.clear();
 					em.getEntityManagerFactory().getCache().evictAll();
-					InetAddress local;
-					String ip = "";
-					try {
-						local = InetAddress.getLocalHost();
-						ip = local.getHostAddress();
-					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+//					String ip = "";
+//					InetAddress local;
+//					try {
+//						local = InetAddress.getLocalHost();
+//						ip = local.getHostAddress();
+//					} catch (UnknownHostException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
 					em.getTransaction().begin();
 					int cnt = 0;
 					for ( TableItem item : tbl.getSelection() ) {
@@ -118,7 +116,7 @@ public class AqtTranTable extends AqtTableView {
 							continue ;
 						}
 						cnt++ ;
-						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getCmpid(), ip ) );
+						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getCmpid(), AqtMain.aqtmain.gip, tr.getUri() ) );
 					}
 					em.getTransaction().commit();
 					em.close();
@@ -238,7 +236,7 @@ public class AqtTranTable extends AqtTableView {
 
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH:mm:ss");
 
-		tvc = createTableViewerColumn("패킷id", 120, 0);
+		tvc = createTableViewerColumn("패킷id", 100, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -247,7 +245,7 @@ public class AqtTranTable extends AqtTableView {
 				return "" + tr.getCmpid();
 			}
 		});
-		tvc = createTableViewerColumn("송신시간", 140, 1);
+		tvc = createTableViewerColumn("송신시간", 130, 1);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -257,7 +255,7 @@ public class AqtTranTable extends AqtTableView {
 //				return smdfmt.format(tr.getStime());
 			}
 		});
-		tvc = createTableViewerColumn("수신시간", 140, 2);
+		tvc = createTableViewerColumn("수신시간", 130, 2);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)

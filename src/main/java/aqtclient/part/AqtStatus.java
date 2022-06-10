@@ -324,7 +324,7 @@ public class AqtStatus {
    	         "", "테스트ID", "  테스트명", "테스트일자", "단계", "대상호스트", "서비스수", "패킷건수", "성공건수", "실패건수", "실패서비스","성공율(%)","미수행"};
 
         int[] columnWidths1 = new int[] {
-        		0, 100, 200, 130, 80, 130, 100, 100, 100, 100, 120,110,100};
+        		0, 100, 200, 120, 80, 100, 100, 80, 100, 100, 100,110,100};
 
 	    int[] columnAlignments1 = new int[] {
 	    		SWT.CENTER, SWT.LEFT, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER, SWT.CENTER};
@@ -523,7 +523,7 @@ public class AqtStatus {
             }
         }
 
-        tblTestList.getColumn(1).setWidth(16 * 10);
+//        tblTestList.getColumn(1).setWidth(16 * 10);
 	}
 	
 	private static class ContentProvider implements IStructuredContentProvider {

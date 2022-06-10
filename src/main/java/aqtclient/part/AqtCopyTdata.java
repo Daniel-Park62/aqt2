@@ -188,6 +188,7 @@ public class AqtCopyTdata extends Dialog {
 //		System.out.println(cond);
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
+			lmsg.setText("...작업중...");
 			em.getTransaction().begin();
 			String rval  = em.createNativeQuery("call sp_copytestdata(?,?,?,?)")
 					.setParameter(1, srcCode.getTcode())
