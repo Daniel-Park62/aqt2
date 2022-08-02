@@ -252,6 +252,7 @@ public class AqtRegTcode {
 	    addsvc.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
+//				em.getTransaction().begin();
 				int i = tblList.getSelectionIndex() ;
 				Tmaster t = new Tmaster() ;
 				t.setDesc1("New");
@@ -259,7 +260,8 @@ public class AqtRegTcode {
 				t.setNew(true);
 				if (i >= 0 ) {
 					Tmaster to = (Tmaster) tblList.getItem(i).getData() ;
-					t.setCode(to.getCode()+"2");
+					t.setDesc1(to.getDesc1()+"");
+					t.setCode(to.getCode().replaceAll("[0-9]$", "?"));
 					t.setCmpCode(to.getCmpCode());
 					t.setThost(to.getThost());
 					t.setLvl(to.getLvl());

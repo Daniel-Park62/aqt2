@@ -1,214 +1,189 @@
 package aqtclient.model;
-
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-
-import javax.persistence.*;
 import java.util.Date;
-
-
 /**
- * The persistent class for the ttcppacket database table.
+ * The tcppacket dto.
  * 
  */
-@Entity
-@NamedQuery(name="Ttcppacket.SvcCnt", query="SELECT COUNT(DISTINCT t.uri) FROM Ttcppacket t where t.tcode = :tcode")
-@NamedQuery(name="Ttcppacket.FlagCnt", query="SELECT COUNT(t.pkey) trxCnt " +
-		", COUNT(CASE WHEN t.sflag = '1' THEN 1 ELSE NULL END) validCnt " + 
-		", COUNT(CASE WHEN t.sflag = '2' THEN 1 ELSE NULL END) invalidCnt " +
-		" FROM Ttcppacket t WHERE t.tcode = :tcode")
-@NamedNativeQuery(name="Ttcppacket.chartData", 
-query="select date_format(t.stime, '%Y-%m-%d %H:%i:00') dtime, count(t.pkey) trxCnt from Ttcppacket t where t.tcode = ? group by date_format(t.stime, '%Y-%m-%d %H:%i:00') ")
+public class TpacketDTO  {
 
-public class Ttcppacket implements Serializable {
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long pkey;
-
-	private long cmpid;
-
-	private long ackno;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date cdate;
-
-	private String dstip;
-
-	private int dstport;
-
-	private double elapsed;
-
-	private String method;
-
-//	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="o_stime")
-	private LocalDateTime oStime;
-
-	private String proto;
-
-	private int rcode;
-	
-	private char sflag ;
-	
-	private String rhead;
-
-	private String errinfo;
-
-	@Lob
-	private byte[] rdata;
-
-	private int rlen;
-
-//	@Temporal(TemporalType.TIMESTAMP)
-	private LocalDateTime rtime;
-
-	@Lob
-	private byte[] sdata;
-
-	private long seqno;
-
-	private int slen;
-
-	private String srcip;
-
-	private int srcport;
-
-//	@Temporal(TemporalType.TIMESTAMP)
-	private LocalDateTime stime;
-
-	@Column(updatable=false, insertable=false )
-	private double svctime;
-
 	private String tcode;
-
+	private long cmpid;
 	private String uri;
-
-	@ManyToOne(targetEntity = Tmaster.class)
-	@JoinColumn(name = "tcode", referencedColumnName = "code" ,updatable=false, insertable=false ) 
+	private LocalDateTime oStime;
+	private LocalDateTime stime;
+	private LocalDateTime rtime;
+	private double svctime;
+	private byte[] rdata;
+	private int rlen;
+	private String rhead;
+	private char sflag ;
+	private String errinfo;
+	private byte[] sdata;
+	private long ackno;
+	private Date cdate;
+	private String dstip;
+	private int dstport;
+	private double elapsed;
+	private String method;
+	private String proto;
+	private int rcode;
+	private long seqno;
+	private int slen;
+	private String srcip;
+	private int srcport;
 	public Tmaster tmaster ;
-
-	@ManyToOne(targetEntity = Tservice.class)
-	@JoinColumn(name = "uri", referencedColumnName = "svcid" ,updatable=false, insertable=false ) 
 	public Tservice tservice ;
+	public TpacketDTO() {
+	}
 
-	public Ttcppacket() {
+	public TpacketDTO(Ttcppacket tp) {
+			
+		pkey = tp.getPkey() ;
+		tcode = tp.getTcode() ;
+		ackno = tp.getAckno() ;
+		cdate = tp.getCdate() ;
+		cmpid = tp.getCmpid() ;
+		dstip = tp.getDstip() ;
+		dstport = tp.getDstport() ;
+		elapsed = tp.getElapsed() ;
+		errinfo = tp.getErrinfo() ;
+		method = tp.getMethod() ;
+		oStime = tp.getOStime() ;
+		proto = tp.getProto() ;
+		rcode = tp.getRcode() ;
+		rdata = tp.getRdatab() ;
+		rhead = tp.getRhead() ;
+		rlen = tp.getRlen() ;
+		rtime = tp.getRtime() ;
+		sdata = tp.getSdatab() ;
+		seqno = tp.getSeqno() ;
+		sflag = tp.getSflag() ;
+		slen  =  tp.getSlen() ;
+		srcip = tp.getSrcip() ;
+		srcport = tp.getSrcport() ;
+		stime = tp.getStime() ;
+		svctime = tp.getSvctime() ;
+		tmaster = tp.getTmaster() ;
+		tservice = tp.getTservice() ;
+		uri = tp.getUri() ;
+	}
+
+	public TpacketDTO(Tloaddata tp) {
+		
+		pkey = tp.getPkey() ;
+		tcode = tp.getTcode() ;
+		ackno = tp.getAckno() ;
+		cdate = tp.getCdate() ;
+		cmpid = tp.getCmpid() ;
+		dstip = tp.getDstip() ;
+		dstport = tp.getDstport() ;
+		elapsed = tp.getElapsed() ;
+		errinfo = tp.getErrinfo() ;
+		method = tp.getMethod() ;
+		oStime = tp.getOStime() ;
+		proto = tp.getProto() ;
+		rcode = tp.getRcode() ;
+		rdata = tp.getRdatab() ;
+		rhead = tp.getRhead() ;
+		rlen = tp.getRlen() ;
+		rtime = tp.getRtime() ;
+		sdata = tp.getSdatab() ;
+		seqno = tp.getSeqno() ;
+		sflag = tp.getSflag() ;
+		slen  =  tp.getSlen() ;
+		srcip = tp.getSrcip() ;
+		srcport = tp.getSrcport() ;
+		stime = tp.getStime() ;
+		svctime = tp.getSvctime() ;
+		tmaster = tp.getTmaster() ;
+		tservice = tp.getTservice() ;
+		uri = tp.getUri() ;
 	}
 
 	public Tmaster getTmaster() {
 		return tmaster;
 	}
-
 	public Tservice getTservice() {
 		return (tservice == null ? new Tservice() : tservice );
 	}
-
 	public long getPkey() {
 		return this.pkey;
 	}
-
 	public char getSflag() {
 		return sflag ;
 	}
 	public long getCmpid() {
 		return cmpid;
 	}
-
 	public void setPkey(int pkey) {
 		this.pkey = pkey;
 	}
-
 	public long getAckno() {
 		return this.ackno;
 	}
-
 	public void setAckno(int ackno) {
 		this.ackno = ackno;
 	}
-
 	public Date getCdate() {
 		return this.cdate;
 	}
-
 	public void setCdate(Date cdate) {
 		this.cdate = cdate;
 	}
-
 	public String getDstip() {
 		return this.dstip;
 	}
-
 	public void setDstip(String dstip) {
 		this.dstip = dstip;
 	}
-
 	public int getDstport() {
 		return this.dstport;
 	}
-
 	public void setDstport(int dstport) {
 		this.dstport = dstport;
 	}
-
 	public double getElapsed() {
 		return this.elapsed;
 	}
-
 	public void setElapsed(double elapsed) {
 		this.elapsed = elapsed;
 	}
-
 	public String getMethod() {
 		return this.method;
 	}
-
 	public void setMethod(String method) {
 		this.method = method;
 	}
-
 	public LocalDateTime getOStime() {
 		return this.oStime;
 	}
-
 	public void setOStime(LocalDateTime oStime) {
 		this.oStime = oStime;
 	}
-
 	public String getProto() {
 		return this.proto;
 	}
-
 	public void setProto(String proto) {
 		this.proto = proto;
 	}
-
 	public int getRcode() {
 		return this.rcode ;
 	}
-
 	public String getRhead() {
 		return this.rhead == null ? "" : this.rhead ;
 	}
-
 	public String getErrinfo() {
 		return errinfo == null ? "" : errinfo ;
 	}
-
 	public void setErrinfo(String errinfo) {
 		this.errinfo = errinfo;
 	}
-
 	public String getRdata()  {
-//		try {
-//			return this.rdata == null ? "" : new String(this.rdata, rhead.toLowerCase().contains("utf")   ? "utf-8" : "euc-kr") ;
-			return this.rdata == null ? "" : new String(this.rdata)   ;
-//		} catch (UnsupportedEncodingException e) {
-//			return "";
-//		}
+		return this.rdata == null ? "" : new String(this.rdata)   ;
 	}
-
 	public String getRdataUTF()  {
 		try {
 			return this.rdata == null ? "" : new String(this.rdata, "utf-8") ;
@@ -216,7 +191,6 @@ public class Ttcppacket implements Serializable {
 			return "";
 		}
 	}
-
 	public String getRdataENCODE(String enc)  {
 		try {
 			return this.rdata == null ? "" : new String(this.rdata, enc) ;
@@ -224,7 +198,6 @@ public class Ttcppacket implements Serializable {
 			return "";
 		}
 	}
-
 	public String getRdataENCODE(String enc, int ln)  {
 		if ( rdata == null ) return "";
 		try {
@@ -237,7 +210,6 @@ public class Ttcppacket implements Serializable {
 			return "";
 		}
 	}
-
 	public String getRdatam()  {
 		if ( rdata == null ) return "";
 		
@@ -252,104 +224,79 @@ public class Ttcppacket implements Serializable {
 			return "" ;
 		}
 	}
-	
 	public byte[] getRdatab() {
 		return this.rdata == null ? "".getBytes() : this.rdata ;
 	}
-
+	public void setRdata(byte[] rdata) {
+		this.rdata = rdata ;
+	}
 	public int getRlen() {
 		return this.rlen;
 	}
-
 	public void setRlen(int rlen) {
 		this.rlen = rlen;
 	}
-
 	public LocalDateTime getRtime() {
 		return this.rtime;
 	}
-
 	public void setRtime(LocalDateTime rtime) {
 		this.rtime = rtime;
 	}
-
 	public String getSdata() {
 		return this.sdata == null ? "" : new String(this.sdata) ;
 	}
-	
-	public byte[] getSdatab() {
-		return sdata ;
-	}
-	public void setSdata(String sdata) {
-		this.sdata = sdata.getBytes() ;
+	public void setSdata(byte[] sdata) {
+		this.sdata = sdata ;
 	}
 	public long getSeqno() {
 		return this.seqno;
 	}
-
 	public void setSeqno(int seqno) {
 		this.seqno = seqno;
 	}
-
 	public int getSlen() {
 		return this.slen;
 	}
-
 	public void setSlen(int slen) {
 		this.slen = slen;
 	}
-
 	public String getSrcip() {
 		return this.srcip;
 	}
-
 	public void setSrcip(String srcip) {
 		this.srcip = srcip;
 	}
-
 	public int getSrcport() {
 		return this.srcport;
 	}
-
 	public void setSrcport(int srcport) {
 		this.srcport = srcport;
 	}
-
 	public LocalDateTime getStime() {
 		return this.stime;
 	}
-
 	public void setStime(LocalDateTime stime) {
 		this.stime = stime;
 	}
-
 	public double getSvctime() {
 		return this.svctime;
 	}
-
 	public void setSvctime(double svctime) {
 		this.svctime = svctime;
 	}
-
 	public String getTcode() {
 		return this.tcode;
 	}
-
 	public void setTcode(String tcode) {
 		this.tcode = tcode;
 	}
-
 	public String getUri() {
 		return this.uri;
 	}
-
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
-
 	public String getSflagNm() {
 		return this.rcode > 399 ? "실패" : this.rcode > 199 ? "성공" : "" ;
 	}
-
-
 }

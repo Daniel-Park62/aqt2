@@ -2,6 +2,7 @@ package aqtclient.part;
 
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -12,9 +13,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +32,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Tloaddata;
+import aqtclient.model.TpacketDTO;
 import aqtclient.model.Ttcppacket;
 
 
@@ -553,10 +553,21 @@ public class AqtDetail extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		
 		try {
-//			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.tcode = :tcode and t.cmpid = :cmpid ",Long.class  )
-//					.setParameter("tcode", tpacket.getTmaster().getCmpCode() ).setParameter("cmpid", tpacket.getCmpid() )
-//					.getResultList().get(0) ;
+			TpacketDTO t2 ;
+			Tloaddata tl = em.find(Tloaddata.class, tpacket.getCmpid() ) ;
+			if (tl != null) {
+				t2 = new TpacketDTO( tl ) ;
+			} else {
+				t2 = new TpacketDTO( em.createQuery("select t from Ttcppacket t  where t.p = :cmpid and t.oStime = :ostime and t.tmaster.lvl = '0'", Ttcppacket.class  )
+						.setParameter("ostime", tpacket.getOStime() ).setParameter("cmpid", tpacket.getCmpid() )
+						.getResultList().get(0) ) ;
+			}
+		
+			AqtDetailComp2 aqtDetail = new AqtDetailComp2(this.getParent(),
+					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
+					new TpacketDTO(tpacket)  , t2 ) ;
 
+/*			
 			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.cmpid = :cmpid and t.oStime = :ostime and t.tmaster.lvl = '0'",Long.class  )
 					.setParameter("ostime", tpacket.getOStime() ).setParameter("cmpid", tpacket.getCmpid() )
 					.getResultList().get(0) ;
@@ -565,6 +576,7 @@ public class AqtDetail extends Dialog {
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
 					tpacket.getPkey() , lkey
 			);
+*/
 			aqtDetail.open();
 		} catch (Exception e) {
 //			System.out.println(e.getMessage() + tpacket.getTmaster().getCmpCode() + " " + tpacket.getCmpid() );

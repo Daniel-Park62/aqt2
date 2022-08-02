@@ -6,8 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.PopupList;
@@ -30,15 +28,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Ttcppacket;
+import aqtclient.model.TpacketDTO;
 
 
 /* 실제 데이터로 확인이 필요함 */
 
-public class AqtDetailComp extends Dialog {
+public class AqtDetailComp2 extends Dialog {
 	protected Shell shell;
 	protected Object result;
-	private Ttcppacket tr1, tr2;  // testcode1 의 tr
+	private TpacketDTO tr1, tr2;  
 	private TranInfo tran1, tran2 ;
 
 	/**
@@ -49,24 +47,12 @@ public class AqtDetailComp extends Dialog {
 //	public AqtDetail(Composite parent, int style) {
 //		create(parent, style);
 //	}
-	public AqtDetailComp(Shell parent, int style, long pkey1, long pkey2) {
+	public AqtDetailComp2(Shell parent, int style, TpacketDTO t1, TpacketDTO t2) {
 
 		super(parent, style);
 
-		EntityManager em = AqtMain.emf.createEntityManager();
-		this.tr1 = em.find(Ttcppacket.class, pkey1);
-		this.tr2 = em.find(Ttcppacket.class, pkey2);
-		em.close();
-
-	}
-	public AqtDetailComp(Shell parent, int style, long pkey1, long pkey2, int sw) {
-
-		super(parent, style);
-
-		EntityManager em = AqtMain.emf.createEntityManager();
-		this.tr1 = em.find(Ttcppacket.class, pkey1);
-		this.tr2 = em.find(Ttcppacket.class, pkey2);
-		em.close();
+		this.tr1 = t1 ;
+		this.tr2 = t2 ;
 
 	}
 
@@ -187,51 +173,9 @@ public class AqtDetailComp extends Dialog {
 		}
 		
 	}
-/*
-	private void compTrMsg(StyledText stext1, StyledText stext2 ) throws UnsupportedEncodingException {
-//		String text1 = stext1.getText() ;
-//		String text2 = stext2.getText() ;
-		byte[] text1 = stext1.getText().getBytes("euc-kr") ;
-		byte[] text2 = stext2.getText().getBytes("euc-kr") ;
-
-		List<StyleRange> ranges = new ArrayList<StyleRange>();
-		int st = -1, n = text2.length , n1 = text1.length ;
-		boolean sw = false ;
-		for (int i = 0 ; i < n; i++) {
-			char x2 = (char)text2[i]; //.charAt(i);
-			char x1 = i < n1 ? (char)text1[i] :  0 ;
-			if (x1 == x2) {
-				if (sw) {
-					ranges.add( new StyleRange(st+1, i - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
-					sw = false ;
-				}
-				st = i ;
-			} else {
-				sw = true ;
-			}
-		}
-		try {
-			if (!ranges.isEmpty()) {
-				stext1.setStyleRanges( (StyleRange[]) ranges.toArray(new StyleRange[0] ) );
-				stext2.setStyleRanges( (StyleRange[]) ranges.toArray(new StyleRange[0] ) );
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		if (sw) {
-			n1 = stext1.getText().length() ;
-			if (st+1 < n1)
-				stext1.setStyleRange(new StyleRange(st+1, n1 - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
-			n = stext2.getText().length() ;
-			if (st+1 < n )
-				stext2.setStyleRange(new StyleRange(st+1, n - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
-		}
-		
-	}
-*/	
 
 	private class  TranInfo extends Composite {
-		private Ttcppacket tr;  // testcode1 의 tr
+		private TpacketDTO tr;  // testcode1 의 tr
 		private Text txtSlen;
 		private StyledText txtSendMsg;
 		private Text txtRlen;
@@ -291,7 +235,7 @@ public class AqtDetailComp extends Dialog {
 		public TranInfo(Composite parent, int style) {
 			super(parent, style) ;
 		}
-		public TranInfo(Composite parent, int style, Ttcppacket tr) {
+		public TranInfo(Composite parent, int style, TpacketDTO tr) {
 			this(parent, style);
 			this.tr = tr ;
 			this.setLayout(new GridLayout(1,false));

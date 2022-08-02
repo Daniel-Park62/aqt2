@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Texecjob;
+import aqtclient.model.Tmaster;
 
 public class AqtExec  {
 
@@ -413,7 +414,7 @@ public class AqtExec  {
 
 		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH.mm.ss");
 
-		tvc = createTableViewerColumn("Job No", 80, 1);
+		tvc = createTableViewerColumn("Job No", 70, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -433,7 +434,7 @@ public class AqtExec  {
 			}
 		});
 
-		tvc = createTableViewerColumn("테스트ID", 120, 1);
+		tvc = createTableViewerColumn("테스트ID", 100, 1);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -442,7 +443,7 @@ public class AqtExec  {
 				return tj.getTcode() ;
 			}
 		});
-		tvc = createTableViewerColumn("테스트내용", 250, 1);
+		tvc = createTableViewerColumn("테스트내용", 240, 1);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
@@ -534,7 +535,7 @@ public class AqtExec  {
 		tv.setContentProvider(new ContentProvider());
 		
 		Composite composite = new Composite(compHeader, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).applyTo(composite);
+		GridLayoutFactory.fillDefaults().numColumns(4).equalWidth(false).applyTo(composite);
 
 //		GridLayout compLayout = new GridLayout(3, false);
 //		compLayout.verticalSpacing = 10;
@@ -543,17 +544,32 @@ public class AqtExec  {
 //		compLayout.marginBottom = 0;
 //		composite.setLayout(compLayout);
 
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+//		composite.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BOTTOM).grab(true, false).applyTo(composite);
 		Label lblTrans = new Label(composite, SWT.NONE);
 
-		lblTrans.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
+//		lblTrans.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
+		GridDataFactory.fillDefaults().align(SWT.LEFT, SWT.TOP).grab(true, false).applyTo(lblTrans);
 		lblTrans.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblTrans.setText("테스트 상세내역 ▽");
 		lblTrans.setFont( IAqtVar.font13b) ;
 
+		AqtButton btnCopy = new AqtButton(composite, SWT.PUSH,"전문생성");
+		btnCopy.setToolTipText("다른 테스트 정보로 부터 데이터를 복제하여 새로운 테스트 데이터를 생성합니다.");
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(false, false).minSize(100, -1).applyTo(btnCopy);
+		btnCopy.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				AqtCopyTdata aqtcopy = new AqtCopyTdata(parent.getShell(), AqtMain.aqtmain.getGtcode() );
+				aqtcopy.open() ;
+				refreshScreen();
+			}
+		});
+
 		btnNew = new AqtButton(composite, SWT.PUSH, "신규작업입력") ;
 //		btnNew.setText("신규작업입력");
-		btnNew.setLayoutData(new GridData(SWT.END, SWT.TOP, false, false));
+//		btnNew.setLayoutData(new GridData(SWT.END, SWT.TOP, false, false));
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.TOP).grab(false, false).applyTo(btnNew);
 //		btnNew.setFont( IAqtVar.font1) ;
 		btnNew.setEnabled( AqtMain.authtype == AuthType.TESTADM) ;
 		btnNew.addSelectionListener(new SelectionAdapter() {

@@ -349,7 +349,7 @@ public class AqtTRList extends Dialog {
 //				)
 //				.collect(Collectors.toCollection(ArrayList::new));
 		tempTrxList1 = qTrx.getResultList();
-
+ 
 		txtSend1.setText("");
 		txtReceive1.setText("");
 		if ( getMaxCnt() > 0)

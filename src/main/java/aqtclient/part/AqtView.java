@@ -98,12 +98,12 @@ public class AqtView {
 
 		cmbCode = new AqtTcodeCombo(compIn,  SWT.DROP_DOWN | SWT.BORDER | SWT.READ_ONLY);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(170, -1).applyTo(cmbCode.getControl());
-		cmbCode.getControl().addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				refreshScreen();
-			}
-		});
+//		cmbCode.getControl().addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				refreshScreen();
+//			}
+//		});
 
 		Label lblTstDt = new Label(compIn, SWT.RIGHT);
 		lblTstDt.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
@@ -139,7 +139,7 @@ public class AqtView {
 //		textHost.setFont(IAqtVar.font1b);
 
 		lbl = new Label(compIn, SWT.NONE);
-		lbl.setImage(AqtMain.getMyimage("refresh.png"));
+		lbl.setImage(AqtMain.getMyimage("search.png"));
 		lbl.setCursor(IAqtVar.handc);
 		lbl.setLayoutData(new GridData(SWT.END,SWT.CENTER,false, false));
 		lbl.addMouseListener(new MouseAdapter() {

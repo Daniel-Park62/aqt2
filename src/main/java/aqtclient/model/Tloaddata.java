@@ -3,25 +3,28 @@ package aqtclient.model;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-
-import javax.persistence.*;
 import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 
 /**
- * The persistent class for the ttcppacket database table.
+ * The persistent class for the Tloaddata database table.
  * 
  */
 @Entity
-@NamedQuery(name="Ttcppacket.SvcCnt", query="SELECT COUNT(DISTINCT t.uri) FROM Ttcppacket t where t.tcode = :tcode")
-@NamedQuery(name="Ttcppacket.FlagCnt", query="SELECT COUNT(t.pkey) trxCnt " +
-		", COUNT(CASE WHEN t.sflag = '1' THEN 1 ELSE NULL END) validCnt " + 
-		", COUNT(CASE WHEN t.sflag = '2' THEN 1 ELSE NULL END) invalidCnt " +
-		" FROM Ttcppacket t WHERE t.tcode = :tcode")
-@NamedNativeQuery(name="Ttcppacket.chartData", 
-query="select date_format(t.stime, '%Y-%m-%d %H:%i:00') dtime, count(t.pkey) trxCnt from Ttcppacket t where t.tcode = ? group by date_format(t.stime, '%Y-%m-%d %H:%i:00') ")
-
-public class Ttcppacket implements Serializable {
+@Table(name="Tloaddata")
+public class Tloaddata implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -94,7 +97,7 @@ public class Ttcppacket implements Serializable {
 	@JoinColumn(name = "uri", referencedColumnName = "svcid" ,updatable=false, insertable=false ) 
 	public Tservice tservice ;
 
-	public Ttcppacket() {
+	public Tloaddata() {
 	}
 
 	public Tmaster getTmaster() {
@@ -342,14 +345,5 @@ public class Ttcppacket implements Serializable {
 	public String getUri() {
 		return this.uri;
 	}
-
-	public void setUri(String uri) {
-		this.uri = uri;
-	}
-
-	public String getSflagNm() {
-		return this.rcode > 399 ? "실패" : this.rcode > 199 ? "성공" : "" ;
-	}
-
 
 }
