@@ -344,14 +344,33 @@ public class AqtDetail extends Dialog {
 		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).applyTo(compM3);
 //		compMessage.setLayoutData(new GridData(SWT.FILL , SWT.FILL, true, true));
 //		compMessage.setLayout(new GridLayout(3, false));
-		
+		/*
 		Label lblm = new Label(compM1, SWT.NONE);
 		lblm.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, SWT.CENTER, true, false));
-//		lblm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblm.setText("송신Data");
 		lblm.setFont( IAqtVar.font1) ;
+		*/
+		Button button = new Button(compM1, SWT.PUSH);
+	    button.setText("송신Data");
+	    button.setFont( IAqtVar.font1) ;
+	    button.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent event) {
+	        PopupList list = new PopupList(shell, 5);
+
+	        list.setItems(new String[]{"UTF-8","UTF-16","MS949","ISO-8859-1"});
+	        list.select(sv_select );
+	        Point pt = shell.getDisplay().getCursorLocation() ;
+
+	        String selected = list.open(new Rectangle(pt.x, pt.y - 40, 80, 30));
+	        if (selected == null) return ;
+	        sv_select = selected ;
+	        txtSendMsg.setText(tpacket.getSdataENCODE(selected));
+	      }
+	    });
+	    GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT,SWT.CENTER).applyTo(button);
+
 		
-		lblm = new Label(compM1, SWT.NONE);
+	    Label lblm = new Label(compM1, SWT.NONE);
 		lblm.setText("송신Data길이");
 //		lblm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblm.setFont( IAqtVar.font1);
@@ -419,7 +438,7 @@ public class AqtDetail extends Dialog {
 //		lblReceiveMsg.setText("수신Data");
 //		lblReceiveMsg.setFont( IAqtVar.font1) ;
 
-		Button button = new Button(compM3, SWT.PUSH);
+		 button = new Button(compM3, SWT.PUSH);
 	    button.setText("수신Data");
 	    button.setFont( IAqtVar.font1) ;
 	    button.addSelectionListener(new SelectionAdapter() {
@@ -474,7 +493,6 @@ public class AqtDetail extends Dialog {
 		SimpleDateFormat dformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S") ;
 		txtPkey.setText(tpacket.getPkey()+"");
 		txtSlen.setText(String.format("%,d",tpacket.getSlen()));
-		txtSendMsg.setText(tpacket.getSdata());
 		txtRlen.setText(String.format("%,d", tpacket.getRlen()));
 		if (AqtMain.tconfig.getEncval() != null )
 			sv_select = AqtMain.tconfig.getEncval() ;
@@ -483,6 +501,7 @@ public class AqtDetail extends Dialog {
 		else
 			sv_select = "UTF-8";
 		
+		txtSendMsg.setText(tpacket.getSdataENCODE(sv_select));
 		txtReceiveMsg.setText(tpacket.getRdataENCODE(sv_select));
 		txtCmpid.setText(tpacket.getCmpid()+"");
 		txtTestCode.setText(tpacket.getTcode()); 

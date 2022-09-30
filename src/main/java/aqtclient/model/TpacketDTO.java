@@ -245,6 +245,14 @@ public class TpacketDTO  {
 	public String getSdata() {
 		return this.sdata == null ? "" : new String(this.sdata) ;
 	}
+	public String getSdataENCODE(String enc)  {
+		try {
+			return this.sdata == null ? "" : new String(this.sdata, enc) ;
+		} catch (UnsupportedEncodingException e) {
+			return "";
+		}
+	}
+
 	public void setSdata(byte[] sdata) {
 		this.sdata = sdata ;
 	}

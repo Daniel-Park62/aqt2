@@ -207,7 +207,6 @@ public class AqtDetailComp2 extends Dialog {
 				return;
 			SimpleDateFormat dformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.S") ;
 			txtSlen.setText(String.format("%,9d",tr.getSlen()));
-			txtSendMsg.setText(tr.getSdata());
 			txtRlen.setText(String.format("%,9d",tr.getRlen()));
 			if (AqtMain.tconfig.getEncval() != null )
 				sv_select = AqtMain.tconfig.getEncval() ;
@@ -216,6 +215,7 @@ public class AqtDetailComp2 extends Dialog {
 			else
 				sv_select = "UTF-8";
 
+			txtSendMsg.setText(tr.getSdataENCODE(sv_select) );
 			txtReceiveMsg.setText(tr.getRdataENCODE(sv_select) );
 			txtPkey.setText(tr.getPkey()+"");
 			txtCmpid.setText(tr.getCmpid()+"");
@@ -359,14 +359,34 @@ public class AqtDetailComp2 extends Dialog {
 			glm.marginTop = 10 ;
 			
 			compMessage.setLayout(glm);
-			
+/*			
 			Label lblm = new Label(compMessage, SWT.NONE);
 			lblm.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 			lblm.setText("송신Data");
 			lblm.setFont( IAqtVar.font1) ;
-//			lblm.pack();	
+*/			
+			Button button = new Button(compMessage, SWT.PUSH);
+		    button.setText("송신Data");
+		    button.setFont( IAqtVar.font1) ;
+		    button.addSelectionListener(new SelectionAdapter() {
+		      public void widgetSelected(SelectionEvent event) {
+		        PopupList list = new PopupList(shell, 5);
+
+		        list.setItems(new String[]{"UTF-8","UTF-16","MS949","ISO-8859-1"});
+		        list.select(sv_select );
+		        Point pt = shell.getDisplay().getCursorLocation() ;
+
+		        String selected = list.open(new Rectangle(pt.x, pt.y - 40, 80, 30));
+		        if (selected == null) return ;
+		        sv_select  = selected ;
+		        txtSendMsg.setText(tr.getSdataENCODE(selected));
+
+		      }
+		    });
+		    GridDataFactory.fillDefaults().grab(true, false).align(SWT.LEFT,SWT.CENTER).applyTo(button);
+	
 			
-			lblm = new Label(compMessage, SWT.NONE);
+			Label lblm = new Label(compMessage, SWT.NONE);
 			lblm.setText("송신Data길이");
 			lblm.setFont( IAqtVar.font1);
 			
@@ -406,7 +426,7 @@ public class AqtDetailComp2 extends Dialog {
 //			lblReceiveMsg.setText("수신Data");
 //			lblReceiveMsg.setFont( IAqtVar.font1) ;
 			
-			Button button = new Button(compMessage, SWT.PUSH);
+			button = new Button(compMessage, SWT.PUSH);
 		    button.setText("수신Data");
 		    button.setFont( IAqtVar.font1) ;
 		    button.addSelectionListener(new SelectionAdapter() {
