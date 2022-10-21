@@ -572,30 +572,20 @@ public class AqtDetail extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		
 		try {
-			TpacketDTO t2 ;
-			Tloaddata tl = em.find(Tloaddata.class, tpacket.getCmpid() ) ;
-			if (tl != null) {
-				t2 = new TpacketDTO( tl ) ;
-			} else {
-				t2 = new TpacketDTO( em.createQuery("select t from Ttcppacket t  where t.p = :cmpid and t.oStime = :ostime and t.tmaster.lvl = '0'", Ttcppacket.class  )
-						.setParameter("ostime", tpacket.getOStime() ).setParameter("cmpid", tpacket.getCmpid() )
-						.getResultList().get(0) ) ;
-			}
+			TpacketDTO t2 = new TpacketDTO( tpacket.getTloaddata() );
+//			Tloaddata tl = em.find(Tloaddata.class, tpacket.getCmpid() ) ;
+//			if (tl != null) {
+//				t2 = new TpacketDTO( tl ) ;
+//			} else {
+//				t2 = new TpacketDTO( em.createQuery("select t from Ttcppacket t  where t.p = :cmpid and t.oStime = :ostime and t.tmaster.lvl = '0'", Ttcppacket.class  )
+//						.setParameter("ostime", tpacket.getOStime() ).setParameter("cmpid", tpacket.getCmpid() )
+//						.getResultList().get(0) ) ;
+//			}
 		
 			AqtDetailComp2 aqtDetail = new AqtDetailComp2(this.getParent(),
 					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
 					new TpacketDTO(tpacket)  , t2 ) ;
 
-/*			
-			long lkey = (long) em.createQuery("select t.pkey from Ttcppacket t  where t.cmpid = :cmpid and t.oStime = :ostime and t.tmaster.lvl = '0'",Long.class  )
-					.setParameter("ostime", tpacket.getOStime() ).setParameter("cmpid", tpacket.getCmpid() )
-					.getResultList().get(0) ;
-
-			AqtDetailComp aqtDetail = new AqtDetailComp(this.getParent(),
-					SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.CLOSE |SWT.CENTER,
-					tpacket.getPkey() , lkey
-			);
-*/
 			aqtDetail.open();
 		} catch (Exception e) {
 //			System.out.println(e.getMessage() + tpacket.getTmaster().getCmpCode() + " " + tpacket.getCmpid() );

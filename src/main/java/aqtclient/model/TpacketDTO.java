@@ -34,8 +34,8 @@ public class TpacketDTO  {
 	private int slen;
 	private String srcip;
 	private int srcport;
-	public Tmaster tmaster ;
-	public Tservice tservice ;
+	private Tmaster tmaster ;
+	private Tservice tservice ;
 	public TpacketDTO() {
 	}
 

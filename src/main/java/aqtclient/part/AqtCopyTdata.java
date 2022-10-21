@@ -1,5 +1,7 @@
 package aqtclient.part;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -8,6 +10,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -23,10 +26,12 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Tmaster;
+
 public class AqtCopyTdata extends Dialog {
 
-	private AqtTcodeCombo srcCode, dstCode;
-	
+	private AqtTcodeCombo  dstCode;
+	private CCombo srcCode ;
 	private Label lmsg ;
 	private Text txtUri, txtRcode , txtEtc ;
 	private Spinner spnum ;
@@ -83,15 +88,26 @@ public class AqtCopyTdata extends Dialog {
 		lbl = new Label(container,SWT.NONE) ;
 		lbl.setText(" 테스트ID(To)") ;
 		lbl.setFont(IAqtVar.font1b);
-		srcCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;
-//		srcCode.getControl().add(" % : ALL");
+		
+		// 2022.10 변경, tloaddata 에서 복제하는것으로
+		srcCode = new CCombo(container, SWT.READ_ONLY | SWT.BORDER) ;
+		srcCode.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		srcCode.setFont(IAqtVar.font1);
 
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(srcCode.getControl());
+		EntityManager em = AqtMain.emf.createEntityManager();
+		
+		List<Object> tlist = em.createNativeQuery("select tcode from tloaddata group by tcode").getResultList();
+		srcCode.setItems(	tlist.stream().toArray(String[]::new));
+
+		em.close();
+
+
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(srcCode);
 
 		dstCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(dstCode.getControl());
 		dstCode.findSelect(acode) ;
-		srcCode.findSelect(dstCode.getCmpCode() );
+		srcCode.select(0); 
 
 		Group gr1 = new Group(container, SWT.SHADOW_ETCHED_IN) ;
 		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).margins(10, 10).applyTo(gr1);
@@ -190,8 +206,8 @@ public class AqtCopyTdata extends Dialog {
 		try {
 			lmsg.setText("...작업중...");
 			em.getTransaction().begin();
-			String rval  = em.createNativeQuery("call sp_copytestdata(?,?,?,?)")
-					.setParameter(1, srcCode.getTcode())
+			String rval  = em.createNativeQuery("call sp_loaddata2(?,?,?,?)")
+					.setParameter(1, srcCode.getText())
 					.setParameter(2, dstCode.getTcode())
 					.setParameter(3, cond )
 					.setParameter(4, spnum.getSelection())

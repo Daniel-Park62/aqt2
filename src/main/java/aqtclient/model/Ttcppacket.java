@@ -88,12 +88,16 @@ public class Ttcppacket implements Serializable {
 
 	@ManyToOne(targetEntity = Tmaster.class)
 	@JoinColumn(name = "tcode", referencedColumnName = "code" ,updatable=false, insertable=false ) 
-	public Tmaster tmaster ;
+	private Tmaster tmaster ;
 
 	@ManyToOne(targetEntity = Tservice.class)
 	@JoinColumn(name = "uri", referencedColumnName = "svcid" ,updatable=false, insertable=false ) 
-	public Tservice tservice ;
+	private Tservice tservice ;
 
+	@ManyToOne
+	@JoinColumn(name="cmpid",updatable=false, insertable=false)
+	private Tloaddata tloaddata ;
+	
 	public Ttcppacket() {
 	}
 
@@ -101,6 +105,10 @@ public class Ttcppacket implements Serializable {
 		return tmaster;
 	}
 
+	public Tloaddata getTloaddata() {
+		return (tloaddata == null ? new Tloaddata() : tloaddata) ;
+	}
+	
 	public Tservice getTservice() {
 		return (tservice == null ? new Tservice() : tservice );
 	}

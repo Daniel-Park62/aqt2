@@ -367,12 +367,12 @@ public class AqtCompare {
 			public void widgetSelected(SelectionEvent e) {
 				int ix = tblDetailResult1.getSelectionIndex() ;
 				if (ix >= 0) {
-					txtSend1.setText(tempTrxList1.get(ix).getSdata());
-					txtReceive1.setText(tblDetailResult1.getItem(ix).getText(7));
+					txtSend1.setText(tempTrxList1.get(ix).getSdataENCODE(AqtMain.tconfig.getEncval()));
+					txtReceive1.setText(tblDetailResult1.getItem(ix).getText(9));
 					String suid = tblDetailResult1.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult2, suid)) >= 0) {
-						txtSend2.setText(tempTrxList2.get(ix).getSdata());
-						txtReceive2.setText(tblDetailResult2.getItem(ix).getText(7));
+						txtSend2.setText(tempTrxList2.get(ix).getSdataENCODE(AqtMain.tconfig.getEncval()));
+						txtReceive2.setText(tblDetailResult2.getItem(ix).getText(9));
 					}
 				}
 			}
@@ -423,12 +423,12 @@ public class AqtCompare {
 			public void widgetSelected(SelectionEvent e) {
 				int ix = tblDetailResult2.getSelectionIndex() ;
 				if (ix >=0) {
-					txtSend2.setText(tempTrxList2.get(ix).getSdata());
-					txtReceive2.setText(tempTrxList2.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+					txtSend2.setText(tempTrxList2.get(ix).getSdataENCODE(AqtMain.tconfig.getEncval()));
+					txtReceive2.setText(tblDetailResult2.getItem(ix).getText(9));
 					String suid = tblDetailResult2.getItem(ix).getText(0);
 					if ( (ix = findRow(tblDetailResult1, suid)) >= 0) {
-						txtSend1.setText(tempTrxList1.get(ix).getSdata());
-						txtReceive1.setText(tempTrxList1.get(ix).getRdataENCODE(AqtMain.tconfig.getEncval() ,250));
+						txtSend1.setText(tempTrxList1.get(ix).getSdataENCODE(AqtMain.tconfig.getEncval()));
+						txtReceive1.setText(tblDetailResult1.getItem(ix).getText(9));
 					}
 
 				}

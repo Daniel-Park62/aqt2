@@ -12,6 +12,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.ICellModifier;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -34,12 +35,15 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Thostmap;
@@ -65,7 +69,7 @@ public class AqtMapToHost extends Dialog {
     	newShell.setBackground(SWTResourceManager.getColor(215, 228, 242));
         super.configureShell(newShell);
         
-        newShell.setText("테스트대상 호스트 정의");
+        newShell.setText(acode + " : 테스트대상 호스트 정의 ");
     }
 
     @Override
@@ -120,6 +124,7 @@ public class AqtMapToHost extends Dialog {
 		lbl = new CLabel(compt1,SWT.SHADOW_OUT) ;
 		lbl.setText(cols[2]) ;
 		lbl.setFont(IAqtVar.font1b);
+		lbl.setToolTipText("ctrl-g : 변경IP 채우기");
 //		lbl.setSize(100, 20);
 		lbl.setAlignment(SWT.CENTER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).hint(colwd[2], 30).grab(true, true).applyTo(lbl);
@@ -138,7 +143,14 @@ public class AqtMapToHost extends Dialog {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int i = tbl.getSelectionIndex() ;
-				if (i+1 == tbl.getItemCount() && e.keyCode == SWT.ARROW_DOWN ) {
+				String lshost = tbl.getItem(i).getText(2) ;
+				
+				if (e.stateMask == SWT.CTRL && e.keyCode == 'g' && ! lshost.isBlank() ) {
+					for(int ii = 0; ii < tbl.getItemCount(); ii++) {
+						TableItem item = tbl.getItem(ii) ;
+						if (item.getText(2).isBlank()) item.setText(2, lshost);
+					}
+				} else	if (i+1 == tbl.getItemCount() && e.keyCode == SWT.ARROW_DOWN ) {
 					Thostmap t = new Thostmap() ;
 					t.setTcode(acode);
 					em.persist(t);
@@ -147,7 +159,7 @@ public class AqtMapToHost extends Dialog {
 				}
 			}
 		});
-		
+	    
 	    Menu popupMenu = tbl.getMenu() ;
 
 	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
@@ -231,6 +243,7 @@ public class AqtMapToHost extends Dialog {
 	    		};
 	    CELL_EDITORS[1].setValidator( getValidateNum() );
 	    CELL_EDITORS[3].setValidator( getValidateNum() );
+
 //	    for (CellEditor cellEditor : CELL_EDITORS) {
 //	    	cellEditor = new TextCellEditor(tbl, SWT.CENTER );
 //		}
@@ -259,6 +272,7 @@ public class AqtMapToHost extends Dialog {
 			t.setTcode(acode);
 			t.setThost(row[0].toString());
 			t.setTport(Integer.parseInt(row[1].toString()));
+			t.setTport2(Integer.parseInt(row[1].toString()));
 			em.persist(t);
 			thostList.add(t) ;
 		}

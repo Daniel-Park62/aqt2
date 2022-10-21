@@ -7,6 +7,9 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,10 +94,11 @@ public class AqtMain extends ApplicationWindow {
 //		addToolBar(SWT.FLAT | SWT.COLOR_WHITE);
 //		addMenuBar();
         emf = getCreateEmf();
-
+        LocalDateTime now = LocalDateTime.now();
+        
         em = AqtMain.emf.createEntityManager() ;
         em.setFlushMode(FlushModeType.AUTO);
-		System.out.println("AQT2 Started !!");
+		System.out.println(now.format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss"))+ " AQT2 Started !!");
 		aqtmain = this ;
 		addStatusLine();
 //		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;

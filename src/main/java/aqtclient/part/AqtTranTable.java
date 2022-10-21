@@ -103,7 +103,7 @@ public class AqtTranTable extends AqtTableView {
 					int cnt = 0;
 					for ( TableItem item : tbl.getSelection() ) {
 						Ttcppacket tr = (Ttcppacket)item.getData() ;
-						Tmaster tmst = tr.tmaster ;
+						Tmaster tmst = tr.getTmaster() ;
 	
 						if ( tmst.getEndDate() != null ) {
 							continue ;
@@ -265,6 +265,7 @@ public class AqtTranTable extends AqtTableView {
 			}
 		});
 		tvc = createTableViewerColumn("소요시간", 70, 3);
+		tvc.getColumn().setAlignment(SWT.RIGHT);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -273,7 +274,35 @@ public class AqtTranTable extends AqtTableView {
 				return String.format("%.3f", tr.getSvctime());
 			}
 		});
-		tvc = createTableViewerColumn("서비스(URI)", 200, 5);
+		tvc = createTableViewerColumn("원소요시간", 80, 3);
+		tvc.getColumn().setAlignment(SWT.RIGHT);
+
+		tvc.setLabelProvider(new ColumnLabelProvider() {
+			public String getText(Object element) {
+				if (element == null)
+					return super.getText(element);
+
+				Ttcppacket tr = (Ttcppacket) element;
+				return String.format("%.3f", tr.getTloaddata().getSvctime());
+			}
+			@Override
+			public Color getForeground(Object element) {
+				// TODO Auto-generated method stub
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_RED);
+			}
+		});
+		tvc = createTableViewerColumn("수신Ip", 150, 4);
+		tvc.getColumn().setToolTipText("칼럼명:DSTIP, DSTPORT") ;
+		tvc.setLabelProvider(new ColumnLabelProvider() {
+			public String getText(Object element) {
+				if (element == null)
+					return super.getText(element);
+				Ttcppacket tr = (Ttcppacket) element;
+				return tr.getDstip()+":"+tr.getDstport() ;
+			}
+		});
+
+		tvc = createTableViewerColumn("서비스(URI)", 100, 5);
 		tvc.setLabelProvider(new ColumnLabelProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -282,7 +311,7 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getUri();
 			}
 		});
-		tvc = createTableViewerColumn("응답코드", 70, 6);
+		tvc = createTableViewerColumn("응답코드", 60, 6);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -291,7 +320,8 @@ public class AqtTranTable extends AqtTableView {
 				return tr.getRcode() + ""  ;
 			}
 		});
-		tvc = createTableViewerColumn("수신크기", 70, 7);
+		tvc = createTableViewerColumn("수신크기", 60, 7);
+		tvc.getColumn().setAlignment(SWT.RIGHT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)
@@ -301,7 +331,7 @@ public class AqtTranTable extends AqtTableView {
 			}
 		});
 
-		tvc = createTableViewerColumn(" 수신데이터", 500, 7);
+		tvc = createTableViewerColumn(" 수신데이터", 300, 7);
 		tvc.getColumn().setAlignment(SWT.LEFT);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
@@ -311,8 +341,27 @@ public class AqtTranTable extends AqtTableView {
 				if (tr.getErrinfo().length() > 0 ) 
 					return tr.getErrinfo() ;
 				else
-					return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdataENCODE(AqtMain.tconfig.getEncval(),200);
+					return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdataENCODE(AqtMain.tconfig.getEncval(),250);
 			}
+		});
+		tvc = createTableViewerColumn(" 원_수신데이터", 300, 7);
+		tvc.getColumn().setAlignment(SWT.LEFT);
+		tvc.setLabelProvider(new myColumnProvider() {
+			public String getText(Object element) {
+				if (element == null)
+					return super.getText(element);
+				Ttcppacket tr = (Ttcppacket) element;
+				if (tr.getTloaddata().getErrinfo().length() > 0 ) 
+					return tr.getTloaddata().getErrinfo() ;
+				else
+					return AqtMain.tconfig.getProto() != '0' ? tr.getTloaddata().getRhead() : tr.getTloaddata().getRdataENCODE(AqtMain.tconfig.getEncval(),250);
+			}
+			@Override
+			public Color getForeground(Object element) {
+				// TODO Auto-generated method stub
+				return SWTResourceManager.getColor(SWT.COLOR_DARK_RED);
+			}
+
 		});
 		if (AqtMain.tconfig.getProto() != '0') {
 			tvc = createTableViewerColumn("Method", 70, 8);
@@ -326,7 +375,7 @@ public class AqtTranTable extends AqtTableView {
 			});
 		}
 
-		tvc = createTableViewerColumn("테스트id", 80,9);
+		tvc = createTableViewerColumn("테스트Id", 80,9);
 		tvc.setLabelProvider(new myColumnProvider() {
 			public String getText(Object element) {
 				if (element == null)

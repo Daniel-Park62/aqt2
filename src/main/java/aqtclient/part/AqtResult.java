@@ -325,8 +325,8 @@ public class AqtResult {
 			public void widgetSelected(SelectionEvent e) {
 				int ix = tblDetailResult1.getSelectionIndex() ;
 				if (ix >= 0) {
-					txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdata());
-					txtReceive1.setText(tblDetailResult1.getItem(tblDetailResult1.getSelectionIndex()).getText(7) );
+					txtSend1.setText(tempTrxList1.get(tblDetailResult1.getSelectionIndex()).getSdataENCODE(AqtMain.tconfig.getEncval()));
+					txtReceive1.setText(tblDetailResult1.getItem(tblDetailResult1.getSelectionIndex()).getText(9) );
 				}
 			}
 		});
