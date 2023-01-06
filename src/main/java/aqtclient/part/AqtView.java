@@ -115,7 +115,7 @@ public class AqtView {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(textEtc);
 		textEtc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textEtc.setFont(IAqtVar.font1);
-		textEtc.setText("");
+		textEtc.setText(AqtMain.aqtmain.getCond("aqtview"));
 		textEtc.addTraverseListener((final TraverseEvent event) -> {
 		      if (event.detail == SWT.TRAVERSE_RETURN)	{  refreshScreen(); }
 		  });
@@ -371,6 +371,7 @@ public class AqtView {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		String sEtc = "";
+		AqtMain.aqtmain.setCond("aqtview", textEtc.getText());
 		if (! textEtc.getText().isEmpty()  )  sEtc = " and (" + textEtc.getText().trim() + ")  " ;
 		List<ChartData> chartData = null ; // = new ArrayList<ChartData>() ;
 		try {

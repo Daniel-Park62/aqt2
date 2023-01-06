@@ -155,7 +155,7 @@ public class AqtSearch {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(7, 1).applyTo(textEtc);
 		textEtc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textEtc.setFont(IAqtVar.font1);
-		textEtc.setText(AqtMain.aqtmain.getCond() );
+		textEtc.setText(AqtMain.aqtmain.getCond("aqtsearch1") );
 		textEtc.addTraverseListener((final TraverseEvent event) -> {
 		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
@@ -431,7 +431,7 @@ public class AqtSearch {
 			qstr.append(" and t.sdata rlike '" + textSdata.getText().trim() + "'" );
 		if (! textEtc.getText().isEmpty()  ) {
 			qstr.append(" and (" + textEtc.getText().trim() + ")  " );
-			AqtMain.aqtmain.setCond(textEtc.getText());
+			AqtMain.aqtmain.setCond("aqtsearch1",textEtc.getText());
 		}
 
 		if (itotal <= 0) {

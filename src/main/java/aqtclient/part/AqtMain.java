@@ -86,8 +86,9 @@ public class AqtMain extends ApplicationWindow {
 	TableViewer tv ;
 	/**
 	 * Create the application window.
+	 * @throws UnknownHostException 
 	 */
-	public AqtMain() {
+	public AqtMain() throws Exception {
 		
 		super(null);
 //		createActions();
@@ -98,7 +99,9 @@ public class AqtMain extends ApplicationWindow {
         
         em = AqtMain.emf.createEntityManager() ;
         em.setFlushMode(FlushModeType.AUTO);
+		gip = InetAddress.getLocalHost().getHostAddress() ;
 		System.out.println(now.format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss"))+ " AQT2 Started !!");
+//		System.out.println("IP:"+gip);
 		aqtmain = this ;
 		addStatusLine();
 //		tconfig = (Tconfig) em.createQuery("select m from Tconfig m "  ).getSingleResult() ;
@@ -111,21 +114,14 @@ public class AqtMain extends ApplicationWindow {
 			em.persist(tconfig);
 			em.getTransaction().commit();
 		}
-		
-		try {
-			gip = InetAddress.getLocalHost().getHostAddress();
-//			System.out.println(gip);
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+
+
 	}
-	public void setCond(String cond) {
-		gsvl.put(this.gip,cond) ;
+	public void setCond(String key, String cond) {
+		gsvl.put(key,cond) ;
 	}
-	public String getCond() {
-		String val = gsvl.get(this.gip) ;
+	public String getCond(String key) {
+		String val = gsvl.get(key) ;
 		return val == null ? "" : val ;
 	}
 	public static EntityManagerFactory getCreateEmf() {
@@ -270,7 +266,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.6.2206");
+		newShell.setText("Application Quarity Test v2.6.2210");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {
