@@ -97,7 +97,7 @@ public class AqtMain extends ApplicationWindow {
         emf = getCreateEmf();
         LocalDateTime now = LocalDateTime.now();
         
-        em = AqtMain.emf.createEntityManager() ;
+        em = emf.createEntityManager() ;
         em.setFlushMode(FlushModeType.AUTO);
 		gip = InetAddress.getLocalHost().getHostAddress() ;
 		System.out.println(now.format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss"))+ " AQT2 Started !!");
@@ -115,7 +115,6 @@ public class AqtMain extends ApplicationWindow {
 			em.getTransaction().commit();
 		}
 
-
 	}
 	public void setCond(String key, String cond) {
 		gsvl.put(key,cond) ;
@@ -127,14 +126,18 @@ public class AqtMain extends ApplicationWindow {
 	public static EntityManagerFactory getCreateEmf() {
 		String dbip = System.getProperty("AQTDB") ;  // 주소:port
         if (dbip == null) dbip = System.getenv("AQTDB") ;
-        if (dbip == null) dbip = "localhost:3306" ;
-        String sEtc = System.getProperty("AQTOPT") ;
+        if (dbip == null || dbip.isEmpty()) dbip = "localhost:3306" ;
+        String sUser = System.getenv("AQTUSER") ;
+        String sPass = System.getenv("AQTPASS") ;
+        String sName = System.getenv("AQTDBNAME") ;
         Map<String, String> properties = new HashMap<String, String>();
-        properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip + (sEtc != null ? "/" + sEtc  :"/aqtdb2?autoReconnect=true") );
+        properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip 
+        		+ "/" + (sName != null ? sName : "aqtdb2") + "?autoReconnect=true" );
  
         properties.put("javax.persistence.jdbc.driver","org.mariadb.jdbc.Driver") ;
-        
-//        emf = Persistence.createEntityManagerFactory("aqtclient", properties) ;
+        if (sUser != null) properties.put("javax.persistence.jdbc.user",sUser) ;
+        if (sPass != null) properties.put("javax.persistence.jdbc.password",sPass) ;
+
         return Persistence.createEntityManagerFactory("aqtclient", properties) ;
 	}
 
@@ -145,7 +148,6 @@ public class AqtMain extends ApplicationWindow {
 		em.getTransaction().begin();
 		tconfig.setTcode(tcode) ;
 		em.getTransaction().commit();
-
 	}
 	/**
 	 * Create contents of the application window.
@@ -266,7 +268,7 @@ public class AqtMain extends ApplicationWindow {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Application Quarity Test v2.6.2210");
+		newShell.setText("Application Quarity Test v2.6.2210 [ " + tconfig.getPjtnm() + " ]");
 //		newShell.setImage(AqtMain.getMyimage("aqt.ico"));
 		newShell.addListener(SWT.Close, new Listener() {
 		      public void handleEvent(Event event) {

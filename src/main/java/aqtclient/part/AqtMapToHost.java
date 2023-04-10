@@ -124,7 +124,7 @@ public class AqtMapToHost extends Dialog {
 		lbl = new CLabel(compt1,SWT.SHADOW_OUT) ;
 		lbl.setText(cols[2]) ;
 		lbl.setFont(IAqtVar.font1b);
-		lbl.setToolTipText("ctrl-g : 변경IP 채우기");
+		lbl.setToolTipText("Ctrl+G : 변경IP 채우기");
 //		lbl.setSize(100, 20);
 		lbl.setAlignment(SWT.CENTER);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).hint(colwd[2], 30).grab(true, true).applyTo(lbl);
@@ -143,12 +143,18 @@ public class AqtMapToHost extends Dialog {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				int i = tbl.getSelectionIndex() ;
+				if (i < 0)  return ;
 				String lshost = tbl.getItem(i).getText(2) ;
-				
-				if (e.stateMask == SWT.CTRL && e.keyCode == 'g' && ! lshost.isBlank() ) {
+				if (! lshost.isBlank() && e.stateMask == SWT.CTRL && e.keyCode == 'g'   ) {
 					for(int ii = 0; ii < tbl.getItemCount(); ii++) {
+
 						TableItem item = tbl.getItem(ii) ;
-						if (item.getText(2).isBlank()) item.setText(2, lshost);
+						Thostmap t = (Thostmap) item.getData() ;
+						if (item.getText(2).isBlank()) {
+							t.setThost2(lshost) ;
+							item.setData(t) ;
+						}
+						tv.refresh();
 					}
 				} else	if (i+1 == tbl.getItemCount() && e.keyCode == SWT.ARROW_DOWN ) {
 					Thostmap t = new Thostmap() ;
@@ -326,7 +332,7 @@ public class AqtMapToHost extends Dialog {
 		
 		@Override
 		public void modify(Object element, String property, Object value) {
-			if (isBlank(value)) return ; 
+//			if (isBlank(value)) return ; 
 
 			if (element instanceof Item)
 				element = ((Item) element).getData();

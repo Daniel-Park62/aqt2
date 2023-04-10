@@ -459,6 +459,7 @@ public class AqtRegSvc {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				int i = tblList.getSelectionIndex() ;
+				if (i < 0)  i = 0;
 				Tservice t = new Tservice() ;
 				t.setSvceng("new");
 				t.setNew(true);

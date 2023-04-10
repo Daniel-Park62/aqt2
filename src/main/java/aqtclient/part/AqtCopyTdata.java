@@ -100,14 +100,14 @@ public class AqtCopyTdata extends Dialog {
 		srcCode.setItems(	tlist.stream().toArray(String[]::new));
 
 		em.close();
-
+		srcCode.select(tlist.indexOf(acode)) ;
 
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(srcCode);
 
 		dstCode = new AqtTcodeCombo(container, SWT.READ_ONLY) ;
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(dstCode.getControl());
 		dstCode.findSelect(acode) ;
-		srcCode.select(0); 
+//		srcCode.select(0); 
 
 		Group gr1 = new Group(container, SWT.SHADOW_ETCHED_IN) ;
 		GridLayoutFactory.fillDefaults().numColumns(3).equalWidth(false).margins(10, 10).applyTo(gr1);
