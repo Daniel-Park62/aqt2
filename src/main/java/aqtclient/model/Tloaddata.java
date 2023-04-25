@@ -31,8 +31,6 @@ public class Tloaddata implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long pkey;
 
-	private long cmpid;
-
 	private long ackno;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -114,9 +112,6 @@ public class Tloaddata implements Serializable {
 
 	public char getSflag() {
 		return sflag ;
-	}
-	public long getCmpid() {
-		return cmpid;
 	}
 
 	public void setPkey(int pkey) {

@@ -124,12 +124,17 @@ public class AqtMain extends ApplicationWindow {
 		return val == null ? "" : val ;
 	}
 	public static EntityManagerFactory getCreateEmf() {
-		String dbip = System.getProperty("AQTDB") ;  // 주소:port
-        if (dbip == null) dbip = System.getenv("AQTDB") ;
-        if (dbip == null || dbip.isEmpty()) dbip = "localhost:3306" ;
-        String sUser = System.getenv("AQTUSER") ;
-        String sPass = System.getenv("AQTPASS") ;
+		String dbip = System.getProperty("AQTDB");  // 주소:Port
+        if (dbip == null) {
+        	dbip = System.getenv("AQTDBIP") ;
+        	if (dbip == null || dbip.isEmpty()) dbip = "localhost" ;
+        	if (System.getenv("AQTDBPORT") != null) dbip += ":" + System.getenv("AQTDBPORT");  
+        }
+        String sUser = System.getenv("AQTDBUSER") ;
+        String sPass = System.getenv("AQTDBPASS") ;
         String sName = System.getenv("AQTDBNAME") ;
+        
+        System.out.println(dbip);
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip 
         		+ "/" + (sName != null ? sName : "aqtdb2") + "?autoReconnect=true" );

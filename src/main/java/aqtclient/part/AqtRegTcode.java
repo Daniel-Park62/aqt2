@@ -557,10 +557,10 @@ public class AqtRegTcode {
 			@Override
 			public void modify(Object element, String property, Object value) {
 				// TODO Auto-generated method stub
-				if (value == null)
-					return;
-				if (value.toString().isEmpty())
-					return;
+//				if (value == null)
+//					return;
+//				if (value.toString().isEmpty())
+//					return;
 
 				if (element instanceof Item)
 					element = ((Item) element).getData();

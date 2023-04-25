@@ -77,7 +77,7 @@ public class TpacketDTO  {
 		tcode = tp.getTcode() ;
 		ackno = tp.getAckno() ;
 		cdate = tp.getCdate() ;
-		cmpid = tp.getCmpid() ;
+		cmpid = tp.getPkey() ;
 		dstip = tp.getDstip() ;
 		dstport = tp.getDstport() ;
 		elapsed = tp.getElapsed() ;

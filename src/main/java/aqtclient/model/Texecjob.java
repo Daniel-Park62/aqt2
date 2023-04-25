@@ -33,6 +33,8 @@ public class Texecjob implements Cloneable {
 
 	private String etc = "";
 
+	private String limits = "";
+
 	private int exectype = 0;
 
 	@Column(name="in_file")
@@ -249,6 +251,14 @@ public class Texecjob implements Cloneable {
 
 	public void setTuser(String tuser) {
 		this.tuser = tuser;
+	}
+
+	public String getLimits() {
+		return limits;
+	}
+
+	public void setLimits(String limits) {
+		this.limits = limits;
 	}
 
 }
