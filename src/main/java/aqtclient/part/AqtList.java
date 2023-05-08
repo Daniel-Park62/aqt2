@@ -310,12 +310,12 @@ public class AqtList  {
 				"select uuid_short()  pkey, a.tcode, a.svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " +
 				" s.cumcnt \n" + 
 				"FROM   (" + 
-				"select t.tcode, t.uri svcid,  dstip, dstport, count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
+				"select t.tcode, t.uri svcid,  appid, count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
 				"from   Ttcppacket t " + 
 				"WHERE t.tcode = ? " + 
 				"group by t.tcode, t.uri ) a " + 
-				"left outer join tservice s on (a.svcid = s.svcid and uf_getapp(dstip,dstport) = s.appid) order by a.svcid " , Vtrxdetail.class)
+				"left outer join tservice s on (a.svcid = s.svcid and a.appid = s.appid) order by a.svcid " , Vtrxdetail.class)
 				.setParameter(1, tempVtrxList.get(tblTestList.getSelectionIndex()).getCode())
 			.getResultList() ;
 

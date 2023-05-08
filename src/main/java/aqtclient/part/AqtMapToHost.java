@@ -1,6 +1,7 @@
 package aqtclient.part;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -46,6 +47,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
+import aqtclient.model.Texecjob;
 import aqtclient.model.Thostmap;
 import aqtclient.model.Tmaster;
 
@@ -156,33 +158,33 @@ public class AqtMapToHost extends Dialog {
 						}
 						tv.refresh();
 					}
-				} else	if (i+1 == tbl.getItemCount() && e.keyCode == SWT.ARROW_DOWN ) {
-					Thostmap t = new Thostmap() ;
-					t.setTcode(acode);
-					em.persist(t);
-					thostList.add(t) ;
-					tv.refresh();
+//				} else	if (i+1 == tbl.getItemCount() && e.keyCode == SWT.ARROW_DOWN ) {
+//					Thostmap t = new Thostmap() ;
+//					t.setTcode(acode);
+//					em.persist(t);
+//					thostList.add(t) ;
+//					tv.refresh();
 				}
 			}
 		});
 	    
 	    Menu popupMenu = tbl.getMenu() ;
 
-	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
-	    addsvc.setText("추가");
-	    addsvc.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				
-				Thostmap t = new Thostmap() ;
-				t.setTcode(acode);
-				
-				em.persist(t);
-				thostList.add(t) ;
-				tv.refresh();
-				tbl.select(tbl.getItemCount()-1);
-			}
-		});
+//	    MenuItem addsvc = new MenuItem(popupMenu, SWT.NONE);
+//	    addsvc.setText("추가");
+//	    addsvc.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent arg0) {
+//				
+//				Thostmap t = new Thostmap() ;
+//				t.setTcode(acode);
+//				
+//				em.persist(t);
+//				thostList.add(t) ;
+//				tv.refresh();
+//				tbl.select(tbl.getItemCount()-1);
+//			}
+//		});
 	    
 	    MenuItem delsvc = new MenuItem(popupMenu, SWT.NONE);
 	    delsvc.setText("삭제");
@@ -205,6 +207,30 @@ public class AqtMapToHost extends Dialog {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
 				getAsisHost();
+			}
+		});
+
+	    MenuItem memptySet = new MenuItem(popupMenu, SWT.NONE);
+	    memptySet.setText("나머지채우기");
+	    memptySet.setEnabled(false);
+	    memptySet.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				int i = tbl.getSelectionIndex() ;
+				if (i < 0)  return ;
+				String lshost = tbl.getItem(i).getText(2) ;
+				if (! lshost.isBlank() ) {
+					for(int ii = 0; ii < tbl.getItemCount(); ii++) {
+
+						TableItem item = tbl.getItem(ii) ;
+						Thostmap t = (Thostmap) item.getData() ;
+						if (item.getText(2).isBlank()) {
+							t.setThost2(lshost) ;
+							item.setData(t) ;
+						}
+						tv.refresh();
+					}
+				}
 			}
 		});
 
@@ -242,12 +268,12 @@ public class AqtMapToHost extends Dialog {
 //	    tv.setLabelProvider(myLabelProvider) ;
 	    tv.setColumnProperties(cols);
 	    CellEditor[] CELL_EDITORS = new CellEditor[] {
-	    		new TextCellEditor(tbl, SWT.CENTER ),
-	    		new TextCellEditor(tbl, SWT.CENTER ),
+	    		null,
+	    		null,
 	    		new TextCellEditor(tbl, SWT.CENTER ),
 	    		new TextCellEditor(tbl, SWT.CENTER )
 	    		};
-	    CELL_EDITORS[1].setValidator( getValidateNum() );
+//	    CELL_EDITORS[1].setValidator( getValidateNum() );
 	    CELL_EDITORS[3].setValidator( getValidateNum() );
 
 //	    for (CellEditor cellEditor : CELL_EDITORS) {
@@ -258,6 +284,16 @@ public class AqtMapToHost extends Dialog {
 	    thostList = queryData();
 	    tv.setInput(thostList);
 	    
+	    tbl.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				memptySet.setEnabled(false) ;
+				int i = tbl.getSelectionIndex() ;
+				if (i < 0)  return ;
+				String lshost = tbl.getItem(i).getText(2) ;
+				if (! lshost.isBlank() ) memptySet.setEnabled(true);
+			}
+		});
 	    GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(tbl);
 	    
 		return container ;
@@ -269,16 +305,22 @@ public class AqtMapToHost extends Dialog {
 	}
 	private void getAsisHost() {
 		
-		List<Object[]> asisList = em.createNativeQuery("SELECT dstip, dstport FROM ttcppacket t WHERE tcode = ?" + 
+		List<Object[]> asisList = em.createNativeQuery("SELECT dstip, dstport, p.thost2, p.tport2 FROM ttcppacket t " +
+								" LEFT JOIN thostmap p ON (p.tcode != t.tcode AND dstip  = thost AND dstport = tport)" +
+								" WHERE t.tcode = ?" + 
 								" AND NOT EXISTS (SELECT 1 FROM thostmap h WHERE h.tcode = t.tcode " +
-								" AND dstip = thost AND ( dstport = tport OR tport = 0)) group by dstip, dstport" )
+								"      AND dstip = thost AND ( dstport = tport OR tport = 0)) group by dstip, dstport" )
 				.setParameter(1, acode).getResultList() ;
 		for( Object[] row : asisList) {
 			Thostmap t = new Thostmap() ;
 			t.setTcode(acode);
 			t.setThost(row[0].toString());
+			if (row[2] != null )  t.setThost2(row[2].toString());
 			t.setTport(Integer.parseInt(row[1].toString()));
-			t.setTport2(Integer.parseInt(row[1].toString()));
+			if (row[3] != null ) 
+				t.setTport2(Integer.parseInt(row[3].toString()));
+			else
+				t.setTport2(Integer.parseInt(row[1].toString()));
 			em.persist(t);
 			thostList.add(t) ;
 		}

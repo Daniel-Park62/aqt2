@@ -283,7 +283,7 @@ public class AqtExec  {
 						texecjob.setJobkind(9);
 						texecjob.setStartDt(null);
 						texecjob.setEndDt(null);
-						texecjob.setMsg(null);
+						texecjob.setMsg("");
 						texecjob.setReqstartDt(new Date());
 					} catch (CloneNotSupportedException  e) {
 						// TODO: handle exception

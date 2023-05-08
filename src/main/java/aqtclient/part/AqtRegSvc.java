@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -30,6 +31,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.PopupList;
@@ -447,7 +449,7 @@ public class AqtRegSvc {
 
 	private String[] getAppList() {
 		return em.createQuery("select a.appid from Tapplication a ", String.class)
-				.getResultList().stream().toArray(size -> new String[size]);
+				.getResultList().stream().toArray(String[]::new);
 	}
 
 	private void createPop(Composite parent) {
@@ -576,8 +578,14 @@ public class AqtRegSvc {
     	{
     		return ;
     	}
+    	
+    	InputDialog dlgi = new InputDialog(Display.getCurrent().getActiveShell(),
+                "Encoding 선택", "Enter MS949 or UTF-8...", AqtMain.tconfig.getEncval() ,null);
+        if (dlgi.open() == Window.CANCEL) {
+        	return ;
+        }
     	FileInputStream fis = new FileInputStream(fileName);
-    	InputStreamReader isr = new InputStreamReader(fis, "MS949");
+    	InputStreamReader isr = new InputStreamReader(fis, dlgi.getValue());
     	try (BufferedReader br = new BufferedReader(isr)) {
     	    String line;
     	    tsvcList.clear();
@@ -607,7 +615,7 @@ public class AqtRegSvc {
     	        		s.setManager(v[i]);
     	        		continue ;
     	        	case 6:
-    	        		s.setSvcid(v[i]);
+    	        		s.setSvckind(v[i]);
     	        		continue ;
     	        	}
     	        }
@@ -615,6 +623,7 @@ public class AqtRegSvc {
     	        s = em.merge(s);
     	        tsvcList.add(s) ;
     	    }
+    	    AqtMain.aqtmain.setStatus(String.format(">> Import 건수 %,d 건" ,tsvcList.size() ) );
     	    tblViewerList.setInput(tsvcList);
     	    
 		} catch (IOException e) {

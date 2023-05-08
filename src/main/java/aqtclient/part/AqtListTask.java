@@ -341,7 +341,7 @@ public class AqtListTask  {
 				"FROM   (" + 
 				"select  t.uri svcid, lvl, svckor, count(1) tcnt, avg(t.svctime) avgt, sum(case when t.sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when t.sflag = '2' then 1 else 0 end) fcnt\r\n" + 
-				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid and uf_getapp(dstip,dstport) = s.appid) " + 
+				"from   Ttcppacket t join tmaster m on (t.tcode = m.code) join tservice s on (t.uri = s.svcid and t.appid = s.appid) " + 
 				"WHERE  " + acond +  
 				" group by t.uri, lvl) a "   )
         		.getResultList() ;

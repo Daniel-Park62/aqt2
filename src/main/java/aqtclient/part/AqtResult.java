@@ -403,12 +403,12 @@ public class AqtResult {
 				"select uuid_short() pkey, a.tcode, ifnull(a.svcid,'총계') svcid, ifnull(s.svckor,'') svckor, a.tcnt, a.avgt ,a.scnt ,a.fcnt, " + 
 				" IF( ISNULL(a.svcid)  ,SUM(CUMCNT) OVER (PARTITION BY TCODE), s.cumcnt) cumcnt " + 
 				"from   (\r\n" + 
-				"select t.tcode, t.uri as svcid, dstip,dstport, count(1) tcnt, avg(t.svctime) avgt, sum(case when sflag = '1' then 1 else 0 end) scnt\r\n" + 
+				"select t.tcode, t.uri as svcid, appid, count(1) tcnt, avg(t.svctime) avgt, sum(case when sflag = '1' then 1 else 0 end) scnt\r\n" + 
 				", sum(case when sflag = '2' then 1 else 0 end) fcnt\r\n" + 
  				"from   Ttcppacket t where t.tcode = '" + tcode +"' " + sfail + ssvc + smsg +
 				" group by t.tcode, t.uri WITH ROLLUP HAVING tcode is NOT null \n" + 
 				") as a \r\n" + 
-				"left outer join Tservice s on (a.svcid = s.svcid and uf_getapp(dstip,dstport) = s.appid) order by a.svcid" ;
+				"left outer join Tservice s on (a.svcid = s.svcid and a.appid = s.appid) order by a.svcid" ;
 				
 		Query qTrxList = em.createNativeQuery(qstr, Vtrxdetail.class);
 		

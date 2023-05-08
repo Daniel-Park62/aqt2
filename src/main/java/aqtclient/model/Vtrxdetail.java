@@ -24,6 +24,8 @@ public class Vtrxdetail implements Serializable {
 
 	private long scnt;
 
+	private String appid;
+
 	private String scrno;
 
 	private String svcid;
@@ -119,6 +121,10 @@ public class Vtrxdetail implements Serializable {
 
 	public void setTcode(String tcode) {
 		this.tcode = tcode;
+	}
+
+	public String getAppid() {
+		return appid;
 	}
 
 }

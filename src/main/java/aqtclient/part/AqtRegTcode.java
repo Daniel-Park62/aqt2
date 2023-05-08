@@ -273,6 +273,7 @@ public class AqtRegTcode {
 
 				tvList.refresh();
 				tvList.setChecked(t, true);
+				AqtMain.aqtmain.setStatus("'Z'로 시작하는 코드는 테스트시 무작위 순으로 진행됩니다. (그 외는 원래 발생순)");
 			}
 		});
 
@@ -567,7 +568,7 @@ public class AqtRegTcode {
 
 				Tmaster m = (Tmaster) element;
 				if (property.equals(cols1[0]))
-					m.setCode(value.toString());
+					m.setCode(value.toString().toUpperCase());
 				else if (property.equals(cols1[1]))
 					m.setDesc1(value.toString());
 				else if (property.equals(cols1[2]))

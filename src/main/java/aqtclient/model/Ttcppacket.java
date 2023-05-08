@@ -30,6 +30,8 @@ public class Ttcppacket implements Serializable {
 
 	private long cmpid;
 
+	private String appid;
+
 	private long ackno;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -365,6 +367,10 @@ public class Ttcppacket implements Serializable {
 
 	public String getSflagNm() {
 		return this.rcode > 399 ? "실패" : this.rcode > 199 ? "성공" : "" ;
+	}
+
+	public String getAppid() {
+		return appid;
 	}
 
 

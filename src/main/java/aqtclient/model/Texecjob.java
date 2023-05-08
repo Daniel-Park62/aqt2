@@ -41,7 +41,7 @@ public class Texecjob implements Cloneable {
 	private String infile = "";
 
 	@Lob
-	private String msg;
+	private String msg = "";
 
 	private String outlogdir = "";
 

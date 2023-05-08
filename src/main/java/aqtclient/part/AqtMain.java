@@ -180,6 +180,8 @@ public class AqtMain extends ApplicationWindow {
 		
 		new AqtStatus(container, SWT.NONE);
 		container.layout();
+//		aqtmain.getStatusLineManager().getControl().setSize(-1, 100);
+		aqtmain.getStatusLineManager().getControl().setFont(IAqtVar.font13b);
 		
 //		sashForm.setWeights(new int[] {18,82});
 		

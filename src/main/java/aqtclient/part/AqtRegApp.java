@@ -196,8 +196,8 @@ public class AqtRegApp {
 				// TODO Auto-generated method stub
 				if (value == null)
 					return;
-				if (value.toString().isEmpty())
-					return;
+//				if (value.toString().isEmpty())
+//					return;
 
 				if (element instanceof Item)
 					element = ((Item) element).getData();

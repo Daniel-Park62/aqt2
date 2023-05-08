@@ -538,19 +538,19 @@ public class AqtCompare {
 				"select  a.uri, ifnull(svckor,'no register') ,  sum(a.tcnt1) , sum(a.avgt1) ,sum(a.scnt1) ,sum(a.fcnt1)  " + 
 				", sum(a.tcnt2), sum(a.avgt2) ,sum(a.scnt2)  ,sum(a.fcnt2)  " + 
 				"from   ( " + 
-				"select t.tcode, t.uri,dstip,dstport,  count(1) tcnt1, avg(t.svctime) avgt1 " + 
+				"select t.tcode, t.uri, appid,  count(1) tcnt1, avg(t.svctime) avgt1 " + 
 				"    , sum(case when t.sflag = '1' then 1 else 0 end) scnt1 " + 
 				"    , sum(case when t.sflag = '2' then 1 else 0 end) fcnt1,0 tcnt2,0 avgt2,0 scnt2,0 fcnt2 " + 
 				"from   Ttcppacket t, tmpt x where t.tcode = ? AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
 				"group by t.tcode, t.uri " + 
 				"UNION ALL  " + 
-				"select t.tcode, t.uri,dstip,dstport, 0,0,0,0,count(1) tcnt2, avg(t.svctime) avgt2 " + 
+				"select t.tcode, t.uri,appid, 0,0,0,0,count(1) tcnt2, avg(t.svctime) avgt2 " + 
 				"    , sum(case when t.sflag = '1' then 1 else 0 end) scnt2 " + 
 				"    , sum(case when t.sflag = '2' then 1 else 0 end) fcnt2 " + 
 				"from   Ttcppacket t, tmpt x where t.tcode = ? AND t.uri = x.uri AND t.cmpid = x.cmpid " + 
 				"group by t.tcode, t.uri " + 
 				") as a " + 
-				"left outer join Tservice s on (a.uri = s.svcid and uf_getapp(dstip,dstport) = s.appid )" + 
+				"left outer join Tservice s on (a.uri = s.svcid and a.appid = s.appid )" + 
 				"GROUP BY a.uri "  
 				)
 				.setParameter(1, cmbCode1.getTcode()).setParameter(2, cmbCode2.getTcode())
