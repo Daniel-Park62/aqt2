@@ -27,7 +27,7 @@ class HostMaptest {
 	@Test
 	void test() {
 		EntityManager em = emf.createEntityManager() ;
-		em.getTransaction().begin();
+
 		Tmaster tmaster =  em.find(Tmaster.class, "TH01") ;
 		assertNotNull(tmaster);
 		Thostmap thostmap = new Thostmap() ;
@@ -35,11 +35,14 @@ class HostMaptest {
 		thostmap.setThost(tmaster.getThost());
 		thostmap.setTport(tmaster.getTport());
 		em.persist(thostmap);
-		em.getTransaction().commit();
 //		System.out.println(thostmap.getTmaster().getCode());
 		em.close();
 		
 	}
 	
+	@Test
+	void test2() {
+		System.out.println("AAA".split(" ")[0]);
+	}
 
 }
