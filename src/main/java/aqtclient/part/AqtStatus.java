@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Ttcppacket;
 import aqtclient.model.Vtrxlist;
 
 public class AqtStatus {
@@ -533,7 +532,7 @@ public class AqtStatus {
 		@Override
 		public Object[] getElements(Object input) {
 			//return new Object[0];
-			List<Vtrxlist> arrayList = (List<Vtrxlist>)input;
+			List<?> arrayList = (List<?>)input;
 			return arrayList.toArray();
 		}
 		@Override

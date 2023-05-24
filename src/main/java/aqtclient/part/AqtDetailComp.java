@@ -151,7 +151,7 @@ public class AqtDetailComp extends Dialog {
 //		byte[] text2 = stext2.getText().getBytes("euc-kr") ;
 
 		List<StyleRange> ranges = new ArrayList<StyleRange>();
-		int st = -1, n = text2.length() , n1 = text1.length() , hcnt = 0;
+		int st = -1, n = text2.length() , n1 = text1.length() ;
 		boolean sw = false ;
 		for (int i = 0 ; i < n; i++) {
 			String x2 = text2.substring(i,i+1); //.charAt(i);
@@ -160,14 +160,12 @@ public class AqtDetailComp extends Dialog {
 				if (sw) {
 					ranges.add( new StyleRange(st+1, i - st - 1, null, SWTResourceManager.getColor(SWT.COLOR_YELLOW), SWT.BOLD));
 					sw = false ;
-					hcnt = 0 ;
 //					System.out.format("%d : %d\n" ,st+1 , st - 1 );
 				}
 				st = i ;
 			} else {
 				sw = true ;
 			}
-//			if (Character.getType(x1.charAt(0)) == 5 ) hcnt++ ;
 		}
 		try {
 			if (!ranges.isEmpty()) {
@@ -254,10 +252,10 @@ public class AqtDetailComp extends Dialog {
 			return this.txtReceiveMsg ;
 		}
 
-		public StyledText getTxtSendMsg() {
-			return this.txtSendMsg ;
-		}
-
+		/**
+		public StyledText getTxtSendMsg() 
+		{ return this.txtSendMsg ; }
+		*/
 		private void setValue() {
 			if (this.tr == null)
 				return;

@@ -1,7 +1,6 @@
 package aqtclient.part;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -13,32 +12,22 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -47,9 +36,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Texecjob;
 import aqtclient.model.Thostmap;
-import aqtclient.model.Tmaster;
 
 public class AqtMapToHost extends Dialog {
 
@@ -261,7 +248,7 @@ public class AqtMapToHost extends Dialog {
 			@Override
 			public Object[] getElements(Object input) {
 				if (input instanceof List<?> )
-					return ((List<Thostmap>)input).toArray() ;
+					return ((List<?>)input).toArray() ;
 				return null;
 			}
 		});
@@ -305,6 +292,7 @@ public class AqtMapToHost extends Dialog {
 	}
 	private void getAsisHost() {
 		
+		@SuppressWarnings("unchecked")
 		List<Object[]> asisList = em.createNativeQuery("SELECT dstip, dstport, p.thost2, p.tport2 FROM ttcppacket t " +
 								" LEFT JOIN thostmap p ON (p.tcode != t.tcode AND dstip  = thost AND dstport = tport)" +
 								" WHERE t.tcode = ?" + 
@@ -396,10 +384,10 @@ public class AqtMapToHost extends Dialog {
 			
 		}
 		
-		private boolean isBlank(Object value) {
-			if (value == null || value.toString().isEmpty() ) return true ;
-			return false;
-		}
+//		private boolean isBlank(Object value) {
+//			if (value == null || value.toString().isEmpty() ) return true ;
+//			return false;
+//		}
 
 		@Override
 		public Object getValue(Object element, String property) {

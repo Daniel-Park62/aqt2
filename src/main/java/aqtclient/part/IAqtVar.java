@@ -29,6 +29,11 @@ public interface IAqtVar {
     final String[] lvlArr = new String[] {"Origin","단위","통합","정합성"};
     
     final public static Map<String, String> lvlnm = Collections.unmodifiableMap(new HashMap<String, String>() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		{
 			put("0", "Origin");
 			put("1", "단위");

@@ -59,7 +59,6 @@ public class AqtExec  {
 	private Text txtdesc ;
 	private Button type0, type1 ;
 	private Button btnkind1, btnkind9 ;
-	private List<Texecjob> execlst ;
 	
 	Button chkDbSkip ;
 	Button btn0, btn1, btn2, btn3 ;
@@ -149,7 +148,7 @@ public class AqtExec  {
 			em.merge(tjob) ;
 			transaction.commit();
 		} catch (Exception e) {
-			System.out.println(e);
+			AqtMain.log.error(e.getMessage());
 			transaction.rollback();
 		} finally {
 			em.close();
@@ -857,14 +856,15 @@ public class AqtExec  {
 
 	private void refreshScreen () {
 	    EntityManager em = AqtMain.emf.createEntityManager();
-	    
+		List<?> execlst ;
+
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		String cond = btn3.getSelection() ? "" : "where resultstat " + (btn0.getSelection() ? "=0" : btn1.getSelection() ? "=1" :  "> 1")  ;
 		
 		String qstmt = "select * from Texecjob  " + cond 
     			+ " order by resultstat,startdt desc, pkey desc" ;
-//		System.out.println(qstmt);
+//		AqtMain.log.info(qstmt);
         execlst = em.createNativeQuery(qstmt, Texecjob.class)
         		.getResultList();
         em.close();		
@@ -941,7 +941,7 @@ public class AqtExec  {
 		@Override
 		public Object[] getElements(Object input) {
 			// return new Object[0];
-			List<Texecjob> arrayList = (List<Texecjob>) input;
+			List<?> arrayList = (List<?>) input;
 			return arrayList.toArray();
 		}
 

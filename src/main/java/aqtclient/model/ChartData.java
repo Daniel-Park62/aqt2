@@ -8,8 +8,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.annotations.ReadOnly;
-
-@Entity 
+@Entity
 @ReadOnly
 public class ChartData {
 	

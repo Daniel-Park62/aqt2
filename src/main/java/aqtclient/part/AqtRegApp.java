@@ -1,5 +1,5 @@
-/*
- * App 등록
+/***
+  App 등록
 */
 
 package aqtclient.part;
@@ -31,7 +31,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -246,7 +245,7 @@ public class AqtRegApp {
 			public Object[] getElements(Object input) {
 				// TODO Auto-generated method stub
 				if (input instanceof List<?> )
-					return ((List<Tapplication>)input).toArray() ;
+					return ((List<?>)input).toArray() ;
 
 				return null;
 			}
@@ -427,7 +426,7 @@ public class AqtRegApp {
 			public Object[] getElements(Object input) {
 				// TODO Auto-generated method stub
 				if (input instanceof List<?> )
-					return ((List<Tapphost>)input).toArray() ;
+					return ((List<?>)input).toArray() ;
 
 				return null;
 			}

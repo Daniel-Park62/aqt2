@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -380,7 +379,7 @@ public class AqtRegSvc {
 			public Object[] getElements(Object input) {
 				// TODO Auto-generated method stub
 				if (input instanceof List<?> )
-					return ((List<Tservice>)input).toArray() ;
+					return ((List<?>)input).toArray() ;
 
 				return null;
 			}
@@ -636,9 +635,9 @@ public class AqtRegSvc {
 		Table table = tblViewerList.getTable();
 		int index = Arrays.asList(table.getColumns()).indexOf(table.getSortColumn());
 		int result = 0;
-		LocalDateTime d1, d2 ;
-		Long l1, l2 ;
-		Double db1,db2;
+//		LocalDateTime d1, d2 ;
+//		Long l1, l2 ;
+//		Double db1,db2;
 		String s1,s2 ;
 		if (index != -1) {
 			switch (index) {

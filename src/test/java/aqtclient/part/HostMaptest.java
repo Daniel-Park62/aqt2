@@ -1,4 +1,4 @@
-package com.dawin.aqttool;
+package aqtclient.part;
 
 import static org.junit.jupiter.api.Assertions.*;
 

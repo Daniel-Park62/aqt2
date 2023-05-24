@@ -7,13 +7,10 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Timer;
 
 import javax.persistence.EntityManager;
@@ -27,18 +24,13 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -59,16 +51,18 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Tconfig;
-import aqtclient.model.Tmaster;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("unchecked")
+import aqtclient.model.Tconfig;
+
 public class AqtMain extends ApplicationWindow {
 	static Composite container ;
 	
 	public static IAqtSetCode cback ;
 	
 	public static AuthType authtype = AuthType.USER;
+	static Logger log = LoggerFactory.getLogger(AqtMain.class);
 
 	EntityManager em ;
 	final public static Color bluecol = SWTResourceManager.getColor(9,72,220);
@@ -100,7 +94,7 @@ public class AqtMain extends ApplicationWindow {
         em = emf.createEntityManager() ;
         em.setFlushMode(FlushModeType.AUTO);
 		gip = InetAddress.getLocalHost().getHostAddress() ;
-		System.out.println(now.format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss"))+ " AQT2 Started !!");
+		log.info(now.format(DateTimeFormatter.ofPattern("MM/dd HH:mm:ss"))+ " AQT2 Started !!");
 //		System.out.println("IP:"+gip);
 		aqtmain = this ;
 		addStatusLine();
@@ -134,7 +128,7 @@ public class AqtMain extends ApplicationWindow {
         String sPass = System.getenv("AQTDBPASS") ;
         String sName = System.getenv("AQTDBNAME") ;
         
-        System.out.println(dbip);
+        log.info(dbip);
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("javax.persistence.jdbc.url", "jdbc:mariadb://" + dbip 
         		+ "/" + (sName != null ? sName : "aqtdb2") + "?autoReconnect=true" );
@@ -327,10 +321,10 @@ public class AqtMain extends ApplicationWindow {
 //		comp_menu.setToolTipText("AqtTRList");
 	}
 	
-	private List<Tmaster> getTmaster() {
-		em.getEntityManagerFactory().getCache().evictAll();
-		return em.createQuery("select t from Tmaster t order by t.tdate desc", Tmaster.class).getResultList() ;
-	}
+//	private List<Tmaster> getTmaster() {
+//		em.getEntityManagerFactory().getCache().evictAll();
+//		return em.createQuery("select t from Tmaster t order by t.tdate desc", Tmaster.class).getResultList() ;
+//	}
 
 	private void menuCreate(Composite parent ) {
 		Image img_logo = AqtMain.getMyimage("Logo.png");

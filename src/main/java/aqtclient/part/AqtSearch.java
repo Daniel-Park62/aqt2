@@ -4,9 +4,6 @@
 
 package aqtclient.part;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -20,12 +17,10 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Spinner;
@@ -34,8 +29,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Tmaster;
-import aqtclient.model.Trequest;
 import aqtclient.model.Ttcppacket;
 
 public class AqtSearch {
@@ -48,7 +41,6 @@ public class AqtSearch {
 	private Spinner spn_pg ;
 	private AqtTranTable tView;
 	private int imax = 100 , itotal = -1, ipos = 0  ;
-	private List<Ttcppacket> trList = new ArrayList<Ttcppacket>();
 	
 	EntityManager em = AqtMain.emf.createEntityManager();
 
@@ -418,7 +410,8 @@ public class AqtSearch {
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
 		
-		trList = new ArrayList<Ttcppacket>();
+		List<Ttcppacket> trList ; // = new ArrayList<Ttcppacket>();
+
 		AqtMain.container.setCursor(IAqtVar.busyc);
 		StringBuilder qstr = new StringBuilder("where t.tcode like ? ") ; 
 		if (! textsvc.getText().isEmpty()  ) 

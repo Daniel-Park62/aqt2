@@ -234,7 +234,7 @@ public class AqtTranTable extends AqtTableView {
 
 		TableViewerColumn tvc;
 
-		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH:mm:ss");
+//		SimpleDateFormat smdfmt = new SimpleDateFormat("MM/dd HH:mm:ss");
 
 		tvc = createTableViewerColumn("패킷id", 100, 0);
 		tvc.setLabelProvider(new myColumnProvider() {
@@ -495,7 +495,7 @@ public class AqtTranTable extends AqtTableView {
 		@Override
 		public Object[] getElements(Object input) {
 			// return new Object[0];
-			List<Ttcppacket> arrayList = (List<Ttcppacket>) input;
+			List<?> arrayList = (List<?>) input;
 			return arrayList.toArray();
 		}
 
@@ -508,6 +508,7 @@ public class AqtTranTable extends AqtTableView {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	private class TrxLabelProvider implements ITableLabelProvider {
 		/**
 		 * Returns the image

@@ -2,7 +2,6 @@ package aqtclient.part;
 
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -32,7 +31,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Tloaddata;
 import aqtclient.model.TpacketDTO;
 import aqtclient.model.Ttcppacket;
 

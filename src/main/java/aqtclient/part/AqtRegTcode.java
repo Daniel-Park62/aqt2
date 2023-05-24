@@ -34,7 +34,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -500,7 +499,7 @@ public class AqtRegTcode {
 				tmaster.setTdate(dt);
 				tvList.refresh();
 			} catch (Exception e2) {
-				System.out.println(e2);
+				AqtMain.log.error(e2.getMessage());
 				// TODO: handle exception
 			}
 	    	
@@ -650,7 +649,7 @@ public class AqtRegTcode {
 			public Object[] getElements(Object input) {
 				// TODO Auto-generated method stub
 				if (input instanceof List<?> )
-					return ((List<Tmaster>)input).toArray() ;
+					return ((List<?>)input).toArray() ;
 
 				return null;
 			}

@@ -49,7 +49,6 @@ import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-import aqtclient.model.Tservice;
 import aqtclient.model.Ttcppacket;
 import aqtclient.model.Vtrxdetail;
 
@@ -241,7 +240,7 @@ public class AqtResult {
 		tableViewer.setUseHashlookup(true);
 
 		Point point = parent.getSize();
-		int width = (point.x - 70) / 8;
+//		int width = (point.x - 70) / 8;
 
 		String[] columnNames1 = new String[] { "", "서비스", "서비스명", "누적건수", "패킷건수", "평균시간", "정상건수", "실패건수","성공율(%)","미수행" };
 
@@ -412,7 +411,7 @@ public class AqtResult {
 				
 		Query qTrxList = em.createNativeQuery(qstr, Vtrxdetail.class);
 		
-		tempTrxCompList = qTrxList.getResultList();
+		tempTrxCompList = qTrxList.getResultList() ;
 
 		tableViewerDR1.setResendEnabled (cmbCode.getTmaster() != null
 					   && ! "3".equals(cmbCode.getTmaster().getLvl() )
@@ -508,7 +507,7 @@ public class AqtResult {
 		chart.getAxisSet().getYAxis(0).getTitle().setText("소요시간");
 
 		// create line series
-		ILineSeries scatterSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, "mychart");
+		ILineSeries<?> scatterSeries = (ILineSeries<?>) chart.getSeriesSet().createSeries(SeriesType.LINE, "mychart");
 		scatterSeries.setAntialias(SWT.ON);
 		// set label visible
 		scatterSeries.setSymbolColor(SWTResourceManager.getColor(SWT.COLOR_RED));
@@ -541,7 +540,7 @@ public class AqtResult {
 
 		chart.setRedraw(false);
 		
-		ILineSeries scatterSeries = (ILineSeries) chart.getSeriesSet().getSeries("mychart");
+		ILineSeries<?> scatterSeries = (ILineSeries<?>) chart.getSeriesSet().getSeries("mychart");
 		scatterSeries.setXDateSeries(xSeries);
 		scatterSeries.setYSeries(ySeries);
 
@@ -556,7 +555,7 @@ public class AqtResult {
 		@Override
 		public Object[] getElements(Object input) {
 			// return new Object[0];
-			List<Ttcppacket> arrayList = (List<Ttcppacket>) input;
+			List<?> arrayList = (List<?>) input;
 			return arrayList.toArray();
 		}
 

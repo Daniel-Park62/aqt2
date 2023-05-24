@@ -11,8 +11,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -25,8 +23,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
-
-import aqtclient.model.Tmaster;
 
 public class AqtCopyTdata extends Dialog {
 
@@ -96,7 +92,7 @@ public class AqtCopyTdata extends Dialog {
 
 		EntityManager em = AqtMain.emf.createEntityManager();
 		
-		List<Object> tlist = em.createNativeQuery("select tcode from tloaddata group by tcode").getResultList();
+		List<?> tlist = em.createNativeQuery("select tcode from tloaddata group by tcode").getResultList();
 		srcCode.setItems(	tlist.stream().toArray(String[]::new));
 
 		em.close();
