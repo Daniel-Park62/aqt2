@@ -45,6 +45,8 @@ public class Tmaster implements Serializable {
 	private String tuser = "";
 
 	private String type = "1";    // 1.배치테스트 2.실시간
+
+	private String pro = "0";  // 0.tmax 1.http 2.https
 	
 	@Column(name="svc_cnt")
 	private int svcCnt ;
@@ -192,6 +194,12 @@ public class Tmaster implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getPro() {
+		return pro;
+	}
+	public void setPro(String pro) {
+		this.pro = pro;
 	}
 
 }

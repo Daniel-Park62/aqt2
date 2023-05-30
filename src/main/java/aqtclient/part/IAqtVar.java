@@ -27,6 +27,7 @@ public interface IAqtVar {
     final String titnm = "Application Quarity Test";
     final String[] typeArr = new String[] {"","배치","실시간"};
     final String[] lvlArr = new String[] {"Origin","단위","통합","정합성"};
+    final String[] proArr = new String[] {"tcp","http","https"};
     
     final public static Map<String, String> lvlnm = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**

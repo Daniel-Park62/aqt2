@@ -1,6 +1,3 @@
-/*
- * 서비스(프로그램) 목록등록
-*/
 
 package aqtclient.part;
 
@@ -51,7 +48,11 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Texecjob;
 import aqtclient.model.Tmaster;
-
+/**
+ * 테스트코드 등록 및 전문생성
+ * @author 박인영
+ *
+ */
 public class AqtRegTcode {
 	private Table tblList;
 	private CheckboxTableViewer tvList;
@@ -454,12 +455,12 @@ public class AqtRegTcode {
 	    
 	    
         String[] cols1 = new String[] 
-        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","서버IP", "서버 Port","전문건수"};
+        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","Test IP", "Port","전문구분", "전문건수"};
 
-        int[] columnWidths1 = new int[] {  130, 250, 80, 80, 150,160,160, 200,100,140};
+        int[] columnWidths1 = new int[] {  130, 250, 80, 80, 150,160,160, 200,80,80,120};
 
 	    int[] colas1 = new int[] 
-	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER ,SWT.CENTER };
+	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER ,SWT.CENTER,SWT.CENTER };
 	    TableViewerColumn tableViewerColumn ;
 	    for (int i = 0; i < cols1.length; i++) {
 	    	tableViewerColumn =
@@ -514,7 +515,9 @@ public class AqtRegTcode {
 			if ( i == 2 ) {
 				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.typeArr,  SWT.READ_ONLY ) ;
 			} else if ( i == 3 ) {
-					CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.lvlArr , SWT.READ_ONLY ) ;
+				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.lvlArr , SWT.READ_ONLY ) ;
+			} else if ( i == 9 ) {
+				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.proArr , SWT.READ_ONLY ) ;
 			} else {
 				CELL_EDITORS[i] = new TextCellEditor(tblList, tblList.getColumn(i).getStyle() );
 			}
@@ -587,6 +590,8 @@ public class AqtRegTcode {
 					m.setThost(value.toString());
 				else if (property.equals(cols1[8]))
 					m.setTport(Integer.parseInt(value.toString()));
+				else if (property.equals(cols1[9]))
+					m.setPro(value.toString());
 				else
 					return ;
 
@@ -618,6 +623,8 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[8]))
 					return t.getTport() +"" ;
 				else if (property.equals(cols1[9]))
+					return Integer.valueOf(t.getPro()) ;
+				else if (property.equals(cols1[10]))
 					return t.getDataCnt() ;
 
 				return null;
@@ -629,7 +636,7 @@ public class AqtRegTcode {
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
 					if ( ! (property.equals(cols1[0]) || property.equals(cols1[5]) 
-							|| property.equals(cols1[6]) || property.equals(cols1[9]))  ) 
+							|| property.equals(cols1[6]) || property.equals(cols1[10]))  ) 
 						return true ;
 
 					return ( t.isNew() ) ;
@@ -709,6 +716,9 @@ public class AqtRegTcode {
 					  case 8:
 						  return s.getTport() +"";
 					  case 9:
+						  i = Integer.valueOf(s.getPro()) ;
+						  return i < IAqtVar.proArr.length ? IAqtVar.proArr[i] : "";
+					  case 10:
 						  return String.format("%,d", s.getDataCnt());
 					  }
 				  return "";

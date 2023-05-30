@@ -33,8 +33,8 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import aqtclient.model.ChartData;
 
 /**
- * @author 박인영
  * 전문조회 - 검색조건에 따라
+ * @author 박인영
  */
 
 @SuppressWarnings("all")
