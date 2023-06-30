@@ -48,7 +48,12 @@ public class AqtTranTable extends AqtTableView {
 	private int gcol = 0;
 	protected MenuItem reSendItem ;
 	private AqtTranTable aqtView = this ;
+	protected String svEnc = AqtMain.tconfig.getEncval() ;
 	
+	public void setSvEnc(String svEnc) {
+		this.svEnc = svEnc;
+	}
+
 	public AqtTranTable(Composite parent, int style) {
 		super(parent, style);
 //		TableViewer tv = new TableViewer(parent, style) ;
@@ -341,7 +346,7 @@ public class AqtTranTable extends AqtTableView {
 				if (tr.getErrinfo().length() > 0 ) 
 					return tr.getErrinfo() ;
 				else
-					return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdataENCODE(AqtMain.tconfig.getEncval(),250);
+					return AqtMain.tconfig.getProto() != '0' ? tr.getRhead() : tr.getRdataENCODE(svEnc,250);
 			}
 		});
 		tvc = createTableViewerColumn(" 원_수신데이터", 300, 7);
@@ -354,7 +359,7 @@ public class AqtTranTable extends AqtTableView {
 				if (tr.getTloaddata().getErrinfo().length() > 0 ) 
 					return tr.getTloaddata().getErrinfo() ;
 				else
-					return AqtMain.tconfig.getProto() != '0' ? tr.getTloaddata().getRhead() : tr.getTloaddata().getRdataENCODE(AqtMain.tconfig.getEncval(),250);
+					return AqtMain.tconfig.getProto() != '0' ? tr.getTloaddata().getRhead() : tr.getTloaddata().getRdataENCODE(svEnc,250);
 			}
 			@Override
 			public Color getForeground(Object element) {
@@ -371,6 +376,28 @@ public class AqtTranTable extends AqtTableView {
 						return super.getText(element);
 					Ttcppacket tr = (Ttcppacket) element;
 					return tr.getMethod();
+				}
+			});
+		}
+		if (AqtMain.tconfig.getCol1() != null) {
+			tvc = createTableViewerColumn(AqtMain.tconfig.getCol1(), 80, 8);
+			tvc.setLabelProvider(new ColumnLabelProvider() {
+				public String getText(Object element) {
+					if (element == null)
+						return super.getText(element);
+					Ttcppacket tr = (Ttcppacket) element;
+					return tr.getCol1();
+				}
+			});
+		}
+		if (AqtMain.tconfig.getCol2() != null) {
+			tvc = createTableViewerColumn(AqtMain.tconfig.getCol2(), 80, 8);
+			tvc.setLabelProvider(new ColumnLabelProvider() {
+				public String getText(Object element) {
+					if (element == null)
+						return super.getText(element);
+					Ttcppacket tr = (Ttcppacket) element;
+					return tr.getCol2();
 				}
 			});
 		}

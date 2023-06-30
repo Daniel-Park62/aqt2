@@ -49,6 +49,8 @@ public class AqtDetail extends Dialog {
 	private Text txtCmpid;
 	private Text txtTestCode;
 	private Text txtUri;
+	private Text txtCol1;
+	private Text txtCol2;
 	private Text txtOStime;
 	private Text txtStime;
 	private Text txtRtime;
@@ -310,7 +312,6 @@ public class AqtDetail extends Dialog {
 
 		lblcomm = new Label(compDetail, SWT.NONE);
 		lblcomm.setText("서비스(URI)");
-//		lblcomm.setBackground(SWTResourceManager.getColor(SWT.COLOR_TRANSPARENT));
 		lblcomm.setFont( IAqtVar.font1);
 		lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
 
@@ -319,6 +320,31 @@ public class AqtDetail extends Dialog {
 		txtUri.setEditable(false);
 		txtUri.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtUri.setFont( IAqtVar.font1);
+		
+		if (AqtMain.tconfig.getCol1() != null ) {
+			lblcomm = new Label(compDetail, SWT.NONE);
+			lblcomm.setText(AqtMain.tconfig.getCol1());
+			lblcomm.setFont( IAqtVar.font1);
+			lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
+
+			txtCol1 = new Text(compDetail, SWT.BORDER);
+			txtCol1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+			txtCol1.setEditable(false);
+			txtCol1.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			txtCol1.setFont( IAqtVar.font1);
+		}
+		if (AqtMain.tconfig.getCol2() != null ) {
+			lblcomm = new Label(compDetail, SWT.NONE);
+			lblcomm.setText(AqtMain.tconfig.getCol2());
+			lblcomm.setFont( IAqtVar.font1);
+			lblcomm.setLayoutData(new GridData(SWT.RIGHT,SWT.CENTER,false, false) );
+
+			txtCol2 = new Text(compDetail, SWT.BORDER);
+			txtCol2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+			txtCol2.setEditable(false);
+			txtCol2.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+			txtCol2.setFont( IAqtVar.font1);
+		}
 //		Composite compMessage = new Composite(compHeader, SWT.NONE);
 		
 		SashForm sash1 = new SashForm(compHeader, SWT.VERTICAL) ;
@@ -518,6 +544,8 @@ public class AqtDetail extends Dialog {
 		txtRlen.requestLayout();
 		txtSlen.requestLayout();
 		txtSlen.setRedraw(true);
+		if (txtCol1 != null) txtCol1.setText( tpacket.getCol1() ) ;
+		if (txtCol2 != null) txtCol2.setText( tpacket.getCol2() ) ;
 	}
 	
 	public void setTrxList(Ttcppacket tpacket) {

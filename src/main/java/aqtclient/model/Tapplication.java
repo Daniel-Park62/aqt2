@@ -2,6 +2,8 @@ package aqtclient.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,7 +25,7 @@ public class Tapplication implements Serializable {
 
 	//bi-directional many-to-one association to Tapphost
 	@OneToMany(mappedBy="tapplication")
-	private List<Tapphost> tapphosts;
+	private List<Tapphost> tapphosts = new ArrayList<Tapphost>();
 
 	public Tapplication() {
 	}

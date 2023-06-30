@@ -10,6 +10,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.KeyAdapter;
@@ -40,7 +41,7 @@ public class AqtTRList extends Dialog {
 
 	private Text txtReceive1;
 	private Text txtSend1, txtcnt;
-//	private CLabel lblRhead ;
+	private Button benc0, benc1 ;
 	
 	private int imax = 100 , itotal = -1, ipos = 0, istc = -1 ;
 	private List<Ttcppacket> tempTrxList1 = new ArrayList<Ttcppacket>(); // testcode1 의 ttransaction
@@ -135,12 +136,13 @@ public class AqtTRList extends Dialog {
     	ltitle.setFont( IAqtVar.title_font );
 
 		Composite compCode1 = new Composite(compHeader, SWT.NONE);
-		GridLayout gl_compCode1 = new GridLayout(4,false);
+		GridLayout gl_compCode1 = new GridLayout(5,false);
 		gl_compCode1.verticalSpacing = 5;
 		gl_compCode1.marginHeight = 10;
 		gl_compCode1.marginWidth = 15;
 		compCode1.setLayout(gl_compCode1);
-		compCode1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//		compCode1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(compCode1);
 
 		CLabel clb = new CLabel(compCode1, SWT.NONE ) ;
 		clb.setText("Search:");
@@ -179,6 +181,16 @@ public class AqtTRList extends Dialog {
 			}
 		});
 		
+		Composite compo_enc = new Composite(compCode1, SWT.BORDER ) ;
+		
+		RowLayoutFactory.fillDefaults().margins(15, 5).type(SWT.HORIZONTAL).spacing(10).applyTo(compo_enc);
+		
+		benc0 = new Button(compo_enc, SWT.RADIO);
+		benc1 = new Button(compo_enc, SWT.RADIO);
+		benc0.setText("UTF-8");
+		benc1.setText("MS949");
+		benc0.setSelection(AqtMain.tconfig.getEncval() == "UTF-8") ;
+		benc1.setSelection(!benc0.getSelection());
 		
 		txtcnt =  new Text(compCode1, SWT.BORDER) ;
 		txtcnt.setText("0 건");
@@ -274,11 +286,11 @@ public class AqtTRList extends Dialog {
 				Ttcppacket tr = ((Ttcppacket) tblList.getItem(i).getData()) ;
 				txtSend1.setText(tr.getSdata());
 //				lblRhead.setText(tempTrxList1.get(i).getRhead());
-				txtReceive1.setText( tblList.getItem(i).getText(7) );
+				txtReceive1.setText( tblList.getItem(i).getText(9) );
 			}
 		});
 		
-		tblList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+		tblList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
 		
 		Label lblSend1 = new Label(compCode1, SWT.NONE);
 		lblSend1.setText("SEND");
@@ -286,7 +298,7 @@ public class AqtTRList extends Dialog {
 //		lblSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		txtSend1 = new Text(compCode1, SWT.BORDER);
-		txtSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,3,1));
+		txtSend1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,4,1));
 		txtSend1.setEditable(false);
 		txtSend1.setFont(IAqtVar.font1);
 
@@ -303,7 +315,7 @@ public class AqtTRList extends Dialog {
 		lblSend1.setFont(IAqtVar.font1);
 
 		txtReceive1 = new Text(compCode1, SWT.BORDER);
-		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,3,1));
+		txtReceive1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,4,1));
 		txtReceive1.setEditable(false);
 		txtReceive1.setFont(IAqtVar.font1);
 		
@@ -316,6 +328,8 @@ public class AqtTRList extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		em.clear();
 //		em.getEntityManagerFactory().getCache().evictAll();
+		if (benc0.getSelection() ) tView.setSvEnc(benc0.getText());
+		if (benc1.getSelection() ) tView.setSvEnc(benc1.getText());
 		
 		tempTrxList1 = new ArrayList<Ttcppacket>();
 		AqtMain.container.setCursor(IAqtVar.busyc);

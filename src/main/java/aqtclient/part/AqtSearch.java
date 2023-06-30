@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -19,6 +20,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -40,6 +42,7 @@ public class AqtSearch {
 	private Text txtSend1, txtcnt;
 	private Spinner spn_pg ;
 	private AqtTranTable tView;
+	private Button benc0, benc1 ;
 	private int imax = 100 , itotal = -1, ipos = 0  ;
 	
 	EntityManager em = AqtMain.emf.createEntityManager();
@@ -126,7 +129,7 @@ public class AqtSearch {
 		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
 
-		lblt = new Label(compTit, SWT.NONE);
+		lblt = new Label(compTit, SWT.NONE|SWT.RIGHT);
 		lblt.setText(" 송신데이터");
 		lblt.setFont(IAqtVar.font1);
 		textSdata = new Text(compTit, SWT.BORDER);
@@ -144,7 +147,7 @@ public class AqtSearch {
 		lblt.setAlignment(SWT.RIGHT);
 		lblt.setToolTipText("[수신ip] DSTIP\r[수신port] DSTPORT\r[원송신시간] O_STIME\r[수신데이터] RDATA\r[소요시간] SVCTIME\r[응답코드] RCODE") ;
 		textEtc = new Text(compTit, SWT.BORDER);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(7, 1).applyTo(textEtc);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).span(5, 1).applyTo(textEtc);
 		textEtc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textEtc.setFont(IAqtVar.font1);
 		textEtc.setText(AqtMain.aqtmain.getCond("aqtsearch1") );
@@ -152,9 +155,23 @@ public class AqtSearch {
 		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
 		  });
 
+		lblt = new Label(compTit, SWT.NONE);
+		lblt.setText(" Encoding");
+		lblt.setFont(IAqtVar.font1);
+		lblt.setAlignment(SWT.RIGHT);
+
+		Composite compo_enc = new Composite(compTit, SWT.BORDER ) ;
+		RowLayoutFactory.fillDefaults().margins(20, 5).type(SWT.HORIZONTAL).spacing(10).applyTo(compo_enc);
+		
+		benc0 = new Button(compo_enc, SWT.RADIO);
+		benc1 = new Button(compo_enc, SWT.RADIO);
+		benc0.setText("UTF-8");
+		benc1.setText("MS949");
+		benc0.setSelection(AqtMain.tconfig.getEncval() == "UTF-8") ;
+		benc1.setSelection(!benc0.getSelection());
 		
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
-		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).span(2, 1).minSize(100, -1).applyTo(btnSearch);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).span(2, 1).grab(true, false).minSize(100, -1).applyTo(btnSearch);
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -409,7 +426,8 @@ public class AqtSearch {
 
 		em.clear();
 		em.getEntityManagerFactory().getCache().evictAll();
-		
+		if (benc0.getSelection() ) tView.setSvEnc(benc0.getText());
+		if (benc1.getSelection() ) tView.setSvEnc(benc1.getText());
 		List<Ttcppacket> trList ; // = new ArrayList<Ttcppacket>();
 
 		AqtMain.container.setCursor(IAqtVar.busyc);

@@ -87,6 +87,9 @@ public class Ttcppacket implements Serializable {
 	private String tcode;
 
 	private String uri;
+	private String col1;
+	private String col2;
+
 
 	@ManyToOne(targetEntity = Tmaster.class)
 	@JoinColumn(name = "tcode", referencedColumnName = "code" ,updatable=false, insertable=false ) 
@@ -371,6 +374,21 @@ public class Ttcppacket implements Serializable {
 
 	public String getAppid() {
 		return appid;
+	}
+	public String getCol1() {
+		return col1;
+	}
+
+	public void setCol1(String col1) {
+		this.col1 = col1;
+	}
+
+	public String getCol2() {
+		return col2;
+	}
+
+	public void setCol2(String col2) {
+		this.col2 = col2;
 	}
 
 
