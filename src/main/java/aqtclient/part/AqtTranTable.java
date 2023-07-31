@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Tmaster;
@@ -49,6 +50,7 @@ public class AqtTranTable extends AqtTableView {
 	protected MenuItem reSendItem ;
 	private AqtTranTable aqtView = this ;
 	protected String svEnc = AqtMain.tconfig.getEncval() ;
+	private Text txtOStime ;
 	
 	public void setSvEnc(String svEnc) {
 		this.svEnc = svEnc;

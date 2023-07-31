@@ -4,6 +4,8 @@
 
 package aqtclient.part;
 
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -33,18 +35,21 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 import aqtclient.model.Ttcppacket;
 
-public class AqtSearch {
+public class AqtSearch2 {
 	private Table tblList;
 	private Text textsvc , textRcode, textCmpid , textSdata, textEtc;
-	
+	AqtButton btn ;
 	private AqtTcodeCombo cmbCode;
 	private Text txtReceive1;
 	private Text txtSend1, txtcnt;
-	private Spinner spn_pg ;
+
 	private AqtTranTable tView;
 	private Button benc0, benc1 ;
-	private int imax = 100 , itotal = -1, ipos = 0  ;
-	
+	private int imax = 100 ;
+	private StringBuilder sbOStime  = new StringBuilder("");
+	private StringBuilder sbtime2  = new StringBuilder("");
+	private Spinner spn_min ;
+	List<Ttcppacket> trListG = new ArrayList<Ttcppacket>() ;
 	EntityManager em = AqtMain.emf.createEntityManager();
 
     private int getMaxCnt() {
@@ -60,20 +65,20 @@ public class AqtSearch {
 	 * @param parent
 	 * @param style
 	 */
-	public AqtSearch(Composite parent, int style) {
+	public AqtSearch2(Composite parent, int style) {
 
 	    Composite container = new Composite(parent, SWT.NONE) ;
 	    GridLayoutFactory.fillDefaults().margins(15, 15).numColumns(1).equalWidth(true).applyTo(container);
 	    GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(container);
 	    
-		new AqtTitle(container, SWT.NONE, "전문검색", "search_i.png");
+		new AqtTitle(container, SWT.NONE, "전문검색(대용량)", "search_i.png");
 		
 		Label lbl = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		lbl.setBackground(container.getBackground());
 		GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(lbl);
 
 		Composite compTit = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(10).equalWidth(false).applyTo(compTit);
+		GridLayoutFactory.fillDefaults().numColumns(11).equalWidth(false).applyTo(compTit);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compTit);
 		
 		Label lblt = new Label(compTit, SWT.NONE);
@@ -88,7 +93,7 @@ public class AqtSearch {
 			}
 		});
 		
-		cmbCode.getControl().add(" % : ALL");
+//		cmbCode.getControl().add(" % : ALL");
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(false, false).hint(160, -1).applyTo(cmbCode.getControl());
 		
 		lblt = new Label(compTit, SWT.NONE);
@@ -101,9 +106,6 @@ public class AqtSearch {
 		textsvc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textsvc.setFont(IAqtVar.font1);
 		textsvc.setText("");
-		textsvc.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
-		  });
 
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" 응답코드");
@@ -113,9 +115,6 @@ public class AqtSearch {
 		textRcode.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textRcode.setFont(IAqtVar.font1);
 		textRcode.setText("");
-		textRcode.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
-		  });
 
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" 패킷ID");
@@ -125,21 +124,15 @@ public class AqtSearch {
 		textCmpid.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textCmpid.setFont(IAqtVar.font1);
 		textCmpid.setText("");
-		textCmpid.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
-		  });
 
 		lblt = new Label(compTit, SWT.NONE|SWT.RIGHT);
 		lblt.setText(" 송신데이터");
 		lblt.setFont(IAqtVar.font1);
 		textSdata = new Text(compTit, SWT.BORDER);
-		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).hint(200, -1).applyTo(textSdata);
+		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).span(2, 1).grab(true, false).hint(200, -1).applyTo(textSdata);
 		textSdata.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textSdata.setFont(IAqtVar.font1);
 		textSdata.setText("");
-		textSdata.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
-		  });
 		
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" 기타조건");
@@ -151,9 +144,6 @@ public class AqtSearch {
 		textEtc.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		textEtc.setFont(IAqtVar.font1);
 		textEtc.setText(AqtMain.aqtmain.getCond("aqtsearch1") );
-		textEtc.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	{ itotal = -1;  queryScr(); }
-		  });
 
 		lblt = new Label(compTit, SWT.NONE);
 		lblt.setText(" Encoding");
@@ -169,13 +159,24 @@ public class AqtSearch {
 		benc1.setText("MS949");
 		benc0.setSelection(AqtMain.tconfig.getEncval() == "UTF-8") ;
 		benc1.setSelection(!benc0.getSelection());
-		
+
+		lblt = new Label(compTit, SWT.NONE);
+		lblt.setText(" 조회간격(분)");
+		lblt.setFont(IAqtVar.font1);
+		lblt.setAlignment(SWT.RIGHT);
+
+		spn_min = new Spinner(compTit, SWT.BORDER | SWT.CENTER) ;
+		spn_min.setMinimum(1) ;
+		spn_min.setFont(IAqtVar.font1) ;
+		spn_min.setSelection(2);
+
 		AqtButton btnSearch = new AqtButton(compTit, SWT.PUSH,"조회");
-		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).span(2, 1).grab(true, false).minSize(100, -1).applyTo(btnSearch);
+		GridDataFactory.fillDefaults().align(SWT.END, SWT.CENTER).grab(true, false).minSize(100, -1).applyTo(btnSearch);
 		btnSearch.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				itotal = -1;
+				trListG = new ArrayList<Ttcppacket>() ;
+				sbOStime.setLength(0);
 				queryScr();
 			}
 		});
@@ -300,125 +301,27 @@ public class AqtSearch {
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(txtReceive1) ;
 		
 		Composite compfooter = new Composite(container, SWT.NONE);
-		GridLayoutFactory.fillDefaults().numColumns(7).equalWidth(false).applyTo(compfooter);
+		GridLayoutFactory.fillDefaults().numColumns(2).equalWidth(false).applyTo(compfooter);
 		GridDataFactory.fillDefaults().align(SWT.FILL, SWT.TOP).grab(true, false).applyTo(compfooter);
 
 
-		AqtButton btn = new AqtButton(compfooter, SWT.PUSH,"첫페이지") ;
+		btn = new AqtButton(compfooter, SWT.PUSH,"다음페이지") ;
+		btn.setEnabled(trListG.size() > 0) ;
 		btn.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-            	if (ipos <= 0 ) return;
-            	ipos = 0 ;
 	        	queryScr();
 			}
 		}) ;
 		GridDataFactory.fillDefaults().align(SWT.RIGHT,SWT.TOP) .grab(true, false).applyTo(btn);
 
-		btn = new AqtButton(compfooter, SWT.PUSH,"이전페이지") ;
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-	        	if (ipos <= 0 ) return;
-	        	ipos -= getMaxCnt() ;
-	        	queryScr();
-			}
-		}) ;
-
-		btn = new AqtButton(compfooter, SWT.PUSH,"다음페이지") ;
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-	        	if (ipos + getMaxCnt() > itotal) return;
-	        	ipos += getMaxCnt() ;
-	        	queryScr();
-			}
-		}) ;
-		btn = new AqtButton(compfooter, SWT.PUSH,"끝페이지") ;
-		btn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-	        	if (ipos + getMaxCnt() > itotal) return;
-	        	ipos = getMaxCnt() == 0 ? 0 : (itotal / getMaxCnt()) * getMaxCnt()  ;
-	        	queryScr();
-			}
-		}) ;
-		
-		spn_pg = new Spinner(compfooter, SWT.BORDER) ;
-		spn_pg.setMinimum(1) ;
-		spn_pg.setFont(btn.getFont()) ;
-		spn_pg.setForeground(btn.getForeground()) ;
-		spn_pg.addTraverseListener((final TraverseEvent event) -> {
-		      if (event.detail == SWT.TRAVERSE_RETURN)	{ 
-		        	if (ipos + getMaxCnt() > itotal) return;
-		        	ipos = (spn_pg.getSelection() - 1) * getMaxCnt()  ;
-		        	queryScr();
-				}
-		  });
-//		btn = new AqtButton(compfooter, SWT.PUSH,"GO") ;
-//		btn.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent arg0) {
-//	        	if (ipos + getMaxCnt() > itotal) return;
-//	        	ipos = (spn_pg.getSelection() - 1) * getMaxCnt()  ;
-//	        	queryScr();
-//			}
-//		}) ;
-		
 		txtcnt =  new Text(compfooter, SWT.NONE) ;
 		txtcnt.setText("조회건수");
 		txtcnt.setEditable(false);
 		txtcnt.setFont(IAqtVar.font1) ;
 		txtcnt.setForeground(btn.getForeground()) ;
 		GridDataFactory.fillDefaults().align(SWT.END,SWT.CENTER) .grab(true, false).applyTo(txtcnt);
-/*		
-		tView.reSendItem.removeListener(SWT.Selection, tView.reSendItem.getListeners(SWT.Selection)[0]) ;
-	    tView.reSendItem.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				if ( tblList.getSelectionIndex() >= 0) {
-					boolean result = MessageDialog.openConfirm(parent.getShell(), "재전송",
-							" 재전송 요청등록하시겠습니까?" ) ;
-					if (  ! result ) return ;
 
-					EntityManager em = AqtMain.emf.createEntityManager();
-					em.clear();
-					em.getEntityManagerFactory().getCache().evictAll();
-					InetAddress local;
-					String ip = "";
-					try {
-						local = InetAddress.getLocalHost();
-						ip = local.getHostAddress();
-					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					em.getTransaction().begin();
-					int cnt = 0;
-					for ( TableItem item : tblList.getSelection() ) {
-						Ttcppacket tr = (Ttcppacket)item.getData() ;
-						Tmaster tmst = tr.tmaster ;
-	
-						if ( tmst.getEndDate() != null ) {
-							continue ;
-						}
-						if (tmst != null && ("3".equals(tmst.getLvl() ) || "0".equals(tmst.getLvl() ) ) ) {
-							continue ;
-						}
-						Trequest treq = em.find(Trequest.class, tr.getPkey()) ;
-						if (treq != null) {
-							continue ;
-						}
-						cnt++ ;
-						em.merge( new Trequest(tr.getPkey(), tr.getTcode(), tr.getCmpid(), ip ) );
-					}
-					em.getTransaction().commit();
-					em.close();
-					MessageDialog.openInformation(parent.getShell(), "Info", cnt + "건 재전송 요청되었습니다.");
-				}
-			}
-		});
-*/
 		
 	}
 	
@@ -429,9 +332,23 @@ public class AqtSearch {
 		if (benc0.getSelection() ) tView.setSvEnc(benc0.getText());
 		if (benc1.getSelection() ) tView.setSvEnc(benc1.getText());
 		List<Ttcppacket> trList ; // = new ArrayList<Ttcppacket>();
-
+		int imin = 2;
+		try {
+			imin = Integer.parseInt(spn_min.getText());
+		} catch (Exception e) {
+			imin = 2;
+		}
 		AqtMain.container.setCursor(IAqtVar.busyc);
-		StringBuilder qstr = new StringBuilder("where t.tcode like ? ") ; 
+		
+		if ( sbOStime.length() == 0) {
+			trList = em.createNativeQuery("select t.* from Ttcppacket t use index(tcode) where tcode = ? order by t.o_stime limit 1 ",
+						Ttcppacket.class).setParameter(1, cmbCode.getTcode()).getResultList() ;
+			if (trList.size() > 0)
+			  sbOStime.append(trList.get(0).getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+		}
+		StringBuilder qstr = new StringBuilder("where t.tcode = ? ") ; 
+		if ( sbOStime.length() > 0 )
+			qstr.append(" and t.o_stime between '" + sbOStime + "' and cast('" + sbOStime + "' + interval " + imin + " minute as datetime)") ;
 		if (! textsvc.getText().isEmpty()  ) 
 			qstr.append(" and t.uri rlike '" + textsvc.getText().trim() + "'");
 		if (! textRcode.getText().isEmpty()  ) 
@@ -445,46 +362,46 @@ public class AqtSearch {
 			AqtMain.aqtmain.setCond("aqtsearch1",textEtc.getText());
 		}
 
-		if (itotal <= 0) {
-			itotal = Math.toIntExact(  (long) em.createNativeQuery("select count(1) from Ttcppacket t " + qstr.toString()  )
-					.setParameter(1, cmbCode.getTcode())
-					.getSingleResult() );
-			ipos = 0 ;
-		} 
-		Query qTrx = em
-				.createNativeQuery("select t.* from Ttcppacket t use index(tcode) " + qstr.toString() + " order by t.o_Stime, t.tcode",
+ 		Query qTrx = em
+				.createNativeQuery("select t.* from Ttcppacket t use index(tcode)  " 
+									+ qstr.toString() + " order by t.o_stime ",
 						Ttcppacket.class).setParameter(1, cmbCode.getTcode()) ;
 		
 //		System.out.println(ipos + ":" + getMaxCnt() );
-		if ( getMaxCnt() > 0 ) {
-			qTrx.setFirstResult(ipos);
-			qTrx.setMaxResults(getMaxCnt());
-		}
+//		if ( getMaxCnt() > 0 ) {
+//			qTrx.setFirstResult(ipos);
+//			qTrx.setMaxResults(getMaxCnt());
+//		}
 
 		trList = qTrx.getResultList();
 
+		trListG.addAll(trList) ;
 		txtSend1.setText("");
 		txtReceive1.setText("");
-		if ( getMaxCnt() > 0) {
-			txtcnt.setText(String.format("총 %,d 건  ( %d / %d Page )", itotal, ipos / getMaxCnt() + 1, itotal / getMaxCnt() + 1));
-			spn_pg.setMaximum(itotal / getMaxCnt() + 1 ) ;
-		} else 
-			txtcnt.setText(String.format("총 %,d 건", itotal) );
 		
+		txtcnt.setText(String.format("총 %,d 건", trListG.size() ) );
 		txtcnt.requestLayout();
-		tView.setInput(trList);
+		btn.setEnabled(trListG.size() > 0) ;
+		int ico = trListG.size() ;
+		tView.setInput(trListG);
 		
-		if (!trList.isEmpty()) {
-			txtSend1.setText(trList.get(0).getSdata()) ;
-			txtReceive1.setText(tblList.getItem(0).getText(9));
+		if (!trListG.isEmpty()) {
+			txtSend1.setText(trListG.get(ico-1).getSdata()) ;
+			txtReceive1.setText(tblList.getItem(ico-1).getText(9));
 			txtSend1.requestLayout();
 			txtReceive1.requestLayout();
-			tblList.setSelection(0);
+			tblList.setSelection(ico-1);
 		}
+		int ic = tblList.getItemCount() ;
+		sbOStime.setLength(0) ;
 
+		if (ic > 0) {
+			sbOStime.append(trListG.get(ic -1).getOStime().plusNanos(imin*1000).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+
+		} 
 		AqtMain.container.setCursor(IAqtVar.arrow);
 
-	    tblList.setSelection(0);
+//	    tblList.setSelection(0);
 	    AqtMain.aqtmain.setStatus(String.format(">> 조회건수 %,d 건" ,trList.size() ) );
 	    AqtMain.container.setCursor(IAqtVar.arrow);
 	    

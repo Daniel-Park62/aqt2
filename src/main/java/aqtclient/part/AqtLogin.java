@@ -189,7 +189,8 @@ public class AqtLogin extends Dialog {
     @Override
     protected void okPressed() {
     	if (AqtMain.authtype == AuthType.TESTADM ) {
-    		if (! pass.equals( txtPwd.getText() ) ){
+//    		if (! pass.equals( txtPwd.getText() ) ){
+    		if ( ! AqtMain.aqtmain.isEqualsPass(txtPwd.getText()) ) { 
     			lblmsg.setText("비밀번호를 확인하세요!!");
     			return ;
     		}

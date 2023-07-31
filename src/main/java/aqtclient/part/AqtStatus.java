@@ -473,11 +473,13 @@ public class AqtStatus {
         
         lblstatus[0].setText(String.format("%.1f", icnt * 100.0 / tcnt) + "%") ;
         
-	    long dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).mapToLong(  a -> a.getScnt() + a.getFcnt() ).sum() ;
+//        long dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).mapToLong(  a -> a.getScnt() + a.getFcnt() ).sum() ;
+        long dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") && a.getScnt()+a.getFcnt() > 0 ).findFirst().map(  a -> a.getScnt() + a.getFcnt() ).orElse(0L) ;
         lblstatus[3].setText(String.format("%,d", dcnt)) ;
 
-	    int scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).flatMapToInt( a -> IntStream.of(a.getScnt().intValue()) ).sum() ;
-	    int fcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).flatMapToInt( a -> IntStream.of(a.getFcnt().intValue()) ).sum() ;
+//	    int scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") ).flatMapToInt( a -> IntStream.of(a.getScnt().intValue()) ).sum() ;
+	    int scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") && a.getScnt()+a.getFcnt() > 0 ).findFirst().map( a -> a.getScnt().intValue() ).orElse(0) ;
+	    int fcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("1") && a.getScnt()+a.getFcnt() > 0 ).findFirst().map( a -> a.getFcnt().intValue() ).orElse(0) ;
         lblstatus[4].setText(String.format("%,d", scnt)) ;
         double spct = 0;
         try {
@@ -497,10 +499,11 @@ public class AqtStatus {
 
         lblstatus[6].setText(String.format("%.1f", icnt * 100.0 / tcnt) + "%") ;
         
-	    dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).mapToLong( a -> a.getDataCnt()  ).sum() ;
+//	    dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).mapToLong( a -> a.getDataCnt()  ).sum() ;
+        dcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") && a.getScnt()+a.getFcnt() > 0 ).findFirst().map(  a -> a.getScnt() + a.getFcnt() ).orElse(0L) ;
+	    scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") && a.getScnt()+a.getFcnt() > 0 ).findFirst().map( a -> a.getScnt().intValue() ).orElse(0) ;
+	    fcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") && a.getScnt()+a.getFcnt() > 0 ).findFirst().map( a -> a.getFcnt().intValue() ).orElse(0) ;
 
-	    scnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).flatMapToInt( a -> IntStream.of(a.getScnt().intValue()) ).sum() ;
-	    fcnt = tempVtrxList.stream().filter(a -> a.getLvl().equals("2") ).flatMapToInt( a -> IntStream.of(a.getFcnt().intValue()) ).sum() ;
         lblstatus[9].setText(String.format("%,d", scnt+fcnt)) ;
         lblstatus[10].setText(String.format("%,d", scnt)) ;
         try {

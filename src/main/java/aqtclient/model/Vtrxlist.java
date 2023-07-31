@@ -24,7 +24,7 @@ import aqtclient.part.IAqtVar;
  */
 @Entity
 @ReadOnly
-@NamedQuery(name="Vtrxlist.findAll", query="SELECT v FROM Vtrxlist v  order by v.lvl desc, v.tdate desc")
+@NamedQuery(name="Vtrxlist.findAll", query="SELECT v FROM Vtrxlist v  order by v.tdate desc")
 public class Vtrxlist  {
 	
 	@Id

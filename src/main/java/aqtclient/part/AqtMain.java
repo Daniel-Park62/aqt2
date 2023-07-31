@@ -143,6 +143,11 @@ public class AqtMain extends ApplicationWindow {
 	public String getGtcode() {
 		return tconfig.getTcode() ;
 	}
+	
+	public boolean isEqualsPass(String spass) {
+		String sp1 = em.createNativeQuery("select password(?1)").setParameter(1, spass).getSingleResult().toString() ;
+		return tconfig.getPass1().equals(sp1) ;
+	}
 	public void setGtcode(String tcode) {
 		em.getTransaction().begin();
 		tconfig.setTcode(tcode) ;
@@ -488,6 +493,28 @@ public class AqtMain extends ApplicationWindow {
 				}
 				container.layout();
 				comp_menu.setToolTipText("AqtSearch");
+				setStatus(comp_menu.getToolTipText());
+
+			}
+		});
+
+		lblist = new Label(comp_1, SWT.NONE);
+		menuLabel(lblist);
+		lblist.setText("전문검색(대용량)");
+		
+		lblist.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				delWidget(container);
+				container.setLayout(new FillLayout());
+				new AqtSearch2(container, SWT.NONE);
+				try {
+					cback.setTcode(tconfig.getTcode());
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+				container.layout();
+				comp_menu.setToolTipText("AqtSearch2");
 				setStatus(comp_menu.getToolTipText());
 
 			}

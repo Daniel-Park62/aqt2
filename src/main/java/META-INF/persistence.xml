@@ -27,6 +27,7 @@
 			<property name="eclipselink.logging.file" value=".\aqtlog.log"/>
 			<property name="eclipselink.logging.level.dms" value="WARNING"/>
 			<property name="eclipselink.logging.level.jpa" value="WARNING"/>
+			<property name="eclipselink.logging.level" value="INFO"/>
 		</properties>
 	</persistence-unit>
 </persistence>
