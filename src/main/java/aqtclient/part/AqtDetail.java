@@ -297,6 +297,9 @@ public class AqtDetail extends Dialog {
 		txtOStime.setEditable(false);
 		txtOStime.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 		txtOStime.setFont( IAqtVar.font1);
+		txtOStime.setTextLimit(26) ;
+		txtStime.setTextLimit(26) ;
+		txtRtime.setTextLimit(26) ;
 
 		lblcomm = new Label(compDetail, SWT.NONE);
 		lblcomm.setText("송수신Host");
@@ -531,9 +534,9 @@ public class AqtDetail extends Dialog {
 		txtTestCode.setText(tpacket.getTcode()); 
 		txtUri.setText(tpacket.getUri() + " [" + tpacket.getTservice().getSvckor() + "]" );
 //		txtScrno.setText(tpacket.getScrno()); 
-		txtOStime.setText(tpacket.getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
-		txtStime.setText(tpacket.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
-		txtRtime.setText(tpacket.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+		txtOStime.setText(tpacket.getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
+		txtStime.setText(tpacket.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
+		txtRtime.setText(tpacket.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
 		txtElapsed.setText(String.format("%.3f",tpacket.getElapsed()));
 		txtSvcTime.setText(String.format("%.3f",tpacket.getSvctime()));
 		txtRcode.setText( tpacket.getSrcip()+" ->"+tpacket.getDstip()+":"+tpacket.getDstport() );

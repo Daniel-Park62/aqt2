@@ -455,12 +455,13 @@ public class AqtRegTcode {
 	    
 	    
         String[] cols1 = new String[] 
-        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","Test IP", "Port","전문구분", "전문건수"};
+        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","Test IP", "Port","전문구분","Enc", "전문건수"};
 
-        int[] columnWidths1 = new int[] {  130, 250, 80, 80, 150,160,160, 200,80,80,120};
+        int[] columnWidths1 = new int[] {  130, 250, 80, 80, 150,160,160, 200,80,80,80,120};
 
 	    int[] colas1 = new int[] 
-	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER , SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER ,SWT.CENTER,SWT.CENTER };
+	    		{SWT.CENTER, SWT.LEFT, SWT.CENTER, SWT.CENTER, SWT.CENTER 
+	    				, SWT.CENTER, SWT.CENTER, SWT.CENTER ,SWT.CENTER ,SWT.CENTER,SWT.CENTER ,SWT.CENTER};
 	    TableViewerColumn tableViewerColumn ;
 	    for (int i = 0; i < cols1.length; i++) {
 	    	tableViewerColumn =
@@ -592,6 +593,8 @@ public class AqtRegTcode {
 					m.setTport(Integer.parseInt(value.toString()));
 				else if (property.equals(cols1[9]))
 					m.setPro(value.toString());
+				else if (property.equals(cols1[10]))
+					m.setTenv(value.toString());
 				else
 					return ;
 
@@ -625,6 +628,8 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[9]))
 					return Integer.valueOf(t.getPro()) ;
 				else if (property.equals(cols1[10]))
+					return t.getTenv()  ;
+				else if (property.equals(cols1[11]))
 					return t.getDataCnt() ;
 
 				return null;
@@ -636,7 +641,7 @@ public class AqtRegTcode {
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
 					if ( ! (property.equals(cols1[0]) || property.equals(cols1[5]) 
-							|| property.equals(cols1[6]) || property.equals(cols1[10]))  ) 
+							|| property.equals(cols1[6]) || property.equals(cols1[11]))  ) 
 						return true ;
 
 					return ( t.isNew() ) ;
@@ -719,6 +724,8 @@ public class AqtRegTcode {
 						  i = Integer.valueOf(s.getPro()) ;
 						  return i < IAqtVar.proArr.length ? IAqtVar.proArr[i] : "";
 					  case 10:
+						  return s.getTenv();
+					  case 11:
 						  return String.format("%,d", s.getDataCnt());
 					  }
 				  return "";

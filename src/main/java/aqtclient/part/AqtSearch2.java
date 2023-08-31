@@ -344,7 +344,7 @@ public class AqtSearch2 {
 			trList = em.createNativeQuery("select t.* from Ttcppacket t use index(tcode) where tcode = ? order by t.o_stime limit 1 ",
 						Ttcppacket.class).setParameter(1, cmbCode.getTcode()).getResultList() ;
 			if (trList.size() > 0)
-			  sbOStime.append(trList.get(0).getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+			  sbOStime.append(trList.get(0).getOStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
 		}
 		StringBuilder qstr = new StringBuilder("where t.tcode = ? ") ; 
 		if ( sbOStime.length() > 0 )
@@ -396,8 +396,7 @@ public class AqtSearch2 {
 		sbOStime.setLength(0) ;
 
 		if (ic > 0) {
-			sbOStime.append(trListG.get(ic -1).getOStime().plusNanos(imin*1000).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
-
+			sbOStime.append(trListG.get(ic -1).getOStime().plusNanos(imin*1000).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
 		} 
 		AqtMain.container.setCursor(IAqtVar.arrow);
 

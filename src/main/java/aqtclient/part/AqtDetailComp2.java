@@ -221,8 +221,8 @@ public class AqtDetailComp2 extends Dialog {
 			txtCmpid.setText(tr.getCmpid()+"");
 			txtTestCode.setText(tr.getTcode());
 			txtUri.setText(tr.getUri());
-			txtStime.setText(tr.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
-			txtRtime.setText(tr.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")).substring(0, 26));
+			txtStime.setText(tr.getStime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
+			txtRtime.setText(tr.getRtime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss.n")));
 			txtElapsed.setText(String.format("%.3f",tr.getElapsed()));
 			txtSvcTime.setText(String.format("%.3f",tr.getSvctime()));
 			txtRcode.setText( tr.getSrcip()+" ->"+tr.getDstip()+":"+tr.getDstport()  );
@@ -307,7 +307,9 @@ public class AqtDetailComp2 extends Dialog {
 			txtRtime.setEditable(false);
 			txtRtime.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
 			txtRtime.setFont( IAqtVar.font1);
-			
+			txtStime.setTextLimit(26) ;
+			txtRtime.setTextLimit(26) ;
+
 			lblcomm = new Label(compDetail, SWT.NONE);
 			lblcomm.setText("총소요시간");
 			lblcomm.setFont( IAqtVar.font1);

@@ -202,11 +202,16 @@ public class AqtCopyTdata extends Dialog {
 		try {
 			lmsg.setText("...작업중...");
 			em.getTransaction().begin();
-			String rval  = em.createNativeQuery("call sp_loaddata2(?,?,?,?)")
+			String rval  = ( spnum.getSelection() > 0 ? em.createNativeQuery("call sp_loaddata2(?,?,?,?)") 
 					.setParameter(1, srcCode.getText())
 					.setParameter(2, dstCode.getTcode())
 					.setParameter(3, cond )
-					.setParameter(4, spnum.getSelection())
+					.setParameter(4, spnum.getSelection())  
+					        : em.createNativeQuery("call sp_loaddata(?,?,?)") 
+					.setParameter(1, srcCode.getText())
+					.setParameter(2, dstCode.getTcode())
+					.setParameter(3, cond )
+						)
 	                .getSingleResult().toString();
 			em.createNativeQuery("call sp_summary(?)")
 					.setParameter(1, dstCode.getTcode())
