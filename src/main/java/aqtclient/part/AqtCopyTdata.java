@@ -49,7 +49,7 @@ public class AqtCopyTdata extends Dialog {
 
     @Override
     protected Point getInitialSize() {
-        return new Point(650, 500);
+        return new Point(650, 600);
     }
     
     @Override
@@ -201,6 +201,7 @@ public class AqtCopyTdata extends Dialog {
 		EntityManager em = AqtMain.emf.createEntityManager();
 		try {
 			lmsg.setText("...작업중...");
+//			System.out.println(cond + spnum.getSelection() );
 			em.getTransaction().begin();
 			String rval  = ( spnum.getSelection() > 0 ? em.createNativeQuery("call sp_loaddata2(?,?,?,?)") 
 					.setParameter(1, srcCode.getText())

@@ -35,6 +35,7 @@ public class Tmaster implements Serializable {
 	private Date endDate ;
 
 	private String tdir = "";
+	private String appid = "";
 
 	private String tenv = "";
 
@@ -46,7 +47,7 @@ public class Tmaster implements Serializable {
 
 	private String type = "1";    // 1.배치테스트 2.실시간
 
-	private String pro = "0";  // 0.tmax 1.http 2.https
+	private String pro = "0";  // 0.tcp 1.http 2.udp 3.tmax
 	
 	@Column(name="svc_cnt")
 	private int svcCnt ;
@@ -200,6 +201,12 @@ public class Tmaster implements Serializable {
 	}
 	public void setPro(String pro) {
 		this.pro = pro;
+	}
+	public String getAppid() {
+		return appid;
+	}
+	public void setAppid(String appid) {
+		this.appid = appid;
 	}
 
 }

@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.PopupList;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -33,6 +34,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -56,7 +58,8 @@ import aqtclient.model.Tmaster;
 public class AqtRegTcode {
 	private Table tblList;
 	private CheckboxTableViewer tvList;
-	
+	private String[] appArr = IAqtVar.getAppList() ;
+	PopupList applst ;
 	private List <Tmaster> tcodeList;
 	private Text txCode , txCodenm ;
 	EntityManager em = AqtMain.emf.createEntityManager();
@@ -455,7 +458,7 @@ public class AqtRegTcode {
 	    
 	    
         String[] cols1 = new String[] 
-        		{  " 테스트ID", "  테스트명", "타입", "단계", "대상코드", "테스트시작일","테스트종료일","Test IP", "Port","전문구분","Enc", "전문건수"};
+        		{  " 테스트ID", "  테스트명", "APPID", "단계", "대상코드", "테스트시작일","테스트종료일","Test IP", "Port","전문구분","Enc", "전문건수"};
 
         int[] columnWidths1 = new int[] {  130, 250, 80, 80, 150,160,160, 200,80,80,80,120};
 
@@ -480,16 +483,32 @@ public class AqtRegTcode {
 	    tblList.addListener(SWT.MouseDoubleClick, (e) -> {
 			int i = tblList.getSelectionIndex() ;
 			if (i < 0) return ;
-			if (  tblList.getItem(i).getTextBounds(9).contains(e.x, e.y) ) {
-				Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
+			Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
+			if (  tblList.getItem(i).getTextBounds(11).contains(e.x, e.y) ) {
+				
 				AqtMain.openTrList("t.tcode = '"+ tmaster.getCode() + "'" ) ; 
 				queryScr();
 				tvList.refresh() ;
-
+				return ;
 			}
-			if ( ! tvList.getChecked(tblList.getItem(i).getData() ) ) return ;	
+//			if ( tmaster == null ) return ;	
+//			System.out.println("appid:" + tmaster.getAppid() + " " + tblList.getItem(i).getTextBounds(2).x  );
+			if ( tblList.getItem(i).getTextBounds(2).contains(e.x, e.y) ) {
+				applst = new PopupList(parent.getShell() , 5);
+				applst.setFont(IAqtVar.font1);
+				applst.setItems(appArr) ;
+
+		        applst.select( tmaster.getAppid() );
+		        Point pt = parent.getDisplay().getCursorLocation() ;
+	
+		        String selected = applst.open(new Rectangle(pt.x, pt.y - 40, 80, 30));
+		        if (selected == null) return ;
+		        tmaster.setAppid(selected);
+		        tvList.refresh();
+		        return ;
+			}
 			if ( ! tblList.getItem(i).getTextBounds(5).contains(e.x, e.y) ) return ;
-			Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
+//			Tmaster tmaster = (Tmaster) tblList.getItem(i).getData() ;
 			
     		Point pt = parent.getDisplay().getCursorLocation() ; 
         	CalDialog cd = new CalDialog(tblList.getShell() , pt.x, pt.y + 10, tmaster.getTdate() );
@@ -513,9 +532,9 @@ public class AqtRegTcode {
 		CellEditor[] CELL_EDITORS = new CellEditor[cols1.length];
 		
 		for (int i = 0; i < CELL_EDITORS.length; i++) {
-			if ( i == 2 ) {
-				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.typeArr,  SWT.READ_ONLY ) ;
-			} else if ( i == 3 ) {
+//			if ( i == 2 ) {
+//				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.typeArr,  SWT.READ_ONLY ) ;
+			if ( i == 3 ) {
 				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.lvlArr , SWT.READ_ONLY ) ;
 			} else if ( i == 9 ) {
 				CELL_EDITORS[i] = new ComboBoxCellEditor(tblList, IAqtVar.proArr , SWT.READ_ONLY ) ;
@@ -575,7 +594,7 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[1]))
 					m.setDesc1(value.toString());
 				else if (property.equals(cols1[2]))
-					m.setType(value.toString());
+					m.setAppid(value.toString());
 				else if (property.equals(cols1[3]))
 					m.setLvl(value.toString());
 				else if (property.equals(cols1[4]))
@@ -612,7 +631,8 @@ public class AqtRegTcode {
 				else if (property.equals(cols1[1]))
 					return t.getDesc1();
 				else if (property.equals(cols1[2]))
-					return Integer.valueOf(t.getType());
+//					return Integer.valueOf(t.getType());
+					return t.getAppid() ;
 				else if (property.equals(cols1[3]))
 					return Integer.valueOf(t.getLvl()) ;
 				else if (property.equals(cols1[4]))
@@ -640,7 +660,7 @@ public class AqtRegTcode {
 				// TODO Auto-generated method stub
 				if (tvList.getChecked(element)) {
 					Tmaster t = (Tmaster)element ;
-					if ( ! (property.equals(cols1[0]) || property.equals(cols1[5]) 
+					if ( ! (property.equals(cols1[0]) || property.equals(cols1[2]) || property.equals(cols1[5]) 
 							|| property.equals(cols1[6]) || property.equals(cols1[11]))  ) 
 						return true ;
 
@@ -705,8 +725,9 @@ public class AqtRegTcode {
 					  case 1:
 						  return s.getDesc1() ;
 					  case 2:
-						  i = Integer.valueOf(s.getType()) ;
-						  return i < IAqtVar.typeArr.length ? IAqtVar.typeArr[i] : "";
+						  return s.getAppid() ;
+//						  i = Integer.valueOf(s.getType()) ;
+//						  return i < IAqtVar.typeArr.length ? IAqtVar.typeArr[i] : "";
 					  case 3:
 						  i = Integer.valueOf(s.getLvl()) ;
 						  return i < IAqtVar.lvlArr.length ? IAqtVar.lvlArr[i] : "";

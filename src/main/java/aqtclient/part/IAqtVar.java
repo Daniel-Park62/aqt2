@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.EntityManager;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -27,7 +29,8 @@ public interface IAqtVar {
     final String titnm = "Application Quarity Test";
     final String[] typeArr = new String[] {"","배치","실시간"};
     final String[] lvlArr = new String[] {"Origin","단위","통합","정합성"};
-    final String[] proArr = new String[] {"tcp","http","https"};
+    final String[] proArr = new String[] {"tcp","http","udp","tmax"};
+    EntityManager em = AqtMain.emf.createEntityManager();
     
     final public static Map<String, String> lvlnm = Collections.unmodifiableMap(new HashMap<String, String>() {
 		/**
@@ -61,6 +64,11 @@ public interface IAqtVar {
 			}
 	    }
 	}
+	public static String[] getAppList() {
+		return em.createQuery("select a.appid from Tapplication a ", String.class)
+				.getResultList().stream().toArray(String[]::new);
+	}
+
     
 }	
 
